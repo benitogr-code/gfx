@@ -1,6 +1,8 @@
 #pragma once
 
 #include "system/application.h"
+#include "system/graphics/buffers.h"
+#include "system/graphics/shader.h"
 
 class SandboxApp: public Application {
 public:
@@ -15,5 +17,7 @@ protected:
   virtual void onGUI() override;
 
 private:
-  glm::vec4 _bgColor;
+  VertexArrayRef _vao;
+  ShaderRef      _shader;
+  ColorRGB       _drawColor;
 };

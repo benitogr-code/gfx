@@ -25,6 +25,8 @@ bool Application::init(const WindowDesc& desc) {
   _input.reset(new Input());
   _input->registerCallback(std::bind(&Application::onInputEvent, this, std::placeholders::_1));
 
+  _renderer.reset(new Renderer());
+
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGui::StyleColorsClassic();
@@ -56,36 +58,23 @@ void Application::run() {
 
   while (_running) {
     // Input + events
-    {
-      SDL_PumpEvents();
+    SDL_PumpEvents();
 
-      checkSystemEvents();
-      _input->update();
-    }
+    checkSystemEvents();
+    _input->update();
 
     // Update
-    {
-      frameId++;
-      timeLast = timeNow;
-      timeNow  = SDL_GetPerformanceCounter();
-      const auto deltaTime = (double)((timeNow - timeLast) / (double)SDL_GetPerformanceFrequency());
+    frameId++;
+    timeLast = timeNow;
+    timeNow  = SDL_GetPerformanceCounter();
+    const auto deltaTime = (double)((timeNow - timeLast) / (double)SDL_GetPerformanceFrequency());
 
-      onUpdate(UpdateContext(deltaTime, frameId));
-    }
+    _renderer->beginFrame();
 
-    // ImGui
-    {
-      ImGui_ImplOpenGL3_NewFrame();
-      ImGui_ImplSDL2_NewFrame();
-      ImGui::NewFrame();
+    onUpdate(UpdateContext(deltaTime, frameId));
+    onGUI();
 
-      onGUI();
-
-      ImGui::Render();
-      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    }
-
-    // Refresh window
+    _renderer->endFrame();
     _window->update();
   }
 }

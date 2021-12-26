@@ -1,6 +1,7 @@
 #pragma once
 
 #include "input.h"
+#include "renderer.h"
 #include "window.h"
 
 struct UpdateContext {
@@ -23,7 +24,8 @@ public:
   void run();
 
 protected:
-  Window* getWindow() const { return _window.get(); };
+  Window*   getWindow() const { return _window.get(); };
+  Renderer* getRenderer() const { return _renderer.get(); }
 
   // To be implemented by custom application
   virtual bool onInit() = 0;
@@ -38,6 +40,8 @@ private:
 private:
   std::unique_ptr<Window> _window;
   std::unique_ptr<Input> _input;
+  std::unique_ptr<Renderer> _renderer;
+
   bool     _running;
 };
 
