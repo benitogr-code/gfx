@@ -25,9 +25,13 @@ bool Window::init() {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
   _window = SDL_CreateWindow(
     _title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-    _width, _height, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE
+    _width, _height, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE|SDL_WINDOW_ALLOW_HIGHDPI
   );
 
   if (_window == nullptr) {
@@ -42,6 +46,8 @@ bool Window::init() {
 
     return false;
   }
+
+  SDL_GL_SetSwapInterval(1);
 
   gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress);
 

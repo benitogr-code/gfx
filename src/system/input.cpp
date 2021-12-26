@@ -1,5 +1,6 @@
 #include "input.h"
 
+#include "imgui/imgui_impl_sdl.h"
 #include <SDL.h>
 
 Input::Input() {
@@ -39,6 +40,8 @@ void Input::update() {
 
       inputEvents.push_back(input);
     }
+
+    ImGui_ImplSDL2_ProcessEvent(&events[i]);
   }
 
   for (auto iter = inputEvents.begin(); iter != inputEvents.end(); ++iter) {

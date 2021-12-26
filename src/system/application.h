@@ -30,6 +30,7 @@ protected:
   virtual void onShutdown() = 0;
   virtual void onInputEvent(const InputEvent& event) = 0;
   virtual void onUpdate(const UpdateContext& ctx) = 0;
+  virtual void onGUI() = 0;
 
 private:
   void checkSystemEvents();

@@ -11,6 +11,9 @@ struct WindowDesc {
 };
 
 class Window {
+private:
+  typedef void* SDL_GLContext;
+
 public:
   Window(const WindowDesc& desc);
   ~Window();
@@ -20,9 +23,10 @@ public:
   void onResized(int width, int height);
   void update();
 
-private:
-  typedef void* SDL_GLContext;
+  SDL_Window*   getWindow() const { return _window; }
+  SDL_GLContext getGLContext() const { return _context; }
 
+private:
   int _width;
   int _height;
   std::string _title;
