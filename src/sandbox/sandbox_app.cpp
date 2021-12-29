@@ -34,10 +34,11 @@ bool SandboxApp::onInit() {
 
   ShaderCreateParams shaderParams;
   shaderParams.name = "test";
-  shaderParams.vertexShaderPath = "shaders/test.vs";
-  shaderParams.fragmentShaderPath = "shaders/test.fs";
+  shaderParams.vertexShaderPath = "shaders/test.vert";
+  shaderParams.fragmentShaderPath = "shaders/test.frag";
 
   _shader = Shader::Create(shaderParams);
+  _shader->use();
 
   return true;
 }
@@ -60,7 +61,7 @@ void SandboxApp::onGUI() {
   static int counter = 0;
 
   ImGui::SetNextWindowPos(ImVec2(5.0f, 5.0f));
-  ImGui::SetNextWindowCollapsed(true, ImGuiCond_Once);
+  //ImGui::SetNextWindowCollapsed(true, ImGuiCond_Once);
   ImGui::Begin("Settings", nullptr);
     ImGui::ColorEdit3("Background color", glm::value_ptr(_drawColor));
 

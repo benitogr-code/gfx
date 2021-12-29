@@ -7,6 +7,8 @@ class Renderer {
 public:
     Renderer();
 
+    void init();
+
     void setClearColor(const ColorRGB& c) { _clearColor = c; }
     void toggleWireframe();
 

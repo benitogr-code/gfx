@@ -26,6 +26,7 @@ bool Application::init(const WindowDesc& desc) {
   _input->registerCallback(std::bind(&Application::onInputEvent, this, std::placeholders::_1));
 
   _renderer.reset(new Renderer());
+  _renderer->init();
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
