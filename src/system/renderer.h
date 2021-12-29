@@ -12,7 +12,7 @@ public:
     void setClearColor(const ColorRGB& c) { _clearColor = c; }
     void toggleWireframe();
 
-    void drawVertexArray(const VertexArrayRef& va, const ShaderRef& shader);
+    void drawVertexArray(const VAORef& va, const ShaderRef& shader);
 
     void beginFrame();
     void endFrame();

@@ -43,7 +43,7 @@ void Renderer::toggleWireframe() {
     glPolygonMode(GL_FRONT_AND_BACK, _wireframeEnabled ? GL_LINE : GL_FILL);
 }
 
-void Renderer::drawVertexArray(const VertexArrayRef& va, const ShaderRef& shader) {
+void Renderer::drawVertexArray(const VAORef& va, const ShaderRef& shader) {
   shader->use();
   va->bind();
   glDrawElements(GL_TRIANGLES, va->indexCount(), GL_UNSIGNED_INT, 0);

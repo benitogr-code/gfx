@@ -44,10 +44,10 @@ private:
   uint32_t _stride;
 };
 
-class VertexBuffer;
-typedef std::shared_ptr<VertexBuffer> VertexBufferRef;
+class VBO;
+typedef std::shared_ptr<VBO> VBORef;
 
-class VertexBuffer {
+class VBO {
 public:
   enum Flag {
     Flag_Dynamic = BIT(1),
@@ -55,7 +55,7 @@ public:
   };
 
 public:
-  ~VertexBuffer();
+  ~VBO();
 
   uint32_t id() const { return _id; }
   void setFlag(Flag flag) { _flags |= flag; }
@@ -65,15 +65,15 @@ public:
 
   void uploadData(const void* data, uint32_t size);
 
-  static VertexBufferRef Create(uint32_t size, const BufferLayout& layout);
-  static VertexBufferRef Create(const void* data, uint32_t size, const BufferLayout& layout);
+  static VBORef Create(uint32_t size, const BufferLayout& layout);
+  static VBORef Create(const void* data, uint32_t size, const BufferLayout& layout);
 
 private:
-  VertexBuffer() = delete;
-  VertexBuffer(const VertexBuffer&) = delete;
+  VBO() = delete;
+  VBO(const VBO&) = delete;
 
-  VertexBuffer(uint32_t size, const BufferLayout& layout);
-  VertexBuffer(const void* data, uint32_t size, const BufferLayout& layout);
+  VBO(uint32_t size, const BufferLayout& layout);
+  VBO(const void* data, uint32_t size, const BufferLayout& layout);
 
 private:
   BufferLayout _layout;
@@ -82,52 +82,52 @@ private:
   uint32_t _flags;
 };
 
-class IndexBuffer;
-typedef std::shared_ptr<IndexBuffer> IndexBufferRef;
+class IBO;
+typedef std::shared_ptr<IBO> IBORef;
 
-class IndexBuffer {
+class IBO {
 public:
-  ~IndexBuffer();
+  ~IBO();
 
   uint32_t id() const { return _id; }
   uint32_t count() const { return _count; }
 
-  static IndexBufferRef Create(const uint32_t* indices, uint32_t count);
+  static IBORef Create(const uint32_t* indices, uint32_t count);
 
 private:
-  IndexBuffer() = delete;
-  IndexBuffer(const IndexBuffer&) = delete;
+  IBO() = delete;
+  IBO(const IBO&) = delete;
 
-  IndexBuffer(const uint32_t* indices, uint32_t count);
+  IBO(const uint32_t* indices, uint32_t count);
 
 private:
   uint32_t _id;
   uint32_t _count;
 };
 
-class VertexArray;
-typedef std::shared_ptr<VertexArray> VertexArrayRef;
+class VAO;
+typedef std::shared_ptr<VAO> VAORef;
 
-class VertexArray {
+class VAO {
 public:
-  ~VertexArray();
+  ~VAO();
 
   void bind();
   void unbind();
 
-  void addVertextBuffer(VertexBufferRef buffer);
-  void setIndexBuffer(IndexBufferRef buffer);
+  void addVertextBuffer(VBORef buffer);
+  void setIndexBuffer(IBORef buffer);
 
   const uint32_t indexCount() const { return _indexBuffer ? _indexBuffer->count() : 0; }
 
-  static VertexArrayRef Create();
+  static VAORef Create();
 private:
-  VertexArray();
-  VertexArray(const VertexArray&) = delete;
+  VAO();
+  VAO(const VAO&) = delete;
 
 private:
   uint32_t _id;
-  std::vector<VertexBufferRef> _vertexBuffers;
-  IndexBufferRef _indexBuffer;
+  std::vector<VBORef> _vertexBuffers;
+  IBORef _indexBuffer;
   uint32_t _attributeCount;
 };

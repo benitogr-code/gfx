@@ -19,16 +19,16 @@ bool SandboxApp::onInit() {
     1, 2, 3 // second triangle
   };
 
-  auto vbo = VertexBuffer::Create(
+  auto vbo = VBO::Create(
     vertices,
     sizeof(vertices),
     BufferLayout({
       { BufferItemType::Float3, "position" }
     })
   );
-  auto ibo = IndexBuffer::Create(indices, 6);
+  auto ibo = IBO::Create(indices, 6);
 
-  _vao = VertexArray::Create();
+  _vao = VAO::Create();
   _vao->addVertextBuffer(vbo);
   _vao->setIndexBuffer(ibo);
 

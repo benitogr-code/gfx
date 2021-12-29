@@ -17,7 +17,7 @@ protected:
   virtual void onGUI() override;
 
 private:
-  VertexArrayRef _vao;
+  VAORef _vao;
   ShaderRef      _shader;
   ColorRGB       _drawColor;
 };

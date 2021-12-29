@@ -56,8 +56,8 @@ BufferLayout::BufferLayout(std::initializer_list<BufferItem> items)
   _stride = stride;
 }
 
-// VertexBuffer
-VertexBuffer::VertexBuffer(const void* data, uint32_t size, const BufferLayout& layout)
+// VBO
+VBO::VBO(const void* data, uint32_t size, const BufferLayout& layout)
   : _id(0)
   , _size(size)
   , _flags(0) {
@@ -69,7 +69,7 @@ VertexBuffer::VertexBuffer(const void* data, uint32_t size, const BufferLayout& 
   _layout = layout;
 }
 
-VertexBuffer::VertexBuffer(uint32_t size, const BufferLayout& layout)
+VBO::VBO(uint32_t size, const BufferLayout& layout)
   : _id(0)
   , _size(size)
   , _flags(0) {
@@ -82,13 +82,13 @@ VertexBuffer::VertexBuffer(uint32_t size, const BufferLayout& layout)
   setFlag(Flag_Dynamic);
 }
 
-VertexBuffer::~VertexBuffer() {
+VBO::~VBO() {
   glDeleteBuffers(1, &_id);
 }
 
-void VertexBuffer::uploadData(const void* data, uint32_t size) {
+void VBO::uploadData(const void* data, uint32_t size) {
   if (!hasFlag(Flag_Dynamic)) {
-    LOG_WARN("VertexBuffer cannot upload data to static buffer");
+    LOG_WARN("VBO cannot upload data to static buffer");
     return;
   }
 
@@ -96,59 +96,59 @@ void VertexBuffer::uploadData(const void* data, uint32_t size) {
   glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 }
 
-/*static*/ VertexBufferRef VertexBuffer::Create(uint32_t size, const BufferLayout& layout) {
-  VertexBufferRef buffer(new VertexBuffer(size, layout));
+/*static*/ VBORef VBO::Create(uint32_t size, const BufferLayout& layout) {
+  VBORef buffer(new VBO(size, layout));
 
   return buffer;
 }
 
-/*static*/ VertexBufferRef VertexBuffer::Create(const void* data, uint32_t size, const BufferLayout& layout) {
-  VertexBufferRef buffer(new VertexBuffer(data, size, layout));
+/*static*/ VBORef VBO::Create(const void* data, uint32_t size, const BufferLayout& layout) {
+  VBORef buffer(new VBO(data, size, layout));
 
   return buffer;
 }
 
-// IndexBuffer
-IndexBuffer::IndexBuffer(const uint32_t* indices, uint32_t count)
+// IBO
+IBO::IBO(const uint32_t* indices, uint32_t count)
   : _count(count) {
   glGenBuffers(1, &_id);
   glBindBuffer(GL_ARRAY_BUFFER, _id);
   glBufferData(GL_ARRAY_BUFFER, sizeof(uint32_t) * count, indices, GL_STATIC_DRAW);
 }
 
-IndexBuffer::~IndexBuffer() {
+IBO::~IBO() {
   glDeleteBuffers(1, &_id);
 }
 
-/*static*/ IndexBufferRef IndexBuffer::Create(const uint32_t* indices, uint32_t count) {
-  IndexBufferRef buffer(new IndexBuffer(indices, count));
+/*static*/ IBORef IBO::Create(const uint32_t* indices, uint32_t count) {
+  IBORef buffer(new IBO(indices, count));
 
   return buffer;
 }
 
-// VertexArray
-VertexArray::VertexArray()
+// VAO
+VAO::VAO()
   : _attributeCount(0) {
   glGenVertexArrays(1, &_id);
 }
 
-VertexArray::~VertexArray() {
+VAO::~VAO() {
   glDeleteVertexArrays(1, &_id);
 }
 
-void VertexArray::bind() {
+void VAO::bind() {
   glBindVertexArray(_id);
 }
 
-void VertexArray::unbind() {
+void VAO::unbind() {
   glBindVertexArray(0);
 }
 
-void VertexArray::addVertextBuffer(VertexBufferRef buffer) {
+void VAO::addVertextBuffer(VBORef buffer) {
   glBindVertexArray(_id);
   glBindBuffer(GL_ARRAY_BUFFER, buffer->id());
 
-  const auto attribDivisor = buffer->hasFlag(VertexBuffer::Flag_Instance) ? 1 : 0;
+  const auto attribDivisor = buffer->hasFlag(VBO::Flag_Instance) ? 1 : 0;
   const auto& layout = buffer->layout();
   for (uint32_t i = 0; i < layout.itemCount(); ++i) {
     const auto& item = layout.itemAt(i);
@@ -199,7 +199,7 @@ void VertexArray::addVertextBuffer(VertexBufferRef buffer) {
   _vertexBuffers.push_back(buffer);
 }
 
-void VertexArray::setIndexBuffer(IndexBufferRef buffer) {
+void VAO::setIndexBuffer(IBORef buffer) {
   glBindVertexArray(_id);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->id());
   glBindVertexArray(0);
@@ -207,8 +207,8 @@ void VertexArray::setIndexBuffer(IndexBufferRef buffer) {
   _indexBuffer = buffer;
 }
 
-/*static*/ VertexArrayRef VertexArray::Create() {
-  VertexArrayRef vertexArray(new VertexArray());
+/*static*/ VAORef VAO::Create() {
+  VAORef vertexArray(new VAO());
 
   return vertexArray;
 }
