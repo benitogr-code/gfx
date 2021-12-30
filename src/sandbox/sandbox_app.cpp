@@ -9,29 +9,21 @@ SandboxApp::SandboxApp()
 }
 
 bool SandboxApp::onInit() {
-  float vertices[] = {
-     0.5f,  0.5f, 0.0f, // top right
-     0.5f, -0.5f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f, // bottom left
-    -0.5f, 0.5f, 0.0f // top left
-  };
-  unsigned int indices[] = {
-    0, 1, 3, // first triangle
-    1, 2, 3 // second triangle
+  MeshCreateParams meshParams;
+  meshParams.vertices.reserve(4);
+  meshParams.indices.reserve(6);
+
+  meshParams.vertices.push_back(Vertex({ glm::vec3(0.5f,  0.5f, 0.0f), glm::vec3(), glm::vec2() }));
+  meshParams.vertices.push_back(Vertex({ glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(), glm::vec2() }));
+  meshParams.vertices.push_back(Vertex({ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(), glm::vec2() }));
+  meshParams.vertices.push_back(Vertex({ glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(), glm::vec2() }));
+
+  meshParams.indices = {
+    0, 1, 3,
+    1, 2, 3
   };
 
-  auto vbo = VBO::Create(
-    vertices,
-    sizeof(vertices),
-    BufferLayout({
-      { BufferItemType::Float3, "position" }
-    })
-  );
-  auto ibo = IBO::Create(indices, 6);
-
-  _vao = VAO::Create();
-  _vao->addVertextBuffer(vbo);
-  _vao->setIndexBuffer(ibo);
+  _mesh = Mesh::Create(meshParams);
 
   ShaderCreateParams shaderParams;
   shaderParams.name = "test";
@@ -57,7 +49,7 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   auto matrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(_offset, 0.0f, 0.0f));
   _shader->setUniformVec3("uColor", _drawColor);
   _shader->setUniformMatrix4("uMatrix", matrix);
-  getRenderer()->drawVertexArray(_vao, _shader);
+  getRenderer()->draw(_mesh, _shader);
 }
 
 void SandboxApp::onGUI() {

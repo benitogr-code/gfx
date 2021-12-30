@@ -1,7 +1,7 @@
 #pragma once
 
 #include "system/application.h"
-#include "system/graphics/buffers.h"
+#include "system/graphics/mesh.h"
 #include "system/graphics/shader.h"
 
 class SandboxApp: public Application {
@@ -17,8 +17,8 @@ protected:
   virtual void onGUI() override;
 
 private:
-  VAORef _vao;
   ShaderRef      _shader;
+  MeshRef        _mesh;
   ColorRGB       _drawColor;
   float          _offset;
 };
