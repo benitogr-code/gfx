@@ -3,7 +3,8 @@
 #include <imgui.h>
 
 SandboxApp::SandboxApp()
-  : _drawColor(0.5f, 0.0f, 0.0f) {
+  : _drawColor(0.5f, 0.0f, 0.0f)
+  , _offset(0.0f) {
 
 }
 
@@ -53,7 +54,9 @@ void SandboxApp::onInputEvent(const InputEvent& event) {
 void SandboxApp::onUpdate(const UpdateContext& ctx) {
   getRenderer()->setClearColor(ColorRGB(0.2f, 0.2f, 0.2f));
 
+  auto matrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(_offset, 0.0f, 0.0f));
   _shader->setUniformVec3("uColor", _drawColor);
+  _shader->setUniformMatrix4("uMatrix", matrix);
   getRenderer()->drawVertexArray(_vao, _shader);
 }
 
@@ -64,6 +67,7 @@ void SandboxApp::onGUI() {
   //ImGui::SetNextWindowCollapsed(true, ImGuiCond_Once);
   ImGui::Begin("Settings", nullptr);
     ImGui::ColorEdit3("Background color", glm::value_ptr(_drawColor));
+    ImGui::SliderFloat("Offset", &_offset, -0.5f, 0.5f);
 
     if (ImGui::Button("Toggle wireframe")) {
       getRenderer()->toggleWireframe();

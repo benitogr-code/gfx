@@ -20,4 +20,5 @@ private:
   VAORef _vao;
   ShaderRef      _shader;
   ColorRGB       _drawColor;
+  float          _offset;
 };

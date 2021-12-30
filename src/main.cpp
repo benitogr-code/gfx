@@ -20,8 +20,8 @@ Application* createApplication() {
 int main(int argc, char* argv[]) {
   StartupParams params;
   params.appCreatorFunc = createApplication;
-  params.windowDesc.width = 1280;
-  params.windowDesc.height = 720;
+  params.windowDesc.width = 1024;
+  params.windowDesc.height = 768;
   params.windowDesc.title = "GFX Sandbox";
   params.assetsFolder = parseAssetsFolder(argc, argv);
 
