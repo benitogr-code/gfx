@@ -1,4 +1,5 @@
 #include "sandbox_app.h"
+#include "utils/mesh_utils.h"
 
 #include <imgui.h>
 
@@ -8,22 +9,7 @@ SandboxApp::SandboxApp()
 }
 
 bool SandboxApp::onInit() {
-  MeshCreateParams meshParams;
-  meshParams.vertices.reserve(4);
-  meshParams.indices.reserve(6);
-
-  meshParams.vertices.push_back(Vertex({ glm::vec3(0.5f,  0.5f, 0.0f), glm::vec3(), glm::vec2() }));
-  meshParams.vertices.push_back(Vertex({ glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(), glm::vec2() }));
-  meshParams.vertices.push_back(Vertex({ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(), glm::vec2() }));
-  meshParams.vertices.push_back(Vertex({ glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(), glm::vec2() }));
-
-  meshParams.indices = {
-    0, 1, 3,
-    1, 2, 3
-  };
-
-  _mesh = Mesh::Create(meshParams);
-
+  _mesh = MeshUtils::CreateCube(1.75f);
   _model = Model3D::Create("objects/planet/planet.obj");
 
   ShaderCreateParams shaderParams;
@@ -49,8 +35,16 @@ void SandboxApp::onInputEvent(const InputEvent& event) {
 void SandboxApp::onUpdate(const UpdateContext& ctx) {
   getRenderer()->setClearColor(_bgColor);
 
+  const glm::vec3 axis(0.0f, 1.0f, -1.0f);
+  const glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::normalize(axis));
+  const glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, -2.0f, 0.0f));
+
   _shader->setUniformMatrix4("uViewProjection", _camera.getViewProjection());
-  //getRenderer()->draw(_mesh, _shader);
+
+  _shader->setUniformMatrix4("uModel", rotation * translation);
+  getRenderer()->draw(_mesh, _shader);
+
+  _shader->setUniformMatrix4("uModel", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(2.0f, 0.0f, 0.0f)));
   getRenderer()->draw(_model, _shader);
 }
 

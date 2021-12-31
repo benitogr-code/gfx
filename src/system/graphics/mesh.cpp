@@ -25,15 +25,25 @@ void Mesh::setup() {
             { BufferItemType::Float2, "texCoords" }
         })
     );
-    auto ibo = IBO::Create(_indices.data(), _indices.size());
 
     _vao = VAO::Create();
     _vao->addVertextBuffer(vbo);
-    _vao->setIndexBuffer(ibo);
+
+    if(_indices.size() > 0) {
+         auto ibo = IBO::Create(_indices.data(), _indices.size());
+        _vao->setIndexBuffer(ibo);
+    }
 }
 
 void Mesh::draw(ShaderRef& shader) {
     shader->use();
     _vao->bind();
-    glDrawElements(GL_TRIANGLES, _vao->indexCount(), GL_UNSIGNED_INT, 0);
+
+    auto indexCount = _vao->indexCount();
+    if (indexCount > 0) {
+        glDrawElements(GL_TRIANGLES, _vao->indexCount(), GL_UNSIGNED_INT, 0);
+    }
+    else {
+        glDrawArrays(GL_TRIANGLES, 0, _vertices.size());
+    }
 }
