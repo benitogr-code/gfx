@@ -35,3 +35,9 @@ void Camera::setAspectRatio(float aspectRatio) {
   _projection = glm::perspective(_fov, _aspectRatio, _nearPlane, _farPlane);
   _viewProjection = _projection * _view;
 }
+
+void Camera::setWorldLocation(const glm::vec3& position, const glm::quat& rotation) {
+  _world = glm::translate(glm::mat4(1.0f), position) * glm::toMat4(rotation);
+  _view = glm::inverse(_world);
+  _viewProjection = _projection * _view;
+}

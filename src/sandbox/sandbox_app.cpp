@@ -4,7 +4,9 @@
 #include <imgui.h>
 
 SandboxApp::SandboxApp()
-  : _bgColor(0.2f, 0.2f, 0.2f) {
+  : _bgColor(0.2f, 0.2f, 0.2f)
+  , _inputFlags(0)
+  , _mousePosition(0.0f, 0.0f) {
 
 }
 
@@ -27,10 +29,43 @@ void SandboxApp::onShutdown() {
 }
 
 void SandboxApp::onInputEvent(const InputEvent& event) {
-  LOG_WARN("Input event: Key={0} State={1}", event.keyId, event.state);
+  const bool released = (event.state == InputState_Released);
+
+  if (event.keyId == KeyId_Left) {
+    setInputFlag(InputFlag_MoveLeft, !released);
+  }
+  else if (event.keyId == KeyId_Right) {
+    setInputFlag(InputFlag_MoveRight, !released);
+  }
+  else if (event.keyId == KeyId_Up) {
+    setInputFlag(InputFlag_MoveForward, !released);
+  }
+  else if (event.keyId == KeyId_Down) {
+    setInputFlag(InputFlag_MoveBackward, !released);
+  }
 }
 
 void SandboxApp::onUpdate(const UpdateContext& ctx) {
+  // Update camera
+  const float cameraSpeed = _camera.movementSpeed * ctx.frameTime;
+  if (hasInputFlag(InputFlag_MoveLeft)) {
+    _camera.position -= (_camera.right * cameraSpeed);
+  }
+  if (hasInputFlag(InputFlag_MoveRight)) {
+    _camera.position += (_camera.right * cameraSpeed);
+  }
+  if (hasInputFlag(InputFlag_MoveForward)) {
+    _camera.position += (_camera.forward * cameraSpeed);
+  }
+  if (hasInputFlag(InputFlag_MoveBackward)) {
+    _camera.position -= (_camera.forward * cameraSpeed);
+  }
+
+  _camera.updateAxis();
+
+  getRenderer()->getViewCamera().setWorldLocation(_camera.position, _camera.getQuat());
+
+  // Render scene
   getRenderer()->setClearColor(_bgColor);
 
   const glm::vec3 axis(0.0f, 1.0f, -1.0f);
@@ -61,4 +96,12 @@ void SandboxApp::onGUI() {
     ImGui::Spacing();
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
   ImGui::End();
+}
+
+void SandboxApp::setInputFlag(uint32_t flag, bool set) {
+  _inputFlags = set ? (_inputFlags | flag) : (_inputFlags & ~flag);
+}
+
+bool SandboxApp::hasInputFlag(uint32_t flag) const {
+  return (_inputFlags & flag) != 0;
 }

@@ -13,6 +13,7 @@ class Camera {
 
     void setFov(float fov);
     void setAspectRatio(float aspectRatio);
+    void setWorldLocation(const glm::vec3& position, const glm::quat& rotation);
 
   private:
     glm::mat4 _world;
