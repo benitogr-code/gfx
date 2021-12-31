@@ -32,7 +32,6 @@ struct MouseEvent {
   MouseButton button;
   uint32_t    state;
   glm::ivec2  pos;
-  glm::ivec2  motion;
 };
 
 class Input {

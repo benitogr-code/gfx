@@ -14,7 +14,7 @@ private:
       , yaw(0.0f)
       , pitch(0.0f)
       , movementSpeed(3.0f)
-      , mouseSensitivity(0.1f)
+      , mouseSensitivity(0.01f)
       , fov(60.0f) {
         updateAxis();
     }
@@ -72,7 +72,7 @@ private:
 private:
   CameraSettings _camera;
   uint32_t       _inputFlags;
-  glm::vec2      _mousePosition;
+  glm::ivec2     _mousePosition;
 
   ShaderRef      _shader;
   MeshRef        _mesh;

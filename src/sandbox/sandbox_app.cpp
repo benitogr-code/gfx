@@ -46,7 +46,27 @@ void SandboxApp::onInputEvent(const InputEvent& event) {
 }
 
 void SandboxApp::onMouseEvent(const MouseEvent& event) {
-  LOG_INFO("Mouse event: Button={0}, State={1}, Pos=[{2}, {3}]", event.button, event.state, event.pos.x, event.pos.y);
+  const bool released = (event.state == InputState_Released);
+
+  if (event.button == MouseButton_Left) {
+    setInputFlag(InputFlag_MouseLeft, !released);
+  }
+  else if (event.button == MouseButton_Right) {
+    setInputFlag(InputFlag_MouseRight, !released);
+  }
+  else if (event.button == MouseButton_Motion) {
+    if(hasInputFlag(InputFlag_MouseLeft)) {
+      const float xoffset = (float)(event.pos.x - _mousePosition.x) * _camera.mouseSensitivity;
+      const float yoffset = (float)(_mousePosition.y - event.pos.y) * _camera.mouseSensitivity;
+
+      _camera.yaw -= xoffset;
+      _camera.pitch = std::max(-89.0f, std::min(_camera.pitch + yoffset, 89.0f));
+
+      _camera.updateAxis();
+    }
+
+    _mousePosition = event.pos;
+  }
 }
 
 void SandboxApp::onUpdate(const UpdateContext& ctx) {

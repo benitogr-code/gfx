@@ -83,7 +83,6 @@ void Input::updateMouse() {
         mouse.button = MouseButton_Motion;
         mouse.state = motionEvent.state == SDL_PRESSED ? InputState_Pressed : InputState_Released;
         mouse.pos = glm::ivec2(motionEvent.x, motionEvent.y);
-        mouse.motion = glm::ivec2(motionEvent.xrel, motionEvent.yrel);
 
         mouseEvents.push_back(mouse);
       }
@@ -97,7 +96,6 @@ void Input::updateMouse() {
         mouse.button = iter->second;
         mouse.state = buttonEvent.state == SDL_PRESSED ? InputState_Pressed : InputState_Released;
         mouse.pos = glm::ivec2(buttonEvent.x, buttonEvent.y);
-        mouse.motion = glm::ivec2(0, 0);
 
         mouseEvents.push_back(mouse);
       }
