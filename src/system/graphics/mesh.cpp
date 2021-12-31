@@ -32,7 +32,7 @@ void Mesh::setup() {
     _vao->setIndexBuffer(ibo);
 }
 
-void Mesh::draw(const ShaderRef& shader) {
+void Mesh::draw(ShaderRef& shader) {
     shader->use();
     _vao->bind();
     glDrawElements(GL_TRIANGLES, _vao->indexCount(), GL_UNSIGNED_INT, 0);

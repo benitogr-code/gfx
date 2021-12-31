@@ -1,6 +1,7 @@
 #pragma once
 
 #include "graphics/mesh.h"
+#include "graphics/model3d.h"
 #include "graphics/shader.h"
 
 class Renderer {
@@ -12,7 +13,8 @@ public:
     void setClearColor(const ColorRGB& c) { _clearColor = c; }
     void toggleWireframe();
 
-    void draw(const MeshRef& mesh, const ShaderRef& shader);
+    void draw(MeshRef& mesh, ShaderRef& shader);
+    void draw(Model3DRef& model, ShaderRef& shader);
 
     void beginFrame();
     void endFrame();

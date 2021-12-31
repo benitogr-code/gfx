@@ -3,8 +3,7 @@
 #include <imgui.h>
 
 SandboxApp::SandboxApp()
-  : _drawColor(0.5f, 0.0f, 0.0f)
-  , _offset(0.0f) {
+  : _bgColor(0.2f, 0.2f, 0.2f) {
 
 }
 
@@ -25,6 +24,8 @@ bool SandboxApp::onInit() {
 
   _mesh = Mesh::Create(meshParams);
 
+  _model = Model3D::Create("objects/planet/planet.obj");
+
   ShaderCreateParams shaderParams;
   shaderParams.name = "test";
   shaderParams.vertexShaderPath = "shaders/test.vert";
@@ -32,6 +33,8 @@ bool SandboxApp::onInit() {
 
   _shader = Shader::Create(shaderParams);
   _shader->use();
+
+  _camera = Camera(glm::vec3(0.0f, 0.0f, 10.0f), 1.0f);
 
   return true;
 }
@@ -44,12 +47,11 @@ void SandboxApp::onInputEvent(const InputEvent& event) {
 }
 
 void SandboxApp::onUpdate(const UpdateContext& ctx) {
-  getRenderer()->setClearColor(ColorRGB(0.2f, 0.2f, 0.2f));
+  getRenderer()->setClearColor(_bgColor);
 
-  auto matrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(_offset, 0.0f, 0.0f));
-  _shader->setUniformVec3("uColor", _drawColor);
-  _shader->setUniformMatrix4("uMatrix", matrix);
-  getRenderer()->draw(_mesh, _shader);
+  _shader->setUniformMatrix4("uViewProjection", _camera.getViewProjection());
+  //getRenderer()->draw(_mesh, _shader);
+  getRenderer()->draw(_model, _shader);
 }
 
 void SandboxApp::onGUI() {
@@ -58,8 +60,7 @@ void SandboxApp::onGUI() {
   ImGui::SetNextWindowPos(ImVec2(5.0f, 5.0f));
   //ImGui::SetNextWindowCollapsed(true, ImGuiCond_Once);
   ImGui::Begin("Settings", nullptr);
-    ImGui::ColorEdit3("Background color", glm::value_ptr(_drawColor));
-    ImGui::SliderFloat("Offset", &_offset, -0.5f, 0.5f);
+    ImGui::ColorEdit3("Background color", glm::value_ptr(_bgColor));
 
     if (ImGui::Button("Toggle wireframe")) {
       getRenderer()->toggleWireframe();

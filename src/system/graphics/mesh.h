@@ -19,7 +19,7 @@ struct MeshCreateParams {
 
 class Mesh {
 public:
-    void draw(const ShaderRef& shader);
+    void draw(ShaderRef& shader);
 
     static MeshRef Create(const MeshCreateParams& params);
 

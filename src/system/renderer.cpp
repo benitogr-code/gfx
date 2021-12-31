@@ -35,6 +35,12 @@ void Renderer::init() {
         glGetIntegerv(GL_PARAMS[i].param, &value);
         LOG_INFO("\t{0} {1}", GL_PARAMS[i].name, value);
     }
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
+    //glFrontFace(GL_CCW);
 }
 
 
@@ -43,13 +49,17 @@ void Renderer::toggleWireframe() {
     glPolygonMode(GL_FRONT_AND_BACK, _wireframeEnabled ? GL_LINE : GL_FILL);
 }
 
-void Renderer::draw(const MeshRef& mesh, const ShaderRef& shader) {
+void Renderer::draw(MeshRef& mesh, ShaderRef& shader) {
   mesh->draw(shader);
+}
+
+void Renderer::draw(Model3DRef& model, ShaderRef& shader) {
+  model->draw(shader);
 }
 
 void Renderer::beginFrame() {
     glClearColor(_clearColor.r, _clearColor.g, _clearColor.b, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();

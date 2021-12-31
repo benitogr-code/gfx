@@ -1,7 +1,9 @@
 #pragma once
 
 #include "system/application.h"
+#include "system/graphics/camera.h"
 #include "system/graphics/mesh.h"
+#include "system/graphics/model3d.h"
 #include "system/graphics/shader.h"
 
 class SandboxApp: public Application {
@@ -19,6 +21,7 @@ protected:
 private:
   ShaderRef      _shader;
   MeshRef        _mesh;
-  ColorRGB       _drawColor;
-  float          _offset;
+  Model3DRef     _model;
+  Camera         _camera;
+  ColorRGB       _bgColor;
 };
