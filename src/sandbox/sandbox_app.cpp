@@ -20,8 +20,6 @@ bool SandboxApp::onInit() {
   _shader = Shader::Create(shaderParams);
   _shader->use();
 
-  _camera = Camera(glm::vec3(0.0f, 0.0f, 10.0f), 1.0f);
-
   return true;
 }
 
@@ -39,7 +37,7 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   const glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::normalize(axis));
   const glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, -2.0f, 0.0f));
 
-  _shader->setUniformMatrix4("uViewProjection", _camera.getViewProjection());
+  _shader->setUniformMatrix4("uViewProjection", getRenderer()->getViewCamera().getViewProjection());
 
   _shader->setUniformMatrix4("uModel", rotation * translation);
   getRenderer()->draw(_mesh, _shader);

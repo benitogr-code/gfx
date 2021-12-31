@@ -22,6 +22,5 @@ private:
   ShaderRef      _shader;
   MeshRef        _mesh;
   Model3DRef     _model;
-  Camera         _camera;
   ColorRGB       _bgColor;
 };

@@ -27,6 +27,7 @@ bool Application::init(const WindowDesc& desc) {
 
   _renderer.reset(new Renderer());
   _renderer->init();
+  _renderer->getViewCamera().setAspectRatio(_window->getAspectRatio());
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
@@ -104,6 +105,7 @@ void Application::checkSystemEvents() {
 
       if (events[i].window.event == SDL_WINDOWEVENT_RESIZED) {
         _window->onResized(events[i].window.data1, events[i].window.data2);
+        _renderer->getViewCamera().setAspectRatio(_window->getAspectRatio());
       }
     }
   }

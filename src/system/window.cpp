@@ -55,11 +55,17 @@ bool Window::init() {
 }
 
 void Window::resize(int width, int height) {
+  _width = width;
+  _height = height;
+
   SDL_SetWindowSize(_window, width, height);
   glViewport(0, 0, width, height);
 }
 
 void Window::onResized(int width, int height) {
+  _width = width;
+  _height = height;
+
   glViewport(0, 0, width, height);
 }
 

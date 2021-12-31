@@ -25,6 +25,8 @@ constexpr std::array<GLParam, 9> GL_PARAMS = {{
 Renderer::Renderer()
     : _clearColor(0.0f)
     , _wireframeEnabled(false) {
+
+    _viewCamera = Camera(glm::vec3(0.0f, 0.0f, 10.0f), 1.0f);
 }
 
 void Renderer::init() {
