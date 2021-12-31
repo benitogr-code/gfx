@@ -45,6 +45,10 @@ void SandboxApp::onInputEvent(const InputEvent& event) {
   }
 }
 
+void SandboxApp::onMouseEvent(const MouseEvent& event) {
+  LOG_INFO("Mouse event: Button={0}, State={1}, Pos=[{2}, {3}]", event.button, event.state, event.pos.x, event.pos.y);
+}
+
 void SandboxApp::onUpdate(const UpdateContext& ctx) {
   // Update camera
   const float cameraSpeed = _camera.movementSpeed * ctx.frameTime;

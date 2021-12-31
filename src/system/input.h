@@ -10,32 +10,56 @@ enum KeyId {
   KeyId_Right,
 };
 
+enum MouseButton {
+  MouseButton_Left,
+  MouseButton_Right,
+  MouseButton_Middle,
+  MouseButton_Motion
+};
+
 enum InputState: unsigned int {
-  InputState_Pressed = 0,
-  InputState_Released = 1,
-  InputState_Hold = 2,
+  InputState_Pressed = 1,
+  InputState_Released = 2,
+  InputState_Hold = 3,
 };
 
 struct InputEvent {
-  KeyId keyId;
-  unsigned int state;
+  KeyId    keyId;
+  uint32_t state;
+};
+
+struct MouseEvent {
+  MouseButton button;
+  uint32_t    state;
+  glm::ivec2  pos;
+  glm::ivec2  motion;
 };
 
 class Input {
 public:
   using EventCallback = std::function<void(const InputEvent&)>;
+  using MouseCallback = std::function<void(const MouseEvent&)>;
 
 public:
   Input();
 
-  void registerCallback(EventCallback callback) {
+  void registerCallbacks(EventCallback callback, MouseCallback mouseCallback) {
     _callback = callback;
+    _mouseCallback = mouseCallback;
   }
   void update();
 
 private:
-  typedef std::map<unsigned int, KeyId> TScanCodes;
+  void updateKeybard();
+  void updateMouse();
 
-  TScanCodes _scanCodes;
+private:
+  typedef std::map<uint32_t, KeyId> KeyCodes;
+  typedef std::map<uint32_t, MouseButton> ButtonCodes;
+
+  KeyCodes    _keyCodes;
+  ButtonCodes _mouseButtonCodes;
+
   EventCallback _callback;
+  MouseCallback _mouseCallback;
 };
