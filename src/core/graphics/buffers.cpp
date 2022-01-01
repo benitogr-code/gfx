@@ -166,7 +166,7 @@ void VAO::addVertextBuffer(VBORef buffer) {
           BufferItemTypeToOpenGLBaseType(item.type),
           GL_FALSE,
           layout.stride(),
-          (const void*)item.offset
+          INT_TO_VOIDPTR(item.offset)
         );
         glEnableVertexAttribArray(idx);
         glVertexAttribDivisor(idx, attribDivisor);
@@ -183,7 +183,7 @@ void VAO::addVertextBuffer(VBORef buffer) {
           item.getComponentCount(),
           BufferItemTypeToOpenGLBaseType(item.type),
           layout.stride(),
-          (const void*)item.offset
+          INT_TO_VOIDPTR(item.offset)
         );
         glEnableVertexAttribArray(idx);
         glVertexAttribDivisor(idx, attribDivisor);
