@@ -20,5 +20,5 @@
 #include <glm/gtx/quaternion.hpp>
 
 // Others
-#include "system/common.h"
-#include "system/logger.h"
+#include "core/common.h"
+#include "core/logger.h"

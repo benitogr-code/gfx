@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphics/camera.h"
+#include "camera.h"
 #include "graphics/mesh.h"
 #include "graphics/model3d.h"
 #include "graphics/shader.h"

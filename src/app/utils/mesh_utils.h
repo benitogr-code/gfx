@@ -1,6 +1,6 @@
 #pragma once
 
-#include "system/graphics/mesh.h"
+#include "core/graphics/mesh.h"
 
 class MeshUtils {
 public:

@@ -1,4 +1,4 @@
-#include "sandbox/sandbox_app.h"
+#include "app/sandbox_app.h"
 
 const char* parseAssetsFolder(int argc, char* argv[]) {
     const char* folder = "";

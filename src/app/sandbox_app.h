@@ -1,10 +1,9 @@
 #pragma once
 
-#include "system/application.h"
-#include "system/graphics/camera.h"
-#include "system/graphics/mesh.h"
-#include "system/graphics/model3d.h"
-#include "system/graphics/shader.h"
+#include "core/application.h"
+#include "core/graphics/mesh.h"
+#include "core/graphics/model3d.h"
+#include "core/graphics/shader.h"
 
 class SandboxApp: public Application {
 private:
