@@ -6,21 +6,27 @@
 SandboxApp::SandboxApp()
   : _bgColor(0.2f, 0.2f, 0.2f)
   , _inputFlags(0)
-  , _mousePosition(0.0f, 0.0f) {
+  , _mousePosition(0.0f, 0.0f)
+  , _planetOffset(0.0f) {
 
 }
 
 bool SandboxApp::onInit() {
+  MeshMaterial material;
+  material.color = glm::vec3(0.5f, 0.0f, 0.0f);
+  material.ambientFactor = 0.05f;
+  material.specularFactor = 0.6f;
+
   _mesh = MeshUtils::CreateCube(1.75f);
+  _mesh->setMaterial(material);
+
   _model = Model3D::Create("objects/planet/planet.obj");
 
   ShaderCreateParams shaderParams;
-  shaderParams.name = "flat_color";
-  shaderParams.vertexShaderPath = "shaders/flat_color.vert";
-  shaderParams.fragmentShaderPath = "shaders/flat_color.frag";
-
-  _shader = Shader::Create(shaderParams);
-  _shader->use();
+  shaderParams.name = "illum_pong";
+  shaderParams.vertexShaderPath = "shaders/illum_pong.vert";
+  shaderParams.fragmentShaderPath = "shaders/illum_pong.frag";
+  _shaderIllumPong = Shader::Create(shaderParams);
 
   return true;
 }
@@ -92,17 +98,20 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   // Render scene
   getRenderer()->setClearColor(_bgColor);
 
-  const glm::vec3 axis(0.0f, 1.0f, -1.0f);
-  const glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::normalize(axis));
-  const glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, -2.0f, 0.0f));
+  const glm::vec3 planetPos(3.0f, _planetOffset, 3.0f);
+  const ColorRGB  lightColor(1.0f, 1.0f, 1.0f);
 
-  _shader->setUniformMatrix4("mtx_viewProj", getRenderer()->getViewCamera().getViewProjection());
+  _shaderIllumPong->use();
+  _shaderIllumPong->setUniformVec3("view_pos", _camera.position);
+  _shaderIllumPong->setUniformMatrix4("mtx_viewProj", getRenderer()->getViewCamera().getViewProjection());
+  _shaderIllumPong->setUniformVec3("light_pos", planetPos);
+  _shaderIllumPong->setUniformVec3("light_color", lightColor);
 
-  _shader->setUniformMatrix4("mtx_model", rotation * translation);
-  getRenderer()->draw(_mesh, _shader);
+  _shaderIllumPong->setUniformMatrix4("mtx_model", glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f)));
+  getRenderer()->draw(_mesh, _shaderIllumPong);
 
-  _shader->setUniformMatrix4("mtx_model", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(2.0f, 0.0f, 0.0f)));
-  getRenderer()->draw(_model, _shader);
+  _shaderIllumPong->setUniformMatrix4("mtx_model", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), planetPos));
+  getRenderer()->draw(_model, _shaderIllumPong);
 }
 
 void SandboxApp::onGUI() {
@@ -116,6 +125,8 @@ void SandboxApp::onGUI() {
     if (ImGui::Button("Toggle wireframe")) {
       getRenderer()->toggleWireframe();
     }
+
+    ImGui::SliderFloat("Light offset", &_planetOffset, -5.0f, 5.0f);
 
     ImGui::Spacing();
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

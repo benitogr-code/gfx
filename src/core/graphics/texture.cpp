@@ -18,6 +18,7 @@ void Texture::bind() {
 void Texture::loadImage(const ImageData& image) {
   glGenTextures(1, &_id);
   glBindTexture(GL_TEXTURE_2D, _id);
+
   // Wrapping params
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

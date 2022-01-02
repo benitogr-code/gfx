@@ -56,7 +56,6 @@ MeshRef Model3D::processMesh(aiMesh *mesh, const aiScene *scene) {
     params.vertices.reserve(512);
     params.indices.reserve(512);
 
-    auto textureCoords = mesh->mTextureCoords[0];
     for(unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
         vertex.position.x = mesh->mVertices[i].x;
@@ -65,9 +64,9 @@ MeshRef Model3D::processMesh(aiMesh *mesh, const aiScene *scene) {
         vertex.normal.x = mesh->mNormals[i].x;
         vertex.normal.y = mesh->mNormals[i].y;
         vertex.normal.z = mesh->mNormals[i].z;
-        if(textureCoords) {
-            vertex.texCoords.x = textureCoords[i].x;
-            vertex.texCoords.y = textureCoords[i].y;
+        if(mesh->HasTextureCoords(0)) {
+            vertex.texCoords.x = mesh->mTextureCoords[0][i].x;
+            vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
         }
         else {
             vertex.texCoords = glm::vec2(0.0f, 0.0f);

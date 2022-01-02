@@ -73,8 +73,9 @@ private:
   uint32_t       _inputFlags;
   glm::ivec2     _mousePosition;
 
-  ShaderRef      _shader;
+  ShaderRef      _shaderIllumPong;
   MeshRef        _mesh;
   Model3DRef     _model;
   ColorRGB       _bgColor;
+  float          _planetOffset;
 };
