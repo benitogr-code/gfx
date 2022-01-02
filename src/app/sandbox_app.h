@@ -13,7 +13,7 @@ private:
       , yaw(0.0f)
       , pitch(0.0f)
       , movementSpeed(3.0f)
-      , mouseSensitivity(0.01f)
+      , mouseSensitivity(0.1f)
       , fov(60.0f) {
         updateAxis();
     }
@@ -27,7 +27,7 @@ private:
     }
 
     glm::quat getQuat() const {
-      return glm::quat(yaw, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::quat(pitch, glm::vec3(1.0f, 0.0f, 0.0f));
+      return glm::quat(glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::quat(glm::radians(pitch), glm::vec3(1.0f, 0.0f, 0.0f));
     }
 
     glm::vec3 position;
@@ -77,5 +77,4 @@ private:
   MeshRef        _mesh;
   Model3DRef     _model;
   ColorRGB       _bgColor;
-  float          _planetOffset;
 };

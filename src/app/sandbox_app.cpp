@@ -6,8 +6,7 @@
 SandboxApp::SandboxApp()
   : _bgColor(0.2f, 0.2f, 0.2f)
   , _inputFlags(0)
-  , _mousePosition(0.0f, 0.0f)
-  , _planetOffset(0.0f) {
+  , _mousePosition(0.0f, 0.0f) {
 
 }
 
@@ -98,7 +97,7 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   // Render scene
   getRenderer()->setClearColor(_bgColor);
 
-  const glm::vec3 planetPos(3.0f, _planetOffset, 3.0f);
+  const glm::vec3 planetPos(3.0f, 0.0f, 3.0f);
   const ColorRGB  lightColor(1.0f, 1.0f, 1.0f);
 
   _shaderIllumPong->use();
@@ -115,22 +114,55 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
 }
 
 void SandboxApp::onGUI() {
-  static int counter = 0;
+  // Settings ///
 
   ImGui::SetNextWindowPos(ImVec2(5.0f, 5.0f));
   //ImGui::SetNextWindowCollapsed(true, ImGuiCond_Once);
-  ImGui::Begin("Settings", nullptr);
-    ImGui::ColorEdit3("Background color", glm::value_ptr(_bgColor));
+  if (ImGui::Begin("Settings", nullptr)) {
+    ImGui::BeginGroup();
+      ImGui::Text("Renderer");
+      ImGui::ColorEdit3("Background color", glm::value_ptr(_bgColor));
 
-    if (ImGui::Button("Toggle wireframe")) {
-      getRenderer()->toggleWireframe();
-    }
-
-    ImGui::SliderFloat("Light offset", &_planetOffset, -5.0f, 5.0f);
+      if (ImGui::Button("Toggle wireframe")) {
+        getRenderer()->toggleWireframe();
+      }
+    ImGui::EndGroup();
 
     ImGui::Spacing();
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-  ImGui::End();
+
+    ImGui::BeginGroup();
+      ImGui::Text("Camera");
+      ImGui::SliderFloat("Speed", &_camera.movementSpeed, 0.1f, 10.0f);
+      ImGui::SliderFloat("Mouse sensitivity", &_camera.mouseSensitivity, 0.01f, 0.3f);
+    ImGui::EndGroup();
+
+    ImGui::End();
+  }
+
+  // Top-Right overlay ///
+  const float PAD = 10.0f;
+  ImGuiWindowFlags overlayFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+  const ImGuiViewport* viewport = ImGui::GetMainViewport();
+  ImVec2 workPos = viewport->WorkPos;
+  ImVec2 workSize = viewport->WorkSize;
+  ImVec2 windowPos, windowPosPivot;
+  windowPos.x = workPos.x + workSize.x - PAD;
+  windowPos.y = workPos.y + PAD;
+  windowPosPivot.x = 1.0f;
+  windowPosPivot.y = 0.0f;
+
+  ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
+  ImGui::SetNextWindowBgAlpha(0.35f);
+  if (ImGui::Begin("Overlay", nullptr, overlayFlags))
+  {
+    ImGui::Text(
+      "Camera Position [%.3f, %.3f, %.3f] | Pitch %.2f, Yaw %.2f",
+      _camera.position.x, _camera.position.y, _camera.position.z, _camera.pitch, _camera.yaw
+    );
+    ImGui::Text("Frame time %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+    ImGui::End();
+  }
 }
 
 void SandboxApp::setInputFlag(uint32_t flag, bool set) {
