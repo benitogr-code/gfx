@@ -3,6 +3,7 @@
 #include "mesh.h"
 
 struct aiScene;
+struct aiMaterial;
 struct aiNode;
 struct aiMesh;
 
@@ -22,10 +23,12 @@ private:
     Model3D(const char* path);
 
     void load();
-    void processNode(aiNode *node, const aiScene *scene);
-    MeshRef processMesh(aiMesh *mesh, const aiScene *scene);
+    void processNode(aiNode* node, const aiScene* scene);
+    MeshRef processMesh(aiMesh* mesh, const aiScene* scene);
+    std::vector<TextureRef> loadMaterialTextures(aiMaterial *mat, uint32_t type);
 
 private:
     std::vector<MeshRef> _meshes;
+    std::map<std::string, TextureRef> _textures;
     std::string _path;
 };

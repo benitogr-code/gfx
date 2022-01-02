@@ -6,7 +6,7 @@
 #include <assimp/postprocess.h>
 
 Model3D::Model3D(const char* path) {
-    _path = FileUtils::getAbsolutePath(path);
+    _path = path;
     load();
 }
 
@@ -24,9 +24,11 @@ void Model3D::draw(ShaderRef& shader) {
 }
 
 void Model3D::load() {
+    LOG_INFO("[Model3d] Loading {0}", _path);
+
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(
-        _path.c_str(),
+        FileUtils::getAbsolutePath(_path.c_str()).c_str(),
         aiProcess_Triangulate | aiProcess_FlipUVs
     );
 
@@ -34,8 +36,6 @@ void Model3D::load() {
         LOG_ERROR("Failed to load model {0}. Reason: {1}", _path, importer.GetErrorString());
         return;
     }
-
-    //directory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
 }
@@ -82,7 +82,50 @@ MeshRef Model3D::processMesh(aiMesh *mesh, const aiScene *scene) {
             params.indices.push_back(face.mIndices[j]);
     }
 
-    // Materials...
+    if(mesh->mMaterialIndex >= 0) {
+        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+
+        auto diffTextures = loadMaterialTextures(material, aiTextureType_DIFFUSE);
+        for (auto texture : diffTextures) {
+            params.textures.push_back(TextureSlot({
+                texture,
+                "diffuse",
+            }));
+        }
+
+        auto specTextures = loadMaterialTextures(material, aiTextureType_SPECULAR);
+        for (auto texture : specTextures) {
+            params.textures.push_back(TextureSlot({
+                texture,
+                "specular",
+            }));
+        }
+    }
 
     return Mesh::Create(params);
+}
+
+std::vector<TextureRef> Model3D::loadMaterialTextures(aiMaterial *mat, uint32_t type) {
+    std::vector<TextureRef> textures;
+
+    for(unsigned int i = 0; i < mat->GetTextureCount((aiTextureType)type); i++) {
+        aiString fileName;
+        mat->GetTexture((aiTextureType)type, i, &fileName);
+
+        std::string filePath = _path.substr(0, _path.find_last_of('/')+1) + std::string(fileName.C_Str());
+        auto iter = _textures.find(filePath);
+
+        if (iter != _textures.end()) {
+            textures.push_back(iter->second);
+        }
+        else {
+            LOG_INFO("[Model3D] Loading texture {0}", filePath);
+
+            TextureCreateParams params;
+            params.filePath = filePath.c_str();
+            textures.push_back(Texture::Create(params));
+        }
+    }
+
+    return textures;
 }
