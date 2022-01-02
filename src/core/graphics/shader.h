@@ -24,6 +24,7 @@ public:
 
   void use();
   void setUniformFloat(const char* name, float value);
+  void setUniformInt(const char* name, int value);
   void setUniformVec2(const char* name, const glm::vec2& value);
   void setUniformVec3(const char* name, const glm::vec3& value);
   void setUniformMatrix4(const char* name, const glm::mat4x4& value);

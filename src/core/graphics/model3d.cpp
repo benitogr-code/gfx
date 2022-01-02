@@ -24,7 +24,7 @@ void Model3D::draw(ShaderRef& shader) {
 }
 
 void Model3D::load() {
-    LOG_INFO("[Model3d] Loading {0}", _path);
+    LOG_INFO("[Model3D] Loading {0}", _path);
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(
@@ -33,7 +33,7 @@ void Model3D::load() {
     );
 
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        LOG_ERROR("Failed to load model {0}. Reason: {1}", _path, importer.GetErrorString());
+        LOG_ERROR("[Model3D] Failed to load model {0}. Reason: {1}", _path, importer.GetErrorString());
         return;
     }
 
@@ -86,18 +86,20 @@ MeshRef Model3D::processMesh(aiMesh *mesh, const aiScene *scene) {
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
         auto diffTextures = loadMaterialTextures(material, aiTextureType_DIFFUSE);
+        int diffCounter = 1;
         for (auto texture : diffTextures) {
             params.textures.push_back(TextureSlot({
                 texture,
-                "diffuse",
+                std::string("texture_diffuse") + std::to_string(diffCounter++),
             }));
         }
 
         auto specTextures = loadMaterialTextures(material, aiTextureType_SPECULAR);
+        int specCounter = 1;
         for (auto texture : specTextures) {
             params.textures.push_back(TextureSlot({
                 texture,
-                "specular",
+                std::string("texture_specular") + std::to_string(specCounter++),
             }));
         }
     }

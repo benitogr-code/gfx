@@ -13,7 +13,7 @@ FontAtlas::FontAtlas(FT_FaceRec_* face, int pixelSize) {
 
   for(unsigned char i = 0; i < charCount; ++i) {
     if(FT_Load_Char(face, i, FT_LOAD_RENDER)) {
-      LOG_WARN("Error loading font character {}, skipping", char(i));
+      LOG_WARN("[Renderer] Error loading font character {}, skipping", char(i));
       continue;
     }
 
@@ -73,7 +73,7 @@ void FontAtlas::bindTexture() {
 /*static*/ FontAtlasRef FontAtlas::Create(FT_LibraryRec_* library, const char* fontFile, int pixelSize) {
   FT_Face face;
   if (FT_New_Face(library, fontFile, 0, &face)) {
-    LOG_ERROR("Failed to load font {}", fontFile);
+    LOG_ERROR("[Renderer] Failed to load font {}", fontFile);
     return nullptr;
   }
 

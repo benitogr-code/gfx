@@ -30,7 +30,7 @@ Renderer::Renderer()
 }
 
 void Renderer::init() {
-    LOG_INFO("OpenGL capabilities:");
+    LOG_INFO("[Renderer] OpenGL capabilities:");
 
     for (size_t i = 0; i < GL_PARAMS.size(); ++i) {
         int value = 0;

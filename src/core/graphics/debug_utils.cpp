@@ -28,7 +28,7 @@ void glCheckError_(const char *file, int line) {
         break;
     }
 
-    LOG_ERROR("OpenGL error: {0} | {1} ({2})", errorMsg, file, line);
+    LOG_ERROR("[Renderer] OpenGL error: {0} | {1} ({2})", errorMsg, file, line);
 
     errorCode = glGetError();
   }

@@ -17,6 +17,7 @@ class Texture {
 public:
   ~Texture();
 
+  unsigned int id() const { return _id; }
   void bind();
 
   static TextureRef Create(const TextureCreateParams& params);

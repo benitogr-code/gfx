@@ -35,14 +35,14 @@ bool Window::init() {
   );
 
   if (_window == nullptr) {
-    LOG_ERROR("Failed to create SDL window: {}", SDL_GetError());
+    LOG_ERROR("[Application] Failed to create SDL window: {}", SDL_GetError());
 
     return false;
   }
 
   _context = SDL_GL_CreateContext(_window);
   if (_context == nullptr) {
-    LOG_ERROR("Failed to create GL context for window. {}", SDL_GetError());
+    LOG_ERROR("[Application] Failed to create GL context for window. {}", SDL_GetError());
 
     return false;
   }

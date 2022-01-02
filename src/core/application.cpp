@@ -17,7 +17,7 @@ Application::~Application() {
 bool Application::init(const WindowDesc& desc) {
   _window.reset(new Window(desc));
   if (!_window->init()) {
-    LOG_ERROR("Failed to initialize window");
+    LOG_ERROR("[Application] Failed to initialize window");
 
     return false;
   }
@@ -40,7 +40,7 @@ bool Application::init(const WindowDesc& desc) {
   ImGui_ImplOpenGL3_Init("#version 150");
 
   if (!onInit()) {
-    LOG_ERROR("Failed to initialize application");
+    LOG_ERROR("[Application] Failed to initialize application");
 
     return false;
   }

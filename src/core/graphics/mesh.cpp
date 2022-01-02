@@ -37,10 +37,16 @@ void Mesh::setup() {
 
 void Mesh::draw(ShaderRef& shader) {
     shader->use();
+
+    for(int i = 0; i < _textures.size(); i++) {
+        glActiveTexture(GL_TEXTURE0 + i);
+        shader->setUniformInt(_textures[i].slot.c_str(), i);
+        glBindTexture(GL_TEXTURE_2D, _textures[i].texture->id());
+    }
+
     _vao->bind();
 
-    auto indexCount = _vao->indexCount();
-    if (indexCount > 0) {
+    if (_vao->indexCount() > 0) {
         glDrawElements(GL_TRIANGLES, _vao->indexCount(), GL_UNSIGNED_INT, 0);
     }
     else {

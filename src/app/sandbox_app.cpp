@@ -15,9 +15,9 @@ bool SandboxApp::onInit() {
   _model = Model3D::Create("objects/planet/planet.obj");
 
   ShaderCreateParams shaderParams;
-  shaderParams.name = "test";
-  shaderParams.vertexShaderPath = "shaders/test.vert";
-  shaderParams.fragmentShaderPath = "shaders/test.frag";
+  shaderParams.name = "flat_color";
+  shaderParams.vertexShaderPath = "shaders/flat_color.vert";
+  shaderParams.fragmentShaderPath = "shaders/flat_color.frag";
 
   _shader = Shader::Create(shaderParams);
   _shader->use();
@@ -96,12 +96,12 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   const glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::normalize(axis));
   const glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, -2.0f, 0.0f));
 
-  _shader->setUniformMatrix4("uViewProjection", getRenderer()->getViewCamera().getViewProjection());
+  _shader->setUniformMatrix4("mtx_viewProj", getRenderer()->getViewCamera().getViewProjection());
 
-  _shader->setUniformMatrix4("uModel", rotation * translation);
+  _shader->setUniformMatrix4("mtx_model", rotation * translation);
   getRenderer()->draw(_mesh, _shader);
 
-  _shader->setUniformMatrix4("uModel", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(2.0f, 0.0f, 0.0f)));
+  _shader->setUniformMatrix4("mtx_model", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), glm::vec3(2.0f, 0.0f, 0.0f)));
   getRenderer()->draw(_model, _shader);
 }
 

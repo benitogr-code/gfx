@@ -12,7 +12,7 @@ static void checkCompileErrors(GLuint shader, const char* type) {
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if(!success) {
     glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-    LOG_ERROR("Shader compile error: Type {0}, Info: {1}", type, infoLog);
+    LOG_ERROR("[Shader] Compile error: Type {0}, Info: {1}", type, infoLog);
   }
 }
 
@@ -23,7 +23,7 @@ static void checkLinkErrors(GLuint shader, const char* name) {
   glGetProgramiv(shader, GL_LINK_STATUS, &success);
   if(!success) {
     glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-    LOG_ERROR("Shader link error: Name {0}, Info: {1}", name, infoLog);
+    LOG_ERROR("[Shader] Link error: Name {0}, Info: {1}", name, infoLog);
   }
 }
 
@@ -45,6 +45,10 @@ void Shader::use() {
 
 void Shader::setUniformFloat(const char* name, float value) {
   glUniform1f(getUniformLocation(name), value);
+}
+
+void Shader::setUniformInt(const char* name, int value) {
+  glUniform1i(getUniformLocation(name), value);
 }
 
 void Shader::setUniformVec2(const char* name, const glm::vec2& value){
@@ -106,7 +110,7 @@ int Shader::getUniformLocation(const char* name) {
     shader->buildFromSources(vsBuffer.data(), fsBuffer.data());
   }
   else {
-    LOG_ERROR("Error loading shader '{}'", params.name);
+    LOG_ERROR("[Shader] Loading error '{}'", params.name);
   }
 
   return shader;

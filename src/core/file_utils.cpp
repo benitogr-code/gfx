@@ -17,7 +17,7 @@ void FileUtils::init(const std::string& assetsFolder) {
     _assetsFolder = path.generic_string().append("/assets/");
   }
 
-  LOG_INFO("Assets folder path: {}", _assetsFolder);
+  LOG_INFO("[FileUtils] Assets folder path: {}", _assetsFolder);
 }
 
 bool FileUtils::readTextFile(const char* filePath, std::vector<char>& data) {
@@ -25,7 +25,7 @@ bool FileUtils::readTextFile(const char* filePath, std::vector<char>& data) {
   std::ifstream inStream(absolutePath);
 
   if (!inStream) {
-    LOG_WARN("Failed to open text file {0}, {1}", absolutePath, strerror(errno));
+    LOG_WARN("[FileUtils] Failed to open text file {0}, {1}", absolutePath, strerror(errno));
     return false;
   }
 
@@ -53,7 +53,7 @@ bool FileUtils::readPngFile(const char* filePath, ImageData& data) {
   unsigned char* pData = stbi_load(absolutePath.c_str(), &width, &height, &components, kRequiredComponents);
 
   if (pData == nullptr) {
-    LOG_WARN("Failed to load image file {0}, {1}", absolutePath, strerror(errno));
+    LOG_WARN("[FileUtils] Failed to load image file {0}, {1}", absolutePath, strerror(errno));
     return false;
   }
 

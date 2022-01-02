@@ -28,7 +28,7 @@ void Input::updateKeybard() {
   const int eventsRead = SDL_PeepEvents(events, maxEvents, SDL_GETEVENT, SDL_KEYDOWN, SDL_KEYUP);
 
   if (eventsRead == -1) {
-    LOG_ERROR("Error reading keyboard events: {}", SDL_GetError());
+    LOG_ERROR("[Input] Error reading keyboard events: {}", SDL_GetError());
 
     return;
   }
@@ -64,7 +64,7 @@ void Input::updateMouse() {
   const int eventsRead = SDL_PeepEvents(events, maxEvents, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEBUTTONUP);
 
   if (eventsRead == -1) {
-    LOG_ERROR("Error reading keyboard events: {}", SDL_GetError());
+    LOG_ERROR("[Input] Error reading keyboard events: {}", SDL_GetError());
 
     return;
   }

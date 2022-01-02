@@ -88,7 +88,7 @@ VBO::~VBO() {
 
 void VBO::uploadData(const void* data, uint32_t size) {
   if (!hasFlag(Flag_Dynamic)) {
-    LOG_WARN("VBO cannot upload data to static buffer");
+    LOG_WARN("[Renderer] VBO cannot upload data to static buffer");
     return;
   }
 

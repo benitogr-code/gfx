@@ -7,17 +7,17 @@
 int startApplication(const StartupParams& params) {
   Logger::init();
 
-  LOG_INFO("Initializing application...");
+  LOG_INFO("[Application] Initializing...");
 
   FileUtils::init(params.assetsFolder);
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    LOG_ERROR("Fail to initialize SDL");
+    LOG_ERROR("[Application] Fail to initialize SDL");
     return -1;
   }
 
   if (!Font::init()) {
-    LOG_ERROR("Fail to initialize Font");
+    LOG_ERROR("[Application] Fail to initialize Font");
     return -1;
   }
 
@@ -26,7 +26,7 @@ int startApplication(const StartupParams& params) {
     application->run();
   }
 
-  LOG_INFO("Closing application...");
+  LOG_INFO("[Application] Closing...");
 
   application->shutdown();
   delete application;
