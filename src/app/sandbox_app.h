@@ -9,7 +9,7 @@ class SandboxApp: public Application {
 private:
   struct CameraSettings {
     CameraSettings()
-      : position(0.0f, 0.0f, 10.0f)
+      : position(0.0f, 5.0f, 10.0f)
       , yaw(0.0f)
       , pitch(0.0f)
       , movementSpeed(3.0f)
@@ -27,7 +27,10 @@ private:
     }
 
     glm::quat getQuat() const {
-      return glm::quat(glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::quat(glm::radians(pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+      const auto xQuat = glm::angleAxis(glm::radians(pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+      const auto yQuat = glm::angleAxis(glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+
+      return yQuat * xQuat;
     }
 
     glm::vec3 position;
@@ -74,6 +77,7 @@ private:
   glm::ivec2     _mousePosition;
 
   ShaderRef      _shaderIllumPong;
+  MeshRef        _ground;
   MeshRef        _mesh;
   Model3DRef     _model;
   ColorRGB       _bgColor;

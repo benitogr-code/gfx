@@ -4,7 +4,7 @@
 #include <imgui.h>
 
 SandboxApp::SandboxApp()
-  : _bgColor(0.2f, 0.2f, 0.2f)
+  : _bgColor(0.5f, 0.6f, 0.7f)
   , _inputFlags(0)
   , _mousePosition(0.0f, 0.0f) {
 
@@ -19,6 +19,12 @@ bool SandboxApp::onInit() {
   _mesh = MeshUtils::CreateCube(1.75f);
   _mesh->setMaterial(material);
 
+  material.color = glm::vec3(0.5f, 0.5f, 0.5f);
+  material.ambientFactor = 0.075f;
+  material.specularFactor = 0.4f;
+  _ground = MeshUtils::CreateGroundPlane(2.0f, 50);
+  _ground->setMaterial(material);
+
   _model = Model3D::Create("objects/planet/planet.obj");
 
   ShaderCreateParams shaderParams;
@@ -26,6 +32,8 @@ bool SandboxApp::onInit() {
   shaderParams.vertexShaderPath = "shaders/illum_pong.vert";
   shaderParams.fragmentShaderPath = "shaders/illum_pong.frag";
   _shaderIllumPong = Shader::Create(shaderParams);
+
+  _camera.pitch = -20.0f;
 
   return true;
 }
@@ -97,19 +105,22 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   // Render scene
   getRenderer()->setClearColor(_bgColor);
 
-  const glm::vec3 planetPos(3.0f, 0.0f, 3.0f);
+  const glm::vec3 planetPos(3.0f, 3.5f, 3.0f);
   const ColorRGB  lightColor(1.0f, 1.0f, 1.0f);
 
   _shaderIllumPong->use();
-  _shaderIllumPong->setUniformVec3("view_pos", _camera.position);
+  _shaderIllumPong->setUniformVec3("view_pos", getRenderer()->getViewCamera().getPosition());
   _shaderIllumPong->setUniformMatrix4("mtx_viewProj", getRenderer()->getViewCamera().getViewProjection());
   _shaderIllumPong->setUniformVec3("light_pos", planetPos);
   _shaderIllumPong->setUniformVec3("light_color", lightColor);
 
-  _shaderIllumPong->setUniformMatrix4("mtx_model", glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f)));
+  _shaderIllumPong->setUniformMatrix4("mtx_model", glm::mat4(1.0f));
+  getRenderer()->draw(_ground, _shaderIllumPong);
+
+  _shaderIllumPong->setUniformMatrix4("mtx_model", glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 2.5f, 0.0f)));
   getRenderer()->draw(_mesh, _shaderIllumPong);
 
-  _shaderIllumPong->setUniformMatrix4("mtx_model", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.6f)), planetPos));
+  _shaderIllumPong->setUniformMatrix4("mtx_model", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)), planetPos));
   getRenderer()->draw(_model, _shaderIllumPong);
 }
 
