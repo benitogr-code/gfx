@@ -1,26 +1,9 @@
 #include "renderer.h"
+#include "graphics/debug_utils.h"
 
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include <glad/glad.h>
-
-
-struct GLParam {
-    const char* name;
-    GLenum      param;
-};
-
-constexpr std::array<GLParam, 9> GL_PARAMS = {{
-    { "GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS },
-    { "GL_MAX_CUBE_MAP_TEXTURE_SIZE", GL_MAX_CUBE_MAP_TEXTURE_SIZE },
-    { "GL_MAX_DRAW_BUFFERS", GL_MAX_DRAW_BUFFERS },
-    { "GL_MAX_FRAGMENT_UNIFORM_COMPONENTS", GL_MAX_FRAGMENT_UNIFORM_COMPONENTS },
-    { "GL_MAX_TEXTURE_IMAGE_UNITS", GL_MAX_TEXTURE_IMAGE_UNITS },
-    { "GL_MAX_TEXTURE_SIZE", GL_MAX_TEXTURE_SIZE },
-    { "GL_MAX_VERTEX_ATTRIBS", GL_MAX_VERTEX_ATTRIBS },
-    { "GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS", GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS },
-    { "GL_MAX_VERTEX_UNIFORM_COMPONENTS", GL_MAX_VERTEX_UNIFORM_COMPONENTS }
-}};
 
 Renderer::Renderer()
     : _clearColor(0.0f)
@@ -30,14 +13,6 @@ Renderer::Renderer()
 }
 
 void Renderer::init() {
-    LOG_INFO("[Renderer] OpenGL capabilities:");
-
-    for (size_t i = 0; i < GL_PARAMS.size(); ++i) {
-        int value = 0;
-        glGetIntegerv(GL_PARAMS[i].param, &value);
-        LOG_INFO("\t{0} {1}", GL_PARAMS[i].name, value);
-    }
-
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     //glEnable(GL_CULL_FACE);
@@ -71,4 +46,6 @@ void Renderer::beginFrame() {
 void Renderer::endFrame() {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    GL_CHECK_ERROR();
 }

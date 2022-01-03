@@ -4,36 +4,48 @@
 #include <imgui.h>
 
 SandboxApp::SandboxApp()
-  : _bgColor(0.5f, 0.6f, 0.7f)
+  : _bgColor(0.0f, 0.0f, 0.0f)
   , _inputFlags(0)
-  , _mousePosition(0.0f, 0.0f) {
+  , _mousePosition(0.0f, 0.0f)
+  , _lightPos(0.0f, 4.0f, 2.0f)
+  , _lightColor(1.0f, 1.0f, 1.0f) {
 
 }
 
 bool SandboxApp::onInit() {
-  MeshMaterial material;
-  material.color = glm::vec3(0.5f, 0.0f, 0.0f);
-  material.ambientFactor = 0.05f;
-  material.specularFactor = 0.6f;
+  _light = MeshUtils::CreateCube(0.1f);
 
-  _mesh = MeshUtils::CreateCube(1.75f);
-  _mesh->setMaterial(material);
+  MeshMaterial boxMat;
+  boxMat.color = glm::vec3(0.5f, 0.0f, 0.0f);
+  boxMat.ambientFactor = 0.05f;
+  boxMat.specularFactor = 0.6f;
 
-  material.color = glm::vec3(0.5f, 0.5f, 0.5f);
-  material.ambientFactor = 0.075f;
-  material.specularFactor = 0.4f;
+  _box = MeshUtils::CreateCube(2.0f);
+  _box->setMaterial(boxMat);
+
+  MeshMaterial groundMat;
+  groundMat.color = glm::vec3(0.5f, 0.5f, 0.5f);
+  groundMat.ambientFactor = 0.075f;
+  groundMat.specularFactor = 0.4f;
   _ground = MeshUtils::CreateGroundPlane(2.0f, 50);
-  _ground->setMaterial(material);
+  _ground->setMaterial(groundMat);
 
-  _model = Model3D::Create("objects/planet/planet.obj");
+  _cyborg = Model3D::Create("objects/cyborg/cyborg.obj");
 
   ShaderCreateParams shaderParams;
   shaderParams.name = "illum_pong";
   shaderParams.vertexShaderPath = "shaders/illum_pong.vert";
   shaderParams.fragmentShaderPath = "shaders/illum_pong.frag";
-  _shaderIllumPong = Shader::Create(shaderParams);
+  _shaderIllum = Shader::Create(shaderParams);
 
-  _camera.pitch = -20.0f;
+  shaderParams.name = "color";
+  shaderParams.vertexShaderPath = "shaders/color.vert";
+  shaderParams.fragmentShaderPath = "shaders/color.frag";
+  _shaderColor = Shader::Create(shaderParams);
+
+  _camera.position = glm::vec3(-1.2f, 3.44f, 5.71f);
+  _camera.pitch = -18.8f;
+  _camera.yaw = -6.6f;
 
   return true;
 }
@@ -100,28 +112,33 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
 
   _camera.updateAxis();
 
-  getRenderer()->getViewCamera().setWorldLocation(_camera.position, _camera.getQuat());
+  auto& viewCamera = getRenderer()->getViewCamera();
+  viewCamera.setWorldLocation(_camera.position, _camera.getQuat());
+  viewCamera.setFov(_camera.fov);
 
   // Render scene
   getRenderer()->setClearColor(_bgColor);
 
-  const glm::vec3 planetPos(3.0f, 3.5f, 3.0f);
-  const ColorRGB  lightColor(1.0f, 1.0f, 1.0f);
+  _shaderColor->use();
+  _shaderColor->setUniformMatrix4("mtx_viewProj", viewCamera.getViewProjection());
+  _shaderColor->setUniformMatrix4("mtx_model", glm::translate(glm::mat4(1.0f), _lightPos));
+  _shaderColor->setUniformVec3("flat_color", _lightColor);
+  getRenderer()->draw(_light, _shaderColor);
 
-  _shaderIllumPong->use();
-  _shaderIllumPong->setUniformVec3("view_pos", getRenderer()->getViewCamera().getPosition());
-  _shaderIllumPong->setUniformMatrix4("mtx_viewProj", getRenderer()->getViewCamera().getViewProjection());
-  _shaderIllumPong->setUniformVec3("light_pos", planetPos);
-  _shaderIllumPong->setUniformVec3("light_color", lightColor);
+  _shaderIllum->use();
+  _shaderIllum->setUniformVec3("view_pos", viewCamera.getPosition());
+  _shaderIllum->setUniformMatrix4("mtx_viewProj", viewCamera.getViewProjection());
+  _shaderIllum->setUniformVec3("light_pos", _lightPos);
+  _shaderIllum->setUniformVec3("light_color", _lightColor);
 
-  _shaderIllumPong->setUniformMatrix4("mtx_model", glm::mat4(1.0f));
-  getRenderer()->draw(_ground, _shaderIllumPong);
+  _shaderIllum->setUniformMatrix4("mtx_model", glm::mat4(1.0f));
+  getRenderer()->draw(_ground, _shaderIllum);
 
-  _shaderIllumPong->setUniformMatrix4("mtx_model", glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 2.5f, 0.0f)));
-  getRenderer()->draw(_mesh, _shaderIllumPong);
+  _shaderIllum->setUniformMatrix4("mtx_model", glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.0f, 0.0f)));
+  getRenderer()->draw(_box, _shaderIllum);
 
-  _shaderIllumPong->setUniformMatrix4("mtx_model", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)), planetPos));
-  getRenderer()->draw(_model, _shaderIllumPong);
+  _shaderIllum->setUniformMatrix4("mtx_model", glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f)));
+  getRenderer()->draw(_cyborg, _shaderIllum);
 }
 
 void SandboxApp::onGUI() {
@@ -133,7 +150,8 @@ void SandboxApp::onGUI() {
     ImGui::BeginGroup();
       ImGui::Text("Renderer");
       ImGui::ColorEdit3("Background color", glm::value_ptr(_bgColor));
-
+      ImGui::SliderFloat("Light offset", &_lightPos.x, -4.0f, 4.0f);
+      ImGui::ColorEdit3("Light color", glm::value_ptr(_lightColor));
       if (ImGui::Button("Toggle wireframe")) {
         getRenderer()->toggleWireframe();
       }
@@ -143,6 +161,7 @@ void SandboxApp::onGUI() {
 
     ImGui::BeginGroup();
       ImGui::Text("Camera");
+      ImGui::SliderFloat("Fov", &_camera.fov, 45.0f, 90.0f);
       ImGui::SliderFloat("Speed", &_camera.movementSpeed, 0.1f, 10.0f);
       ImGui::SliderFloat("Mouse sensitivity", &_camera.mouseSensitivity, 0.01f, 0.3f);
     ImGui::EndGroup();

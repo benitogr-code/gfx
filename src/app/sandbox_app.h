@@ -12,8 +12,8 @@ private:
       : position(0.0f, 5.0f, 10.0f)
       , yaw(0.0f)
       , pitch(0.0f)
-      , movementSpeed(3.0f)
-      , mouseSensitivity(0.1f)
+      , movementSpeed(7.5f)
+      , mouseSensitivity(0.2f)
       , fov(60.0f) {
         updateAxis();
     }
@@ -76,9 +76,16 @@ private:
   uint32_t       _inputFlags;
   glm::ivec2     _mousePosition;
 
-  ShaderRef      _shaderIllumPong;
+  ShaderRef      _shaderIllum;
+  ShaderRef      _shaderColor;
+
   MeshRef        _ground;
-  MeshRef        _mesh;
-  Model3DRef     _model;
+  MeshRef        _box;
+  MeshRef        _light;
+  Model3DRef     _cyborg;
+
+  glm::vec3      _lightPos;
+  glm::vec3      _lightColor;
+
   ColorRGB       _bgColor;
 };

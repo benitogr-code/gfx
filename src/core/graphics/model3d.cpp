@@ -29,7 +29,7 @@ void Model3D::load() {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(
         FileUtils::getAbsolutePath(_path.c_str()).c_str(),
-        aiProcess_Triangulate | aiProcess_FlipUVs
+        aiProcess_Triangulate | aiProcess_CalcTangentSpace
     );
 
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {

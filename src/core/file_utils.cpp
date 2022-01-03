@@ -62,7 +62,7 @@ bool FileUtils::readPngFile(const char* filePath, ImageData& data) {
   data.data.assign(pData, pData + (imgSize - 1));
   data.width = width;
   data.height = height;
-  data.bytesPerPixel = components;
+  data.bytesPerPixel = kRequiredComponents;
 
   STBI_FREE(pData);
 

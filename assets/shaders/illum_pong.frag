@@ -24,23 +24,25 @@ uniform vec3      view_pos;
 out vec4 out_color;
 
 void main() {
+    vec3 color = mat_color;
+
     if (texture_enable != 0) {
-        out_color = texture(texture_diffuse1, vtx_texcoords);
+        color = texture(texture_diffuse1, vtx_texcoords).rgb;
     }
-    else {
-        vec3 ambient = mat_ambient * light_color;
 
-        vec3 normal = normalize(vtx_normal);
-        vec3 light_dir = normalize(light_pos - vtx_fragpos);
-        float diffuse_factor = max(dot(normal, light_dir), 0.0);
-        vec3 diffuse = diffuse_factor * light_color;
+    vec3 normal = normalize(vtx_normal);
+    vec3 light_dir = normalize(light_pos - vtx_fragpos);
 
-        vec3 view_dir = normalize(view_pos - vtx_fragpos);
-        vec3 reflect_dir = reflect(-light_dir, normal);
-        float spec = pow(max(dot(view_dir, reflect_dir), 0.0), 32);
-        vec3 specular = mat_specular * spec * light_color;
+    vec3 ambient = mat_ambient * light_color;
 
-        vec3 result = (ambient + diffuse + specular) * mat_color;
-        out_color = vec4(result, 1.0);
-    }
+    float diffuse_factor = max(dot(normal, light_dir), 0.0);
+    vec3 diffuse = diffuse_factor * light_color;
+
+    vec3 view_dir = normalize(view_pos - vtx_fragpos);
+    vec3 reflect_dir = reflect(-light_dir, normal);
+    float spec = pow(max(dot(view_dir, reflect_dir), 0.0), 32);
+    vec3 specular = mat_specular * spec * light_color;
+
+    vec3 result = (ambient + diffuse + specular) * color;
+    out_color = vec4(result, 1.0);
 }
