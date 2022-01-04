@@ -25,6 +25,8 @@ public:
 
 private:
     Camera   _viewCamera;
+    UBORef   _uboCamera;
+
     ColorRGB _clearColor;
     bool     _wireframeEnabled;
 };

@@ -5,6 +5,8 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include <glad/glad.h>
 
+#define UBO_CAMERA_IDX 0
+
 Renderer::Renderer()
     : _clearColor(0.0f)
     , _wireframeEnabled(false) {
@@ -13,6 +15,15 @@ Renderer::Renderer()
 }
 
 void Renderer::init() {
+    _uboCamera = UBO::Create(
+        UBO_CAMERA_IDX,
+        BufferLayout({
+            { BufferItemType::Float3, "view_pos" },
+            { BufferItemType::Mat4,   "mtx_view" },
+            { BufferItemType::Mat4,   "mtx_viewProj"}
+        })
+    );
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     //glEnable(GL_CULL_FACE);
@@ -44,6 +55,13 @@ void Renderer::beginFrame() {
 }
 
 void Renderer::endFrame() {
+    // Prepare UBOs
+    _uboCamera->writeBegin();
+    _uboCamera->writeVec3(_viewCamera.getPosition());
+    _uboCamera->writeMat4(_viewCamera.getView());
+    _uboCamera->writeMat4(_viewCamera.getViewProjection());
+    _uboCamera->writeEnd();
+
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

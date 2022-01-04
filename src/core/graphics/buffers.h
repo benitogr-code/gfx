@@ -6,6 +6,7 @@ enum class BufferItemType {
   Float3,
   Float4,
   Int,
+  Mat4,
 };
 
 struct BufferItem {
@@ -24,6 +25,20 @@ struct BufferItem {
       case BufferItemType::Float3:   return 3;
       case BufferItemType::Float4:   return 4;
       case BufferItemType::Int:      return 1;
+      case BufferItemType::Mat4:     return 16;
+    }
+
+    return 0;
+  }
+
+  uint32_t getStd140Alignment() const {
+    switch (type) {
+      case BufferItemType::Float:    return 4;
+      case BufferItemType::Float2:   return 8;
+      case BufferItemType::Float3:   return 16;
+      case BufferItemType::Float4:   return 16;
+      case BufferItemType::Int:      return 4;
+      case BufferItemType::Mat4:     return 16;
     }
 
     return 0;
@@ -57,6 +72,9 @@ public:
 public:
   ~VBO();
 
+  static VBORef Create(uint32_t size, const BufferLayout& layout);
+  static VBORef Create(const void* data, uint32_t size, const BufferLayout& layout);
+
   uint32_t id() const { return _id; }
   void setFlag(Flag flag) { _flags |= flag; }
 
@@ -64,9 +82,6 @@ public:
   const BufferLayout& layout() const { return _layout; }
 
   void uploadData(const void* data, uint32_t size);
-
-  static VBORef Create(uint32_t size, const BufferLayout& layout);
-  static VBORef Create(const void* data, uint32_t size, const BufferLayout& layout);
 
 private:
   VBO() = delete;
@@ -89,10 +104,10 @@ class IBO {
 public:
   ~IBO();
 
+  static IBORef Create(const uint32_t* indices, uint32_t count);
+
   uint32_t id() const { return _id; }
   uint32_t count() const { return _count; }
-
-  static IBORef Create(const uint32_t* indices, uint32_t count);
 
 private:
   IBO() = delete;
@@ -112,6 +127,8 @@ class VAO {
 public:
   ~VAO();
 
+  static VAORef Create();
+
   void bind();
   void unbind();
 
@@ -119,8 +136,6 @@ public:
   void setIndexBuffer(IBORef buffer);
 
   const uint32_t indexCount() const { return _indexBuffer ? _indexBuffer->count() : 0; }
-
-  static VAORef Create();
 private:
   VAO();
   VAO(const VAO&) = delete;
@@ -130,4 +145,37 @@ private:
   std::vector<VBORef> _vertexBuffers;
   IBORef _indexBuffer;
   uint32_t _attributeCount;
+};
+
+class UBO;
+typedef std::shared_ptr<UBO> UBORef;
+
+class UBO {
+public:
+  ~UBO();
+
+  void writeBegin();
+  void writeEnd();
+  void writeInt(int value);
+  void writeFloat(float value);
+  void writeVec2(const glm::vec2& value);
+  void writeVec3(const glm::vec3& value);
+  void writeVec4(const glm::vec4& value);
+  void writeMat4(const glm::mat4& value);
+
+  static UBORef Create(uint32_t bindIndex, const BufferLayout& layout);
+
+private:
+  UBO(uint32_t size, uint32_t bindIndex);
+  UBO(const UBO&) = delete;
+
+  void write(const void* data, uint32_t size, uint32_t alignment);
+
+private:
+  uint32_t _id;
+  uint32_t _bindIndex;
+  uint32_t _size;
+
+  std::vector<uint8_t> _writeBuffer;
+  uint32_t             _writePos;
 };
