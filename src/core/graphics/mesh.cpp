@@ -2,16 +2,15 @@
 
 #include <glad/glad.h>
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<TextureSlot>& textures) {
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) {
     _vertices = vertices;
     _indices = indices;
-    _textures = textures;
 
     setup();
 }
 
 /*static*/ MeshRef Mesh::Create(const MeshCreateParams& params) {
-    MeshRef mesh(new Mesh(params.vertices, params.indices, params.textures));
+    MeshRef mesh(new Mesh(params.vertices, params.indices));
 
     return mesh;
 }
@@ -36,23 +35,7 @@ void Mesh::setup() {
     }
 }
 
-void Mesh::draw(ShaderRef& shader) {
-    const auto textureCount = _textures.size();
-    shader->setUniformInt("texture_enable", textureCount > 0 ? 1 : 0);
-
-    if (textureCount > 0) {
-        for(int i = 0; i < textureCount; i++) {
-            glActiveTexture(GL_TEXTURE0 + i);
-            shader->setUniformInt(_textures[i].slot.c_str(), i);
-            glBindTexture(GL_TEXTURE_2D, _textures[i].texture->id());
-        }
-    }
-    else {
-        shader->setUniformVec3("mat_color", _material.color);
-        shader->setUniformFloat("mat_ambient", _material.ambientFactor);
-        shader->setUniformFloat("mat_specular", _material.specularFactor);
-    }
-
+void Mesh::draw() {
     _vao->bind();
 
     if (_vao->indexCount() > 0) {

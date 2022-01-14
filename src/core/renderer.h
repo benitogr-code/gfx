@@ -1,32 +1,41 @@
 #pragma once
 
 #include "camera.h"
+#include "graphics/material.h"
 #include "graphics/mesh.h"
-#include "graphics/model3d.h"
-#include "graphics/shader.h"
+
+struct RenderItem {
+  MeshRef     mesh;
+  MaterialRef material;
+  glm::mat4   modelTM;
+};
 
 class Renderer {
+private:
+  typedef std::vector<RenderItem> RenderList;
+
 public:
-    Renderer();
+  Renderer();
 
-    void init();
+  void init();
 
-    Camera& getViewCamera() { return _viewCamera; };
-    const Camera& getViewCamera() const { return _viewCamera; }
+  Camera& getViewCamera() { return _viewCamera; };
+  const Camera& getViewCamera() const { return _viewCamera; }
 
-    void setClearColor(const ColorRGB& c) { _clearColor = c; }
-    void toggleWireframe();
+  void setClearColor(const ColorRGB& c) { _clearColor = c; }
+  void toggleWireframe();
 
-    void draw(MeshRef& mesh, ShaderRef& shader);
-    void draw(Model3DRef& model, ShaderRef& shader);
+  void draw(const RenderItem& item);
 
-    void beginFrame();
-    void endFrame();
+  void beginFrame();
+  void endFrame();
 
 private:
-    Camera   _viewCamera;
-    UBORef   _uboCamera;
+  Camera   _viewCamera;
+  UBORef   _uboCamera;
 
-    ColorRGB _clearColor;
-    bool     _wireframeEnabled;
+  RenderList _renderList;
+
+  ColorRGB _clearColor;
+  bool     _wireframeEnabled;
 };

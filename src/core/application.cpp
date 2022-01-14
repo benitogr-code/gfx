@@ -39,6 +39,9 @@ bool Application::init(const WindowDesc& desc) {
   ImGui_ImplSDL2_InitForOpenGL(_window->getWindow(), _window->getGLContext());
   ImGui_ImplOpenGL3_Init("#version 150");
 
+  _materialLibrary.reset(new MaterialLibrary());
+  _materialLibrary->init();
+
   if (!onInit()) {
     LOG_ERROR("[Application] Failed to initialize application");
 

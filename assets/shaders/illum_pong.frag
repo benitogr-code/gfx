@@ -5,9 +5,9 @@ in vec3 vtx_normal;
 in vec2 vtx_texcoords;
 
 // Samplers
-uniform int       texture_enable;
-uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_specular1;
+uniform int       texture_slots;
+uniform sampler2D texture_diffuse;
+uniform sampler2D texture_specular;
 
 // Fallback material
 uniform vec3      mat_color;
@@ -28,9 +28,9 @@ void main() {
     vec3 diff_color = mat_color;
     vec3 spec_color = vec3(mat_specular, mat_specular, mat_specular);
 
-    if (texture_enable != 0) {
-        diff_color = texture(texture_diffuse1, vtx_texcoords).rgb;
-        spec_color = texture(texture_specular1, vtx_texcoords).rgb;
+    if (texture_slots != 0) {
+        diff_color = texture(texture_diffuse, vtx_texcoords).rgb;
+        spec_color = texture(texture_specular, vtx_texcoords).rgb;
     }
 
     vec3 normal = normalize(vtx_normal);

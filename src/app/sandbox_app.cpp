@@ -15,33 +15,13 @@ SandboxApp::SandboxApp()
 bool SandboxApp::onInit() {
   _light = MeshUtils::CreateCube(0.1f);
 
-  MeshMaterial boxMat;
-  boxMat.color = glm::vec3(0.5f, 0.0f, 0.0f);
-  boxMat.ambientFactor = 0.05f;
-  boxMat.specularFactor = 0.6f;
-
   _box = MeshUtils::CreateCube(2.0f);
-  _box->setMaterial(boxMat);
-
-  MeshMaterial groundMat;
-  groundMat.color = glm::vec3(0.5f, 0.5f, 0.5f);
-  groundMat.ambientFactor = 0.075f;
-  groundMat.specularFactor = 0.4f;
   _ground = MeshUtils::CreateGroundPlane(2.0f, 50);
-  _ground->setMaterial(groundMat);
 
   _cyborg = Model3D::Create("objects/cyborg/cyborg.obj");
 
-  ShaderCreateParams shaderParams;
-  shaderParams.name = "illum_pong";
-  shaderParams.vertexShaderPath = "shaders/illum_pong.vert";
-  shaderParams.fragmentShaderPath = "shaders/illum_pong.frag";
-  _shaderIllum = Shader::Create(shaderParams);
-
-  shaderParams.name = "color";
-  shaderParams.vertexShaderPath = "shaders/color.vert";
-  shaderParams.fragmentShaderPath = "shaders/color.frag";
-  _shaderColor = Shader::Create(shaderParams);
+  _matDefault = getMaterialLibrary()->getDefaultMaterial();
+  _matLightSource = getMaterialLibrary()->createMaterial("bulb_light", "color");
 
   _camera.position = glm::vec3(-1.2f, 3.44f, 5.71f);
   _camera.pitch = -18.8f;
@@ -119,26 +99,39 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   // Render scene
   getRenderer()->setClearColor(_bgColor);
 
-  _shaderColor->use();
-  _shaderColor->setUniformMatrix4("mtx_viewProj", viewCamera.getViewProjection());
-  _shaderColor->setUniformMatrix4("mtx_model", glm::translate(glm::mat4(1.0f), _lightPos));
-  _shaderColor->setUniformVec3("flat_color", _lightColor);
-  getRenderer()->draw(_light, _shaderColor);
+  // Hack
+  _matLightSource->setParamVec3("mat_color", _lightColor);
 
-  _shaderIllum->use();
-  _shaderIllum->setUniformVec3("view_pos", viewCamera.getPosition());
-  _shaderIllum->setUniformMatrix4("mtx_viewProj", viewCamera.getViewProjection());
-  _shaderIllum->setUniformVec3("light_pos", _lightPos);
-  _shaderIllum->setUniformVec3("light_color", _lightColor);
+  RenderItem light;
+  light.mesh = _light;
+  light.material = _matLightSource;
+  light.modelTM = glm::translate(glm::mat4(1.0f), _lightPos);
+  getRenderer()->draw(light);
 
-  _shaderIllum->setUniformMatrix4("mtx_model", glm::mat4(1.0f));
-  getRenderer()->draw(_ground, _shaderIllum);
+  // Hack
+  _matDefault->setParamVec3("light_pos", _lightPos);
+  _matDefault->setParamVec3("light_color", _lightColor);
 
-  _shaderIllum->setUniformMatrix4("mtx_model", glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.0f, 0.0f)));
-  getRenderer()->draw(_box, _shaderIllum);
+  for (uint32_t idx = 0; idx < _cyborg->getMeshCount(); ++idx) {
+    RenderItem item;
+    item.mesh = _cyborg->getMesh(idx);
+    item.material = _cyborg->getMeshMaterial(idx);
+    item.modelTM = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f));
 
-  _shaderIllum->setUniformMatrix4("mtx_model", glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f)));
-  getRenderer()->draw(_cyborg, _shaderIllum);
+    getRenderer()->draw(item);
+  }
+
+  RenderItem box;
+  box.mesh = _box;
+  box.material = _matDefault;
+  box.modelTM = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.0f, 0.0f));
+  getRenderer()->draw(box);
+
+  RenderItem ground;
+  ground.mesh = _ground;
+  ground.material = _matDefault;
+  ground.modelTM = glm::mat4(1.0f);
+  getRenderer()->draw(ground);
 }
 
 void SandboxApp::onGUI() {

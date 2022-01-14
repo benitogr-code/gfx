@@ -1,9 +1,9 @@
 #pragma once
 
 #include "core/application.h"
+#include "core/graphics/material.h"
 #include "core/graphics/mesh.h"
-#include "core/graphics/model3d.h"
-#include "core/graphics/shader.h"
+#include "utils/model3d.h"
 
 class SandboxApp: public Application {
 private:
@@ -76,8 +76,8 @@ private:
   uint32_t       _inputFlags;
   glm::ivec2     _mousePosition;
 
-  ShaderRef      _shaderIllum;
-  ShaderRef      _shaderColor;
+  MaterialRef _matDefault;
+  MaterialRef _matLightSource;
 
   MeshRef        _ground;
   MeshRef        _box;
