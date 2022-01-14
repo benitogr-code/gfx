@@ -1,13 +1,19 @@
 #pragma once
 
-enum KeyId {
-  KeyId_Escape = 0,
-  KeyId_Space,
-  KeyId_Enter,
-  KeyId_Up,
-  KeyId_Down,
-  KeyId_Left,
-  KeyId_Right,
+enum KeyboardKey {
+  KeyboardKey_Escape = 0,
+  KeyboardKey_Space,
+  KeyboardKey_Enter,
+
+  KeyboardKey_Up,
+  KeyboardKey_Down,
+  KeyboardKey_Left,
+  KeyboardKey_Right,
+
+  KeyboardKey_A,
+  KeyboardKey_S,
+  KeyboardKey_D,
+  KeyboardKey_W
 };
 
 enum MouseButton {
@@ -24,7 +30,7 @@ enum InputState: unsigned int {
 };
 
 struct InputEvent {
-  KeyId    keyId;
+  KeyboardKey    key;
   uint32_t state;
 };
 
@@ -53,7 +59,7 @@ private:
   void updateMouse();
 
 private:
-  typedef std::map<uint32_t, KeyId> KeyCodes;
+  typedef std::map<uint32_t, KeyboardKey> KeyCodes;
   typedef std::map<uint32_t, MouseButton> ButtonCodes;
 
   KeyCodes    _keyCodes;

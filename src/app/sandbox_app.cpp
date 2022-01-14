@@ -56,16 +56,16 @@ void SandboxApp::onShutdown() {
 void SandboxApp::onInputEvent(const InputEvent& event) {
   const bool released = (event.state == InputState_Released);
 
-  if (event.keyId == KeyId_Left) {
+  if (event.key == KeyboardKey_A) {
     setInputFlag(InputFlag_MoveLeft, !released);
   }
-  else if (event.keyId == KeyId_Right) {
+  else if (event.key == KeyboardKey_D) {
     setInputFlag(InputFlag_MoveRight, !released);
   }
-  else if (event.keyId == KeyId_Up) {
+  else if (event.key == KeyboardKey_W) {
     setInputFlag(InputFlag_MoveForward, !released);
   }
-  else if (event.keyId == KeyId_Down) {
+  else if (event.key == KeyboardKey_S) {
     setInputFlag(InputFlag_MoveBackward, !released);
   }
 }

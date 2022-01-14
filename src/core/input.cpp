@@ -4,13 +4,17 @@
 #include <SDL.h>
 
 Input::Input() {
-  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_ESCAPE, KeyId_Escape));
-  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_SPACE, KeyId_Space));
-  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_RETURN, KeyId_Enter));
-  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_UP, KeyId_Up));
-  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_DOWN, KeyId_Down));
-  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_LEFT, KeyId_Left));
-  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_RIGHT, KeyId_Right));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_ESCAPE, KeyboardKey_Escape));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_SPACE, KeyboardKey_Space));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_RETURN, KeyboardKey_Enter));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_UP, KeyboardKey_Up));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_DOWN, KeyboardKey_Down));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_LEFT, KeyboardKey_Left));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_RIGHT, KeyboardKey_Right));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_A, KeyboardKey_A));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_S, KeyboardKey_S));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_D, KeyboardKey_D));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_W, KeyboardKey_W));
 
   _mouseButtonCodes.insert(ButtonCodes::value_type(SDL_BUTTON_LEFT, MouseButton_Left));
   _mouseButtonCodes.insert(ButtonCodes::value_type(SDL_BUTTON_RIGHT, MouseButton_Left));
@@ -42,7 +46,7 @@ void Input::updateKeybard() {
     const auto iter = _keyCodes.find(keyEvent.keysym.scancode);
     if (iter != _keyCodes.end()) {
       InputEvent input;
-      input.keyId = iter->second;
+      input.key = iter->second;
       input.state = keyEvent.type == SDL_KEYDOWN ? InputState_Pressed : InputState_Released;
       if (keyEvent.repeat > 0)
         input.state = InputState_Hold;
