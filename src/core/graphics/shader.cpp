@@ -63,6 +63,13 @@ void Shader::setUniformMatrix4(const char* name, const glm::mat4x4& value) {
   glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
+void Shader::setUniformBlockBind(const char* name, int bindId) {
+  auto index = getUniformBlockIndex(name);
+  if (index >= 0) {
+    glUniformBlockBinding(_id, getUniformBlockIndex(name), bindId);
+  }
+}
+
 void Shader::buildFromSources(const char* vsSources, const char* fsSources) {
   // Vertex Shader
   unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -98,6 +105,18 @@ int Shader::getUniformLocation(const char* name) {
   _uniformsCache.insert(UniformLocations::value_type(name, location));
 
   return location;
+}
+
+int Shader::getUniformBlockIndex(const char* name) {
+  auto iter = _blockIndices.find(name);
+
+  if (iter != _blockIndices.end())
+    return iter->second;
+
+  GLint index = glGetUniformBlockIndex(_id, name);
+  _blockIndices.insert(UniformLocations::value_type(name, index));
+
+  return index;
 }
 
 /*static*/ ShaderRef Shader::Create(const ShaderCreateParams& params) {

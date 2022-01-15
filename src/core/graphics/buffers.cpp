@@ -233,7 +233,8 @@ UBO::UBO(uint32_t size, uint32_t bindIndex) {
 
   glGenBuffers(1, &_id);
   glBindBuffer(GL_UNIFORM_BUFFER, _id);
-  glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_STATIC_DRAW);
+  glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
   glBindBufferBase(GL_UNIFORM_BUFFER, bindIndex, _id);
 }

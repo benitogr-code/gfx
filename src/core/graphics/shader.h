@@ -28,6 +28,7 @@ public:
   void setUniformVec2(const char* name, const glm::vec2& value);
   void setUniformVec3(const char* name, const glm::vec3& value);
   void setUniformMatrix4(const char* name, const glm::mat4x4& value);
+  void setUniformBlockBind(const char* name, int bindId);
 
   static ShaderRef Create(const ShaderCreateParams& params);
 
@@ -39,12 +40,15 @@ private:
 
   void buildFromSources(const char* vsSources, const char* fsSources);
   int getUniformLocation(const char* name);
+  int getUniformBlockIndex(const char* name);
 
 private:
   typedef std::unordered_map<std::string, int> UniformLocations;
+  typedef std::unordered_map<std::string, int> UniformBlockIndeces;
 
   std::string _name;
   unsigned int _id;
 
   UniformLocations _uniformsCache;
+  UniformBlockIndeces _blockIndices;
 };

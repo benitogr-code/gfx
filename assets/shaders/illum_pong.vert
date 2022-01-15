@@ -7,8 +7,6 @@ layout (location = 1) in vec3 attr_normal;
 layout (location = 2) in vec2 attr_texcoords;
 
 uniform mat4 mtx_model;
-uniform mat4 mtx_view;
-uniform mat4 mtx_viewProj;
 
 out vec3 vtx_fragpos;
 out vec3 vtx_normal;
@@ -19,5 +17,5 @@ void main() {
     vtx_normal = attr_normal;
     vtx_texcoords = attr_texcoords;
 
-    gl_Position = mtx_viewProj * mtx_model * vec4(attr_pos.x, attr_pos.y, attr_pos.z, 1.0);
+    gl_Position = camera.viewproj * mtx_model * vec4(attr_pos.x, attr_pos.y, attr_pos.z, 1.0);
 }

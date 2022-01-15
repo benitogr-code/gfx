@@ -63,8 +63,7 @@ void Renderer::endFrame() {
   for (auto item : _renderList) {
     auto shader = item.material->getShader();
     shader->use();
-    shader->setUniformVec3("view_pos", _viewCamera.getPosition());
-    shader->setUniformMatrix4("mtx_viewProj", _viewCamera.getViewProjection());
+    shader->setUniformBlockBind("Camera", UBO_CAMERA_IDX);
     shader->setUniformMatrix4("mtx_model", item.modelTM);
     item.material->apply();
     item.mesh->draw();

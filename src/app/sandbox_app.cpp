@@ -21,7 +21,7 @@ bool SandboxApp::onInit() {
   _cyborg = getAssetManager()->loadModel("cyborg");
 
   _matDefault = getAssetManager()->getDefaultMaterial();
-  _matLightSource = getAssetManager()->getDefaultMaterial();
+  _matLightSource = getAssetManager()->getMaterial("light_source");
 
   _camera.position = glm::vec3(-1.2f, 3.44f, 5.71f);
   _camera.pitch = -18.8f;
