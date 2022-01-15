@@ -3,7 +3,7 @@
 #include "core/application.h"
 #include "core/graphics/material.h"
 #include "core/graphics/mesh.h"
-#include "utils/model3d.h"
+#include "core/gfx_model.h"
 
 class SandboxApp: public Application {
 private:
@@ -82,7 +82,7 @@ private:
   MeshRef        _ground;
   MeshRef        _box;
   MeshRef        _light;
-  Model3DRef     _cyborg;
+  GfxModelRef    _cyborg;
 
   glm::vec3      _lightPos;
   glm::vec3      _lightColor;

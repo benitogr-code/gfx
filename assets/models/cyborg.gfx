@@ -1,0 +1,4 @@
+{
+  "geometry": "models/cyborg.obj",
+  "material": "cyborg",
+}

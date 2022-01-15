@@ -18,7 +18,7 @@ bool SandboxApp::onInit() {
   _box = MeshUtils::CreateCube(2.0f);
   _ground = MeshUtils::CreateGroundPlane(2.0f, 50);
 
-  _cyborg = Model3D::Create("objects/cyborg/cyborg.obj");
+  _cyborg = getAssetManager()->loadModel("cyborg");
 
   _matDefault = getAssetManager()->getDefaultMaterial();
   _matLightSource = getAssetManager()->getDefaultMaterial();
@@ -115,7 +115,7 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   for (uint32_t idx = 0; idx < _cyborg->getMeshCount(); ++idx) {
     RenderItem item;
     item.mesh = _cyborg->getMesh(idx);
-    item.material = _cyborg->getMeshMaterial(idx);
+    item.material = _cyborg->getMaterial();
     item.modelTM = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f));
 
     getRenderer()->draw(item);
