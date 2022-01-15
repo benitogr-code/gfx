@@ -4,6 +4,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <regex>
 #include <string>
 #include <unordered_map>
 #include <vector>

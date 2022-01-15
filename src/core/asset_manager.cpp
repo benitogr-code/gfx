@@ -150,7 +150,6 @@ void AssetManager::init() {
   for (uint32_t i = 0; i < SHADER_COUNT; ++i) {
     loadShader(SHADERS[i]);
   }
-  loadShader("illum_pong");
 
   _defaultMaterial = loadMaterial("default");
   loadMaterial("cyborg");

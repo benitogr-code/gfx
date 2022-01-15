@@ -1,5 +1,7 @@
 #version 410 core
 
+//#common.inc
+
 uniform vec3 mat_color;
 
 out vec4 out_color;

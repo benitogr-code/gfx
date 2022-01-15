@@ -1,5 +1,7 @@
 #version 410 core
 
+//#common.inc
+
 in vec3 vtx_fragpos;
 in vec3 vtx_normal;
 in vec2 vtx_texcoords;

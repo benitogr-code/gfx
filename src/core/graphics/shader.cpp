@@ -103,11 +103,19 @@ int Shader::getUniformLocation(const char* name) {
 /*static*/ ShaderRef Shader::Create(const ShaderCreateParams& params) {
   ShaderRef shader(new Shader(params.name));
 
+  std::vector<char> incBuffer;
+  FileUtils::readTextFile("shaders/_common.inc", incBuffer);
+
   std::vector<char> vsBuffer, fsBuffer;
   if (FileUtils::readTextFile(params.vertexShaderPath, vsBuffer)
     && FileUtils::readTextFile(params.fragmentShaderPath, fsBuffer)) {
 
-    shader->buildFromSources(vsBuffer.data(), fsBuffer.data());
+    auto regex = std::regex("//#common.inc");
+
+    shader->buildFromSources(
+      std::regex_replace(vsBuffer.data(), regex, incBuffer.data()).c_str(),
+      std::regex_replace(fsBuffer.data(), regex, incBuffer.data()).c_str()
+    );
   }
   else {
     LOG_ERROR("[Shader] Loading error '{}'", params.name);
