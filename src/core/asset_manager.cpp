@@ -18,9 +18,9 @@ namespace JsonHelper {
 
   ColorRGB readColorRGB(const Json::Value& value, const char* key, const ColorRGB& defaultValue) {
     ColorRGB color = defaultValue;
-    if (value.isArray() && value.size() == 3) {
-      for (int i = 0; i < value.size(); ++i) {
-        color[i] = value[i].asFloat();
+    if (value[key].isArray() && value[key].size() == 3) {
+      for (int i = 0; i < value[key].size(); ++i) {
+        color[i] = value[key][i].asFloat();
       }
     }
 
@@ -66,7 +66,7 @@ namespace JsonHelper {
       material->setParamVec3("mat_color", color);
       material->setParamFloat("mat_ambient", ambient.r);
       material->setParamFloat("mat_specular", specular.r);
-      //material->setParamFloat("mat_shininess", shininess);
+      material->setParamFloat("mat_shininess", shininess);
     }
   }
 

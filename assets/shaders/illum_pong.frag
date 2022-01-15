@@ -15,6 +15,7 @@ uniform sampler2D texture_specular;
 uniform vec3      mat_color;
 uniform float     mat_ambient;
 uniform float     mat_specular;
+uniform float     mat_shininess;
 
 // Directional light
 uniform vec3      light_pos;
@@ -42,7 +43,7 @@ void main() {
 
     vec3 view_dir = normalize(camera.pos - vtx_fragpos);
     vec3 reflect_dir = reflect(-light_dir, normal);
-    float spec_factor = pow(max(dot(view_dir, reflect_dir), 0.0), 32);
+    float spec_factor = pow(max(dot(view_dir, reflect_dir), 0.0), mat_shininess);
     vec3 specular = spec_factor * spec_color * light_color;
 
     vec3 result = ambient + diffuse + specular;
