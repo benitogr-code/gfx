@@ -1,6 +1,6 @@
 #include "model3d.h"
 #include "core/file_utils.h"
-#include "core/material_library.h"
+#include "core/asset_manager.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -86,7 +86,7 @@ MaterialRef Model3D::processMeshMaterial(aiMesh* mesh, const aiScene* scene) {
     auto diffTextures = loadMaterialTextures(material, aiTextureType_DIFFUSE);
     auto specTextures = loadMaterialTextures(material, aiTextureType_SPECULAR);
 
-    auto meshMaterial = MaterialLibrary::Get()->createMaterial(material->GetName().C_Str(), "illum_pong");
+    auto meshMaterial = AssetManager::Get()->createMaterial(material->GetName().C_Str(), "illum_pong");
     if (diffTextures.size() > 0) {
       meshMaterial->setTexture(TextureType_Diffuse, diffTextures[0]);
     }
@@ -98,7 +98,7 @@ MaterialRef Model3D::processMeshMaterial(aiMesh* mesh, const aiScene* scene) {
     return meshMaterial;
   }
 
-  return MaterialLibrary::Get()->getDefaultMaterial();
+  return AssetManager::Get()->getDefaultMaterial();
 }
 
 std::vector<TextureRef> Model3D::loadMaterialTextures(aiMaterial *mat, uint32_t type) {

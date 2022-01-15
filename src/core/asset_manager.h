@@ -3,16 +3,16 @@
 #include "graphics/material.h"
 #include "graphics/shader.h"
 
-class MaterialLibrary {
+class AssetManager {
 private:
   typedef std::map<std::string, ShaderRef> Shaders;
   typedef std::map<std::string, MaterialRef> Materials;
 
 public:
-  MaterialLibrary();
-  ~MaterialLibrary();
+  AssetManager();
+  ~AssetManager();
 
-  static MaterialLibrary* Get() { return _sThis; }
+  static AssetManager* Get() { return _sThis; }
 
   void init();
 
@@ -32,5 +32,5 @@ private:
   ShaderRef   _defaultShader;
   MaterialRef _defaultMaterial;
 
-  static MaterialLibrary* _sThis;
+  static AssetManager* _sThis;
 };

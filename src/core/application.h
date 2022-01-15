@@ -2,7 +2,7 @@
 
 #include "input.h"
 #include "renderer.h"
-#include "material_library.h"
+#include "asset_manager.h"
 #include "window.h"
 
 struct UpdateContext {
@@ -27,7 +27,7 @@ public:
 protected:
   Window*   getWindow() const { return _window.get(); };
   Renderer* getRenderer() const { return _renderer.get(); }
-  MaterialLibrary* getMaterialLibrary() const { return _materialLibrary.get(); }
+  AssetManager* getAssetManager() const { return _assetManager.get(); }
 
   // To be implemented by custom application
   virtual bool onInit() = 0;
@@ -44,7 +44,7 @@ private:
   std::unique_ptr<Window> _window;
   std::unique_ptr<Input> _input;
   std::unique_ptr<Renderer> _renderer;
-  std::unique_ptr<MaterialLibrary> _materialLibrary;
+  std::unique_ptr<AssetManager> _assetManager;
 
   bool     _running;
 };

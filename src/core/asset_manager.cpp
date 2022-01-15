@@ -1,16 +1,16 @@
-#include "material_library.h"
+#include "asset_manager.h"
 
-MaterialLibrary* MaterialLibrary::_sThis = nullptr;
+AssetManager* AssetManager::_sThis = nullptr;
 
-MaterialLibrary::MaterialLibrary() {
+AssetManager::AssetManager() {
   _sThis = this;
 }
 
-MaterialLibrary::~MaterialLibrary() {
+AssetManager::~AssetManager() {
   _sThis = nullptr;
 }
 
-void MaterialLibrary::init() {
+void AssetManager::init() {
   _defaultShader = loadShader("color");
   loadShader("illum_pong");
 
@@ -20,26 +20,26 @@ void MaterialLibrary::init() {
   _defaultMaterial->setParamFloat("mat_specular", 0.6f);
 }
 
-MaterialRef MaterialLibrary::createMaterial(const char* name, const char* shader) {
+MaterialRef AssetManager::createMaterial(const char* name, const char* shader) {
   auto pair = _materials.insert_or_assign(std::string(name), Material::Create(getShader(shader)));
 
   return pair.first->second;
 }
 
-MaterialRef MaterialLibrary::getMaterial(const char* name) const {
+MaterialRef AssetManager::getMaterial(const char* name) const {
   auto iter = _materials.find(std::string(name));
 
   return iter != _materials.end() ? iter->second : _defaultMaterial;
 }
 
-ShaderRef MaterialLibrary::loadShader(const char* name) {
+ShaderRef AssetManager::loadShader(const char* name) {
   char vertexShader[128];
   char fragmentShader[128];
 
   snprintf(vertexShader, sizeof(vertexShader), "shaders/%s.vert", name);
   snprintf(fragmentShader, sizeof(fragmentShader), "shaders/%s.frag", name);
 
-  LOG_INFO("[MaterialLibrary] Loading shader {}", name);
+  LOG_INFO("[AssetManager] Loading shader {}", name);
 
   ShaderCreateParams shaderParams;
   shaderParams.name = name;
@@ -52,7 +52,7 @@ ShaderRef MaterialLibrary::loadShader(const char* name) {
   return shader;
 }
 
-ShaderRef MaterialLibrary::getShader(const char* name) const {
+ShaderRef AssetManager::getShader(const char* name) const {
   auto iter = _shaders.find(std::string(name));
 
   return iter != _shaders.end() ? iter->second : _defaultShader;
