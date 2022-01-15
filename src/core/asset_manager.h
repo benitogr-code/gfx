@@ -17,19 +17,18 @@ public:
   void init();
 
   MaterialRef getDefaultMaterial() const { return _defaultMaterial; }
-
-  MaterialRef createMaterial(const char* name, const char* shader);
   MaterialRef getMaterial(const char* name) const;
 
 private:
   ShaderRef loadShader(const char* name);
   ShaderRef getShader(const char* name) const;
 
+  MaterialRef loadMaterial(const char* name);
+
 private:
   Shaders     _shaders;
   Materials   _materials;
 
-  ShaderRef   _defaultShader;
   MaterialRef _defaultMaterial;
 
   static AssetManager* _sThis;

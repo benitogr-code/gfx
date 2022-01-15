@@ -1,5 +1,7 @@
 #pragma once
 
+#include <json/json.h>
+
 struct ImageData {
   ImageData()
     : width(0)
@@ -19,6 +21,7 @@ public:
 
   static bool readTextFile(const char* filePath, std::vector<char>& data);
   static bool readPngFile(const char* filePath, ImageData& data);
+  static bool readJsonFile(const char* filePath, Json::Value& root);
   static std::string getAbsolutePath(const char* filePath);
 
 private:

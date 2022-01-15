@@ -86,7 +86,8 @@ MaterialRef Model3D::processMeshMaterial(aiMesh* mesh, const aiScene* scene) {
     auto diffTextures = loadMaterialTextures(material, aiTextureType_DIFFUSE);
     auto specTextures = loadMaterialTextures(material, aiTextureType_SPECULAR);
 
-    auto meshMaterial = AssetManager::Get()->createMaterial(material->GetName().C_Str(), "illum_pong");
+    auto meshMaterial = AssetManager::Get()->getDefaultMaterial();
+    /*
     if (diffTextures.size() > 0) {
       meshMaterial->setTexture(TextureType_Diffuse, diffTextures[0]);
     }
@@ -94,6 +95,7 @@ MaterialRef Model3D::processMeshMaterial(aiMesh* mesh, const aiScene* scene) {
     if (specTextures.size() > 0) {
       meshMaterial->setTexture(TextureType_Specular, specTextures[0]);
     }
+    */
 
     return meshMaterial;
   }

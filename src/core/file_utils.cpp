@@ -69,6 +69,27 @@ bool FileUtils::readPngFile(const char* filePath, ImageData& data) {
   return true;
 }
 
+bool FileUtils::readJsonFile(const char* filePath, Json::Value& root) {
+  const auto absolutePath = getAbsolutePath(filePath);
+  std::ifstream inStream(absolutePath);
+
+  if (!inStream) {
+    LOG_WARN("[FileUtils] Failed to open json file {0}, {1}", absolutePath, strerror(errno));
+    return false;
+  }
+
+  Json::CharReaderBuilder builder;
+  std::string errors;
+
+  if (!Json::parseFromStream(builder, inStream, &root, &errors)) {
+    LOG_WARN("[FileUtils] Failed to parse json file {0}, {1}", absolutePath, errors);
+    return false;
+  }
+
+  return true;
+}
+
+
 std::string FileUtils::getAbsolutePath(const char* filePath) {
   return _assetsFolder + filePath;
 }

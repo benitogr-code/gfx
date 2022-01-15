@@ -21,7 +21,7 @@ bool SandboxApp::onInit() {
   _cyborg = Model3D::Create("objects/cyborg/cyborg.obj");
 
   _matDefault = getAssetManager()->getDefaultMaterial();
-  _matLightSource = getAssetManager()->createMaterial("bulb_light", "color");
+  _matLightSource = getAssetManager()->getDefaultMaterial();
 
   _camera.position = glm::vec3(-1.2f, 3.44f, 5.71f);
   _camera.pitch = -18.8f;

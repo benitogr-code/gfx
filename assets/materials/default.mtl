@@ -1,0 +1,13 @@
+{
+  "shader": "illum_pong",
+  "texture_maps": {
+    "diffuse": "",
+    "specular": ""
+  },
+  "properties": {
+    "color": [1.0, 1.0, 1.0],
+    "ambient": [0.15, 0.15, 0.15],
+    "specular": [0.6, 0.6, 0.6],
+    "shininess": 32.0
+  }
+}
