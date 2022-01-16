@@ -130,14 +130,10 @@ namespace AssimpHelper {
 
 // AssetManager
 
-AssetManager* AssetManager::_sThis = nullptr;
-
 AssetManager::AssetManager() {
-  _sThis = this;
 }
 
 AssetManager::~AssetManager() {
-  _sThis = nullptr;
 }
 
 void AssetManager::init() {

@@ -14,8 +14,6 @@ public:
   AssetManager();
   ~AssetManager();
 
-  static AssetManager* Get() { return _sThis; }
-
   void init();
 
   MaterialRef getDefaultMaterial() const { return _defaultMaterial; }
@@ -36,6 +34,4 @@ private:
   Models      _models;
 
   MaterialRef _defaultMaterial;
-
-  static AssetManager* _sThis;
 };
