@@ -63,10 +63,10 @@ namespace JsonHelper {
       ColorRGB specular = JsonHelper::readColorRGB(properties, "specular", ColorRGB(0.3f));;
       float shininess = JsonHelper::readFloat(properties, "shininess", 10.0f);
 
-      material->setParamVec3("mat_color", color);
-      material->setParamFloat("mat_ambient", ambient.r);
-      material->setParamFloat("mat_specular", specular.r);
-      material->setParamFloat("mat_shininess", shininess);
+      material->setParamVec3("material.color", color);
+      material->setParamFloat("material.ambient", ambient.r);
+      material->setParamFloat("material.specular", specular.r);
+      material->setParamFloat("material.shininess", shininess);
     }
   }
 
@@ -75,7 +75,7 @@ namespace JsonHelper {
       auto properties = root["properties"];
 
       ColorRGB color = JsonHelper::readColorRGB(properties, "color", ColorRGB(1.0f));
-      material->setParamVec3("mat_color", color);
+      material->setParamVec3("material.color", color);
     }
   }
 }

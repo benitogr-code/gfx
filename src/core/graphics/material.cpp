@@ -3,8 +3,8 @@
 #include <glad/glad.h>
 
 const char* TEXTURE_SLOT_NAMES[TextureType_Count] = {
-  "texture_diffuse",
-  "texture_specular"
+  "material.texture_diffuse",
+  "material.texture_specular"
 };
 
 Material::Material(ShaderRef shader)
@@ -30,7 +30,7 @@ void Material::apply() {
     }
   }
 
-  _shader->setUniformInt("texture_slots", textureSlots);
+  _shader->setUniformInt("material.texture_slots", textureSlots);
 
   for (auto iter = _params.begin(); iter != _params.end(); ++iter) {
     switch (iter->second.type)
