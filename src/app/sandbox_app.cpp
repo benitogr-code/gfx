@@ -18,7 +18,7 @@ bool SandboxApp::onInit() {
   _box = MeshUtils::CreateCube(2.0f);
   _ground = MeshUtils::CreateGroundPlane(2.0f, 50);
 
-  _cyborg = getAssetManager()->loadModel("cyborg");
+  _cyborg = getAssetManager()->loadModel("models/cyborg.gfx");
 
   _matDefault = getAssetManager()->getDefaultMaterial();
   _matLightSource = getAssetManager()->getMaterial("light_source");

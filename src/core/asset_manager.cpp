@@ -147,9 +147,19 @@ void AssetManager::init() {
     loadShader(SHADERS[i]);
   }
 
-  _defaultMaterial = loadMaterial("default");
-  loadMaterial("cyborg");
-  loadMaterial("light_source");
+  std::string path = FileUtils::getAbsolutePath("materials");
+  for (const auto& file : std::filesystem::directory_iterator(path)) {
+    if (file.is_directory())
+      continue;
+
+    if (file.path().extension().generic_string().compare(".mtl") != 0)
+      continue;
+
+    auto name = FileUtils::removeExtension(file.path().filename().generic_string());
+    loadMaterial(name.c_str());
+  }
+
+  _defaultMaterial = getMaterial("default");
 }
 
 MaterialRef AssetManager::getMaterial(const char* name) const {
@@ -158,14 +168,15 @@ MaterialRef AssetManager::getMaterial(const char* name) const {
   return iter != _materials.end() ? iter->second : _defaultMaterial;
 }
 
-GfxModelRef AssetManager::loadModel(const char* name) {
-  char modelFile[128];
-  snprintf(modelFile, sizeof(modelFile), "models/%s.gfx", name);
+GfxModelRef AssetManager::loadModel(const char* path) {
+  auto iter = _models.find(std::string(path));
+  if (iter != _models.end())
+    return iter->second;
 
-  LOG_INFO("[AssetManager] Loading model {}", name);
+  LOG_INFO("[AssetManager] Loading model {}", path);
 
   Json::Value root;
-  if (!FileUtils::readJsonFile(modelFile, root)) {
+  if (!FileUtils::readJsonFile(path, root)) {
     return nullptr;
   }
 
@@ -192,15 +203,9 @@ GfxModelRef AssetManager::loadModel(const char* name) {
   }
   model->setMaterial(getMaterial(materialName.c_str()));
 
-  _models.insert_or_assign(std::string(name), model);
+  _models.insert_or_assign(std::string(path), model);
 
   return model;
-}
-
-GfxModelRef AssetManager::getModel(const char* name) const {
-  auto iter = _models.find(std::string(name));
-
-  return iter != _models.end() ? iter->second : nullptr;
 }
 
 ShaderRef AssetManager::loadShader(const char* name) {
@@ -233,7 +238,7 @@ MaterialRef AssetManager::loadMaterial(const char* name) {
   char materialFile[128];
   snprintf(materialFile, sizeof(materialFile), "materials/%s.mtl", name);
 
-  LOG_INFO("[AssetManager] Loading material {}", name);
+  LOG_INFO("[AssetManager] Loading material {}", materialFile);
 
   Json::Value root;
   if (!FileUtils::readJsonFile(materialFile, root)) {

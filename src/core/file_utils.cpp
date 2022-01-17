@@ -89,6 +89,15 @@ bool FileUtils::readJsonFile(const char* filePath, Json::Value& root) {
   return true;
 }
 
+std::string FileUtils::removeExtension(const std::string& filename) {
+  char sep = '.';
+
+  size_t pos = filename.find(sep, 0);
+  if (pos == std::string::npos)
+    return "";
+
+  return(filename.substr(0, pos));
+}
 
 std::string FileUtils::getAbsolutePath(const char* filePath) {
   return _assetsFolder + filePath;

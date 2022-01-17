@@ -22,6 +22,7 @@ public:
   static bool readTextFile(const char* filePath, std::vector<char>& data);
   static bool readPngFile(const char* filePath, ImageData& data);
   static bool readJsonFile(const char* filePath, Json::Value& root);
+  static std::string removeExtension(const std::string& filename);
   static std::string getAbsolutePath(const char* filePath);
 
 private:

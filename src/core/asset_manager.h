@@ -19,8 +19,7 @@ public:
   MaterialRef getDefaultMaterial() const { return _defaultMaterial; }
   MaterialRef getMaterial(const char* name) const;
 
-  GfxModelRef loadModel(const char* name);
-  GfxModelRef getModel(const char* name) const;
+  GfxModelRef loadModel(const char* path);
 
 private:
   ShaderRef loadShader(const char* name);

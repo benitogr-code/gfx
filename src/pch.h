@@ -1,6 +1,7 @@
 // Standard library
 #include <algorithm>
 #include <array>
+#include <filesystem>
 #include <functional>
 #include <map>
 #include <memory>
