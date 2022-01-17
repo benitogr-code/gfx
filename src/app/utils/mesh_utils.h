@@ -10,11 +10,11 @@ public:
         MeshCreateParams params;
         params.vertices = {
             { glm::vec3(-s, -s, -s), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2() },
+            { glm::vec3( s,  s, -s), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2() },
             { glm::vec3( s, -s, -s), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2() },
             { glm::vec3( s,  s, -s), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2() },
-            { glm::vec3( s,  s, -s), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2() },
-            { glm::vec3(-s,  s, -s), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2() },
             { glm::vec3(-s, -s, -s), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2() },
+            { glm::vec3(-s,  s, -s), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2() },
 
             { glm::vec3(-s, -s,  s), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec2() },
             { glm::vec3( s, -s,  s), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec2() },
@@ -31,11 +31,11 @@ public:
             { glm::vec3(-s,  s,  s), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec2() },
 
             { glm::vec3( s,  s,  s), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2() },
+            { glm::vec3( s, -s, -s), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2() },
             { glm::vec3( s,  s, -s), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2() },
             { glm::vec3( s, -s, -s), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2() },
-            { glm::vec3( s, -s, -s), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2() },
-            { glm::vec3( s, -s,  s), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2() },
             { glm::vec3( s,  s,  s), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2() },
+            { glm::vec3( s, -s,  s), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec2() },
 
             { glm::vec3(-s, -s, -s), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2() },
             { glm::vec3( s, -s, -s), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2() },
@@ -45,11 +45,11 @@ public:
             { glm::vec3(-s, -s, -s), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec2() },
 
             { glm::vec3(-s,  s, -s), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec2() },
+            { glm::vec3( s,  s,  s), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec2() },
             { glm::vec3( s,  s, -s), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec2() },
             { glm::vec3( s,  s,  s), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec2() },
-            { glm::vec3( s,  s,  s), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec2() },
-            { glm::vec3(-s,  s,  s), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec2() },
             { glm::vec3(-s,  s, -s), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec2() },
+            { glm::vec3(-s,  s,  s), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec2() },
         };
 
         return Mesh::Create(params);
@@ -78,13 +78,13 @@ public:
                 const auto row = cellCount+1;
                 // 1st triangle
                 params.indices.push_back((i*row)+j);
-                params.indices.push_back(((i+1)*row)+j);
                 params.indices.push_back((i*row)+j+1);
+                params.indices.push_back(((i+1)*row)+j);
 
                 // 2nd triangle
                 params.indices.push_back((i*row)+j+1);
-                params.indices.push_back((((i+1)*row)+j));
                 params.indices.push_back(((i+1)*row)+j+1);
+                params.indices.push_back((((i+1)*row)+j));
             }
         }
 

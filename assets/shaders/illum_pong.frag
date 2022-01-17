@@ -21,17 +21,15 @@ uniform Material material;
 out vec4 out_color;
 
 vec3 calculateDirectionalLight(MainLight light, vec3 diffColor, vec3 specColor, vec3 normal, vec3 viewDir, float shininess) {
-  vec3 lightDir = normalize(-light.direction);
-
   // Ambient
   vec3 ambient = light.ambient * diffColor;
 
   // Diffuse
-  float diffuseFactor = max(dot(lightDir, normal), 0.0);
+  float diffuseFactor = max(dot(-light.direction, normal), 0.0);
   vec3 diffuse = light.diffuse * diffuseFactor * diffColor;
 
   // Specular
-  vec3 reflectDir = reflect(-lightDir, normal);
+  vec3 reflectDir = reflect(light.direction, normal);
   float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
   vec3 specular = light.specular * specularFactor * specColor;
 

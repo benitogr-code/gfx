@@ -41,15 +41,23 @@ void Renderer::init() {
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
-  //glEnable(GL_CULL_FACE);
-  //glCullFace(GL_BACK);
-  //glFrontFace(GL_CCW);
+
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
+  glFrontFace(GL_CCW);
 }
 
 
 void Renderer::toggleWireframe() {
   _wireframeEnabled = !_wireframeEnabled;
-  glPolygonMode(GL_FRONT_AND_BACK, _wireframeEnabled ? GL_LINE : GL_FILL);
+  if (_wireframeEnabled) {
+    glDisable(GL_CULL_FACE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  }
+  else {
+    glEnable(GL_CULL_FACE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  }
 }
 
 void Renderer::draw(const RenderItem& item) {
