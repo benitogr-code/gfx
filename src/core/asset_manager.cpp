@@ -64,8 +64,7 @@ namespace JsonHelper {
       float shininess = JsonHelper::readFloat(properties, "shininess", 10.0f);
 
       material->setParamVec3("material.color", color);
-      material->setParamFloat("material.ambient", ambient.r);
-      material->setParamFloat("material.specular", specular.r);
+      material->setParamVec3("material.specular", specular);
       material->setParamFloat("material.shininess", shininess);
     }
   }

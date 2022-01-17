@@ -11,43 +11,49 @@ struct Material {
   sampler2D texture_diffuse;
   sampler2D texture_specular;
 
-  vec3      color;
-  float     ambient;
-  float     specular;
-  float     shininess;
+  vec3     color;
+  vec3     specular;
+  float    shininess;
 };
 
 uniform Material material;
 
-// Directional light
-uniform vec3      light_pos;
-uniform vec3      light_color;
-
 out vec4 out_color;
 
+vec3 calculateDirectionalLight(MainLight light, vec3 diffColor, vec3 specColor, vec3 normal, vec3 viewDir, float shininess) {
+  vec3 lightDir = normalize(-light.direction);
+
+  // Ambient
+  vec3 ambient = light.ambient * diffColor;
+
+  // Diffuse
+  float diffuseFactor = max(dot(lightDir, normal), 0.0);
+  vec3 diffuse = light.diffuse * diffuseFactor * diffColor;
+
+  // Specular
+  vec3 reflectDir = reflect(-lightDir, normal);
+  float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+  vec3 specular = light.specular * specularFactor * specColor;
+
+  return (ambient + diffuse + specular);
+}
+
 void main() {
-    vec3 amb_color = vec3(material.ambient, material.ambient, material.ambient);
-    vec3 diff_color = material.color;
-    vec3 spec_color = vec3(material.specular, material.specular, material.specular);
+  vec3 diffColor = material.color;
+  vec3 specColor = material.specular;
+  float shininess = material.shininess;
 
-    if (material.texture_slots != 0) {
-        diff_color = texture(material.texture_diffuse, vtx_texcoords).rgb;
-        spec_color = texture(material.texture_specular, vtx_texcoords).rgb;
-    }
+  if (material.texture_slots != 0) {
+      diffColor = texture(material.texture_diffuse, vtx_texcoords).rgb;
+      specColor = texture(material.texture_specular, vtx_texcoords).rgb;
+  }
 
-    vec3 normal = normalize(vtx_normal);
-    vec3 light_dir = normalize(light_pos - vtx_fragpos);
+  vec3 normal = normalize(vtx_normal);
+  vec3 viewDir = normalize(camera.pos.xyz - vtx_fragpos);
 
-    vec3 ambient = amb_color * light_color;
+  vec3 result = vec3(0.0, 0.0, 0.0);
 
-    float diffuse_factor = max(dot(normal, light_dir), 0.0);
-    vec3 diffuse = diffuse_factor * diff_color * light_color;
+  result += calculateDirectionalLight(lights.main, diffColor, specColor, normal, viewDir, shininess);
 
-    vec3 view_dir = normalize(camera.pos - vtx_fragpos);
-    vec3 reflect_dir = reflect(-light_dir, normal);
-    float spec_factor = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
-    vec3 specular = spec_factor * spec_color * light_color;
-
-    vec3 result = ambient + diffuse + specular;
-    out_color = vec4(result, 1.0);
+  out_color = vec4(result, 1.0);
 }

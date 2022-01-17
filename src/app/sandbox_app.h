@@ -76,11 +76,11 @@ private:
 
   Entity    _ground;
   Entity    _box;
-  Entity    _light;
   Entity    _cyborg;
 
-  glm::vec3      _lightPos;
-  glm::vec3      _lightColor;
+  ColorRGB _lightColor;
+  float    _lightAmbientFactor;
+  float    _lightSpecularFactor;
 
-  ColorRGB       _bgColor;
+  ColorRGB _bgColor;
 };

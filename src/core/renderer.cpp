@@ -6,6 +6,7 @@
 #include <glad/glad.h>
 
 #define UBO_CAMERA_IDX 0
+#define UBO_LIGHTS_IDX 1
 
 Renderer::Renderer()
   : _clearColor(0.0f)
@@ -18,11 +19,25 @@ void Renderer::init() {
   _uboCamera = UBO::Create(
       UBO_CAMERA_IDX,
       BufferLayout({
-          { BufferItemType::Float3, "view_pos" },
-          { BufferItemType::Mat4,   "mtx_view" },
-          { BufferItemType::Mat4,   "mtx_viewProj"}
+          { BufferItemType::Float3, "position" },
+          { BufferItemType::Mat4,   "view" },
+          { BufferItemType::Mat4,   "viewProj"}
       })
   );
+  _uboLights = UBO::Create(
+    UBO_LIGHTS_IDX,
+      BufferLayout({
+          { BufferItemType::Float3, "direction" },
+          { BufferItemType::Float3, "ambient" },
+          { BufferItemType::Float3, "diffuse"},
+          { BufferItemType::Float3, "specular"},
+      })
+  );
+
+  _mainLight.direction = glm::normalize(glm::vec3(-0.2f, -0.3f, -1.0f));
+  _mainLight.ambient = ColorRGB(0.2f);
+  _mainLight.diffuse = ColorRGB(1.0f);
+  _mainLight.specular = ColorRGB(0.85f);
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -60,10 +75,18 @@ void Renderer::endFrame() {
   _uboCamera->writeMat4(_viewCamera.getViewProjection());
   _uboCamera->writeEnd();
 
+  _uboLights->writeBegin();
+  _uboLights->writeVec3(_mainLight.direction);
+  _uboLights->writeVec3(_mainLight.ambient);
+  _uboLights->writeVec3(_mainLight.diffuse);
+  _uboLights->writeVec3(_mainLight.specular);
+  _uboLights->writeEnd();
+
   for (auto item : _renderList) {
     auto shader = item.material->getShader();
     shader->use();
     shader->setUniformBlockBind("Camera", UBO_CAMERA_IDX);
+    shader->setUniformBlockBind("Lights", UBO_LIGHTS_IDX);
     shader->setUniformMatrix4("mtx_model", item.modelTM);
     item.material->apply();
     item.mesh->draw();

@@ -6,22 +6,17 @@
 SandboxApp::SandboxApp()
   : _bgColor(0.0f, 0.0f, 0.0f)
   , _inputFlags(0)
-  , _mousePosition(0.0f, 0.0f)
-  , _lightPos(0.0f, 4.0f, 2.0f)
-  , _lightColor(1.0f, 1.0f, 1.0f) {
+  , _mousePosition(0.0f, 0.0f) {
 
 }
 
 bool SandboxApp::onInit() {
   auto matDefault = getAssetManager()->getDefaultMaterial();
-  auto matLightSource = getAssetManager()->getMaterial("light_source");
+  auto matBox = getAssetManager()->getMaterial("box");
 
-  _light = Entity(
-    GfxModel::Create(MeshUtils::CreateCube(0.1f), matLightSource)
-  );
   _box = Entity(
-    GfxModel::Create(MeshUtils::CreateCube(2.0f), matDefault),
-    glm::vec3(3.0f, 1.0f, 0.0f)
+    GfxModel::Create(MeshUtils::CreateCube(2.0f), matBox),
+    glm::vec3(3.0f, 1.5f, 0.5f)
   );
   _ground = Entity(
     GfxModel::Create(MeshUtils::CreateGroundPlane(2.0f, 50), matDefault)
@@ -34,6 +29,10 @@ bool SandboxApp::onInit() {
   _camera.position = glm::vec3(-1.2f, 3.44f, 5.71f);
   _camera.pitch = -18.8f;
   _camera.yaw = -6.6f;
+
+  _lightColor = ColorRGB(1.0f);
+  _lightAmbientFactor = 0.2f;
+  _lightSpecularFactor = 0.85f;
 
   return true;
 }
@@ -108,12 +107,12 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   // Render scene
   renderer.setClearColor(_bgColor);
 
-  _light.worldTM = glm::translate(glm::mat4(1.0f), _lightPos);
-  Entity::Render(_light, renderer);
-
-  // Hack
-  getAssetManager()->getDefaultMaterial()->setParamVec3("light_pos", _lightPos);
-  getAssetManager()->getDefaultMaterial()->setParamVec3("light_color", _lightColor);
+  DirectionalLight light;
+  light.direction = glm::normalize(glm::vec3(-0.2f, -0.3f, -1.0f));
+  light.diffuse = _lightColor;
+  light.ambient = _lightAmbientFactor * _lightColor;
+  light.specular = _lightSpecularFactor * _lightColor;
+  renderer.setMainLight(light);
 
   Entity::Render(_cyborg, renderer);
   Entity::Render(_box, renderer);
@@ -122,15 +121,18 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
 
 void SandboxApp::onGUI() {
   // Settings ///
+  static float ambient = 0.2f;
+  static float specular = 0.8f;
 
   ImGui::SetNextWindowPos(ImVec2(5.0f, 5.0f));
   //ImGui::SetNextWindowCollapsed(true, ImGuiCond_Once);
   if (ImGui::Begin("Settings", nullptr)) {
     ImGui::BeginGroup();
-      ImGui::Text("Renderer");
+      ImGui::Text("Scene");
+      ImGui::ColorEdit3("Light diffuse", glm::value_ptr(_lightColor));
+      ImGui::SliderFloat("Ambient factor", &_lightAmbientFactor, 0.05f, 0.4f);
+      ImGui::SliderFloat("Specular factor", &_lightSpecularFactor, 0.3f, 1.0f);
       ImGui::ColorEdit3("Background color", glm::value_ptr(_bgColor));
-      ImGui::SliderFloat("Light offset", &_lightPos.x, -4.0f, 4.0f);
-      ImGui::ColorEdit3("Light color", glm::value_ptr(_lightColor));
       if (ImGui::Button("Toggle wireframe")) {
         getRenderer()->toggleWireframe();
       }
