@@ -11,3 +11,11 @@
 
   return model;
 }
+
+/*static*/ GfxModelRef GfxModel::Create(MeshRef mesh, MaterialRef material) {
+  GfxModelRef model(new GfxModel());
+  model->addMesh(mesh);
+  model->setMaterial(material);
+
+  return model;
+}

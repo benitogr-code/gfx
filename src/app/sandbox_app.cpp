@@ -13,15 +13,23 @@ SandboxApp::SandboxApp()
 }
 
 bool SandboxApp::onInit() {
-  _light = MeshUtils::CreateCube(0.1f);
+  auto matDefault = getAssetManager()->getDefaultMaterial();
+  auto matLightSource = getAssetManager()->getMaterial("light_source");
 
-  _box = MeshUtils::CreateCube(2.0f);
-  _ground = MeshUtils::CreateGroundPlane(2.0f, 50);
-
-  _cyborg = getAssetManager()->loadModel("models/cyborg.gfx");
-
-  _matDefault = getAssetManager()->getDefaultMaterial();
-  _matLightSource = getAssetManager()->getMaterial("light_source");
+  _light = Entity(
+    GfxModel::Create(MeshUtils::CreateCube(0.1f), matLightSource)
+  );
+  _box = Entity(
+    GfxModel::Create(MeshUtils::CreateCube(2.0f), matDefault),
+    glm::vec3(3.0f, 1.0f, 0.0f)
+  );
+  _ground = Entity(
+    GfxModel::Create(MeshUtils::CreateGroundPlane(2.0f, 50), matDefault)
+  );
+  _cyborg = Entity(
+    getAssetManager()->loadModel("models/cyborg.gfx"),
+    glm::vec3(-3.0f, 0.0f, 0.0f)
+  );
 
   _camera.position = glm::vec3(-1.2f, 3.44f, 5.71f);
   _camera.pitch = -18.8f;
@@ -92,46 +100,24 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
 
   _camera.updateAxis();
 
-  auto& viewCamera = getRenderer()->getViewCamera();
+  auto& renderer = *getRenderer();
+  auto& viewCamera = renderer.getViewCamera();
   viewCamera.setWorldLocation(_camera.position, _camera.getQuat());
   viewCamera.setFov(_camera.fov);
 
   // Render scene
-  getRenderer()->setClearColor(_bgColor);
+  renderer.setClearColor(_bgColor);
+
+  _light.worldTM = glm::translate(glm::mat4(1.0f), _lightPos);
+  Entity::Render(_light, renderer);
 
   // Hack
-  _matLightSource->setParamVec3("mat_color", _lightColor);
+  getAssetManager()->getDefaultMaterial()->setParamVec3("light_pos", _lightPos);
+  getAssetManager()->getDefaultMaterial()->setParamVec3("light_color", _lightColor);
 
-  RenderItem light;
-  light.mesh = _light;
-  light.material = _matLightSource;
-  light.modelTM = glm::translate(glm::mat4(1.0f), _lightPos);
-  getRenderer()->draw(light);
-
-  // Hack
-  _matDefault->setParamVec3("light_pos", _lightPos);
-  _matDefault->setParamVec3("light_color", _lightColor);
-
-  for (uint32_t idx = 0; idx < _cyborg->getMeshCount(); ++idx) {
-    RenderItem item;
-    item.mesh = _cyborg->getMesh(idx);
-    item.material = _cyborg->getMaterial();
-    item.modelTM = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f));
-
-    getRenderer()->draw(item);
-  }
-
-  RenderItem box;
-  box.mesh = _box;
-  box.material = _matDefault;
-  box.modelTM = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.0f, 0.0f));
-  getRenderer()->draw(box);
-
-  RenderItem ground;
-  ground.mesh = _ground;
-  ground.material = _matDefault;
-  ground.modelTM = glm::mat4(1.0f);
-  getRenderer()->draw(ground);
+  Entity::Render(_cyborg, renderer);
+  Entity::Render(_box, renderer);
+  Entity::Render(_ground, renderer);
 }
 
 void SandboxApp::onGUI() {

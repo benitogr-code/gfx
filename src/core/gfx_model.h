@@ -21,6 +21,7 @@ public:
   MaterialRef getMaterial() const { return _material; }
 
   static GfxModelRef Create();
+  static GfxModelRef Create(MeshRef mesh, MaterialRef material);
 
 private:
   GfxModel() = default;

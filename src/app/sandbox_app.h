@@ -1,9 +1,7 @@
 #pragma once
 
 #include "core/application.h"
-#include "core/graphics/material.h"
-#include "core/graphics/mesh.h"
-#include "core/gfx_model.h"
+#include "utils/entity.h"
 
 class SandboxApp: public Application {
 private:
@@ -76,13 +74,10 @@ private:
   uint32_t       _inputFlags;
   glm::ivec2     _mousePosition;
 
-  MaterialRef _matDefault;
-  MaterialRef _matLightSource;
-
-  MeshRef        _ground;
-  MeshRef        _box;
-  MeshRef        _light;
-  GfxModelRef    _cyborg;
+  Entity    _ground;
+  Entity    _box;
+  Entity    _light;
+  Entity    _cyborg;
 
   glm::vec3      _lightPos;
   glm::vec3      _lightColor;
