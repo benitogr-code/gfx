@@ -1,8 +1,8 @@
 {
   "shader": "illum_pong",
   "texture_maps": {
-    "diffuse": "",
-    "specular": ""
+    "diffuse": "textures/crate_diffuse.png",
+    "specular": "textures/crate_specular.png"
   },
   "properties": {
     "color": [0.5, 0.0, 0.0],

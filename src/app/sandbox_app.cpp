@@ -12,7 +12,7 @@ SandboxApp::SandboxApp()
 
 bool SandboxApp::onInit() {
   auto matDefault = getAssetManager()->getDefaultMaterial();
-  auto matBox = getAssetManager()->getMaterial("box");
+  auto matBox = getAssetManager()->getMaterial("crate");
 
   _box = Entity(
     GfxModel::Create(MeshUtils::CreateCube(2.0f), matBox),
