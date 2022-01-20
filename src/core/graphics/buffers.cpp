@@ -243,14 +243,35 @@ UBO::~UBO() {
   glDeleteBuffers(1, &_id);
 }
 
-/*static*/ UBORef UBO::Create(uint32_t bindIndex, const BufferLayout& layout) {
+/*static*/ UBORef UBO::Create(uint32_t bindIndex, const UBO::Layout& layout) {
   uint32_t size = 0;
 
-  for (uint32_t i = 0; i < layout.itemCount(); ++i) {
-    const auto& item = layout.itemAt(i);
+  for (uint32_t count = 0; count < layout.repeat(); ++count) {
+    for (uint32_t i = 0; i < layout.itemCount(); ++i) {
+      const auto& item = layout.itemAt(i);
 
-    size = Align(size, item.getStd140Alignment());
-    size += item.size;
+      size = Align(size, item.getStd140Alignment());
+      size += item.size;
+    }
+  }
+
+  UBORef buffer(new UBO(size, bindIndex));
+
+  return buffer;
+}
+
+/*static*/ UBORef UBO::Create(uint32_t bindIndex, const std::vector<UBO::Layout>& layouts) {
+  uint32_t size = 0;
+
+  for (auto& layout : layouts) {
+    for (uint32_t count = 0; count < layout.repeat(); ++count) {
+      for (uint32_t i = 0; i < layout.itemCount(); ++i) {
+        const auto& item = layout.itemAt(i);
+
+        size = Align(size, item.getStd140Alignment());
+        size += item.size;
+      }
+    }
   }
 
   UBORef buffer(new UBO(size, bindIndex));

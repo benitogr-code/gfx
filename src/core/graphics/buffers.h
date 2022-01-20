@@ -54,7 +54,7 @@ public:
   const BufferItem& itemAt(uint32_t idx) const { return _items[idx]; }
   uint32_t stride() const { return _stride; }
 
-private:
+protected:
   std::vector<BufferItem> _items;
   uint32_t _stride;
 };
@@ -152,6 +152,26 @@ typedef std::shared_ptr<UBO> UBORef;
 
 class UBO {
 public:
+  class Layout : public BufferLayout {
+  public:
+    Layout() {
+      _repeat = 1;
+    }
+
+    Layout(std::initializer_list<BufferItem> items): Layout(1, items) {
+    }
+
+    Layout(uint32_t repeat, std::initializer_list<BufferItem> items): BufferLayout(items) {
+      _repeat = repeat;
+    }
+
+    uint32_t repeat() const { return _repeat; }
+
+  protected:
+    uint32_t _repeat;
+  };
+
+public:
   ~UBO();
 
   void writeBegin();
@@ -163,7 +183,8 @@ public:
   void writeVec4(const glm::vec4& value);
   void writeMat4(const glm::mat4& value);
 
-  static UBORef Create(uint32_t bindIndex, const BufferLayout& layout);
+  static UBORef Create(uint32_t bindIndex, const Layout& layout);
+  static UBORef Create(uint32_t bindIndex, const std::vector<Layout>& layouts);
 
 private:
   UBO(uint32_t size, uint32_t bindIndex);

@@ -13,11 +13,6 @@ Entity::Entity(GfxModelRef model, const glm::vec3 position) {
 
 void Entity::Render(const Entity& entity, Renderer& renderer) {
   for (uint32_t idx = 0; idx < entity.model->getMeshCount(); ++idx) {
-    RenderItem item;
-    item.mesh = entity.model->getMesh(idx);
-    item.material = entity.model->getMaterial();
-    item.modelTM = entity.worldTM;
-
-    renderer.draw(item);
+    renderer.drawMesh(entity.model->getMesh(idx), entity.model->getMaterial(), entity.worldTM);
   }
 }

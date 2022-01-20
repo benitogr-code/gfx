@@ -114,6 +114,16 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   light.specular = _lightSpecularFactor * _lightColor;
   renderer.setMainLight(light);
 
+  PointLight pointLight;
+  pointLight.position = glm::vec3(1.5f, 3.75f, 0.75f);
+  pointLight.ambient = ColorRGB(0.02f, 0.08f, 0.06f);
+  pointLight.diffuse = ColorRGB(0.20f, 0.80f, 0.63f);
+  pointLight.specular = ColorRGB(0.24f, 0.96f, 0.75f);
+  pointLight.attConstant = 1.0f;
+  pointLight.attLinear = 0.14f;
+  pointLight.attQuadratic = 0.07f;
+  renderer.drawLight(pointLight);
+
   Entity::Render(_cyborg, renderer);
   Entity::Render(_box, renderer);
   Entity::Render(_ground, renderer);

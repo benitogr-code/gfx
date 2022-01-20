@@ -18,20 +18,36 @@ Renderer::Renderer()
 void Renderer::init() {
   _uboCamera = UBO::Create(
       UBO_CAMERA_IDX,
-      BufferLayout({
+      UBO::Layout({
           { BufferItemType::Float3, "position" },
           { BufferItemType::Mat4,   "view" },
           { BufferItemType::Mat4,   "viewProj"}
       })
   );
+
   _uboLights = UBO::Create(
     UBO_LIGHTS_IDX,
-      BufferLayout({
+      {
+      UBO::Layout({
           { BufferItemType::Float3, "direction" },
           { BufferItemType::Float3, "ambient" },
-          { BufferItemType::Float3, "diffuse"},
-          { BufferItemType::Float3, "specular"},
+          { BufferItemType::Float3, "diffuse" },
+          { BufferItemType::Float3, "specular" },
+      }),
+      UBO::Layout({
+        { BufferItemType::Int, "pointLightCount"}
+      }),
+      UBO::Layout(MaxPointLights, {
+        { BufferItemType::Float3, "position" },
+        { BufferItemType::Float3, "ambient" },
+        { BufferItemType::Float3, "diffuse" },
+        { BufferItemType::Float3, "specular" },
+        { BufferItemType::Float,  "attConstant" },
+        { BufferItemType::Float,  "attLinear" },
+        { BufferItemType::Float,  "attQuadratic" },
+        { BufferItemType::Float,  "PAD" }
       })
+      }
   );
 
   _mainLight.direction = glm::normalize(glm::vec3(-0.2f, -0.3f, -1.0f));
@@ -60,7 +76,18 @@ void Renderer::toggleWireframe() {
   }
 }
 
-void Renderer::draw(const RenderItem& item) {
+void Renderer::drawLight(const PointLight& light) {
+  if (_pointLights.size() < MaxPointLights) {
+    _pointLights.push_back(light);
+  }
+}
+
+void Renderer::drawMesh(MeshRef mesh, MaterialRef material, const glm::mat4& modelMtx) {
+  RenderItem item;
+  item.mesh = mesh;
+  item.material = material;
+  item.modelTM = modelMtx;
+
   _renderList.push_back(item);
 }
 
@@ -73,6 +100,7 @@ void Renderer::beginFrame() {
   ImGui::NewFrame();
 
   _renderList.clear();
+  _pointLights.clear();
 }
 
 void Renderer::endFrame() {
@@ -88,8 +116,21 @@ void Renderer::endFrame() {
   _uboLights->writeVec3(_mainLight.ambient);
   _uboLights->writeVec3(_mainLight.diffuse);
   _uboLights->writeVec3(_mainLight.specular);
+
+  for (auto& light : _pointLights) {
+    _uboLights->writeVec3(light.position);
+    _uboLights->writeVec3(light.ambient);
+    _uboLights->writeVec3(light.diffuse);
+    _uboLights->writeVec3(light.specular);
+    _uboLights->writeFloat(light.attConstant);
+    _uboLights->writeFloat(light.attLinear);
+    _uboLights->writeFloat(light.attQuadratic);
+    _uboLights->writeFloat(0.0f);
+  }
+  _uboLights->writeInt((int)_pointLights.size());
   _uboLights->writeEnd();
 
+  // Go through render list
   for (auto item : _renderList) {
     auto shader = item.material->getShader();
     shader->use();

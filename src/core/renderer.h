@@ -14,6 +14,11 @@ struct RenderItem {
 class Renderer {
 private:
   typedef std::vector<RenderItem> RenderList;
+  typedef std::vector<PointLight> PointLights;
+
+  enum {
+    MaxPointLights = 8,
+  };
 
 public:
   Renderer();
@@ -27,7 +32,8 @@ public:
   void setMainLight(const DirectionalLight& light) { _mainLight = light; }
   void toggleWireframe();
 
-  void draw(const RenderItem& item);
+  void drawLight(const PointLight& light);
+  void drawMesh(MeshRef mesh, MaterialRef material, const glm::mat4& modelMtx);
 
   void beginFrame();
   void endFrame();
@@ -40,6 +46,7 @@ private:
   RenderList _renderList;
 
   DirectionalLight _mainLight;
+  PointLights      _pointLights;
   ColorRGB _clearColor;
   bool     _wireframeEnabled;
 };
