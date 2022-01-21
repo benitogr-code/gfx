@@ -13,7 +13,6 @@ struct PointLight {
   float attConstant;
   float attLinear;
   float attQuadratic;
-  float PAD;
 };
 
 #define MAX_POINT_LIGHTS 8
@@ -26,6 +25,6 @@ layout(std140) uniform Camera {
 
 layout(std140) uniform Lights {
   MainLight main;
-  PointLight points[MAX_POINT_LIGHTS];
   int  numPointLights;
+  PointLight points[MAX_POINT_LIGHTS];
 } lights;

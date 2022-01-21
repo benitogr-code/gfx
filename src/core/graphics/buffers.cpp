@@ -225,15 +225,16 @@ void VAO::setIndexBuffer(IBORef buffer) {
 }
 
 // UBO
-UBO::UBO(uint32_t size, uint32_t bindIndex) {
-  _size = size;
+UBO::UBO(uint32_t bindIndex, std::vector<UBO::Item> items) {
+  _block = UBO::Item(UBO::newStruct(items));
+  _size = _block.getSize();
   _bindIndex = bindIndex;
-  _writeBuffer.resize(size);
-  _writePos = 0;
+  _stackDepth = -1;
+  _writeBuffer.resize(_size);
 
   glGenBuffers(1, &_id);
   glBindBuffer(GL_UNIFORM_BUFFER, _id);
-  glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
+  glBufferData(GL_UNIFORM_BUFFER, _size, NULL, GL_DYNAMIC_DRAW);
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
   glBindBufferBase(GL_UNIFORM_BUFFER, bindIndex, _id);
@@ -243,104 +244,189 @@ UBO::~UBO() {
   glDeleteBuffers(1, &_id);
 }
 
-/*static*/ UBORef UBO::Create(uint32_t bindIndex, const UBO::Layout& layout) {
-  uint32_t size = 0;
-
-  for (uint32_t count = 0; count < layout.repeat(); ++count) {
-    for (uint32_t i = 0; i < layout.itemCount(); ++i) {
-      const auto& item = layout.itemAt(i);
-
-      size = Align(size, item.getStd140Alignment());
-      size += item.size;
-    }
-  }
-
-  UBORef buffer(new UBO(size, bindIndex));
-
-  return buffer;
-}
-
-/*static*/ UBORef UBO::Create(uint32_t bindIndex, const std::vector<UBO::Layout>& layouts) {
-  uint32_t size = 0;
-
-  for (auto& layout : layouts) {
-    for (uint32_t count = 0; count < layout.repeat(); ++count) {
-      for (uint32_t i = 0; i < layout.itemCount(); ++i) {
-        const auto& item = layout.itemAt(i);
-
-        size = Align(size, item.getStd140Alignment());
-        size += item.size;
-      }
-    }
-  }
-
-  UBORef buffer(new UBO(size, bindIndex));
+UBORef UBO::Create(uint32_t bindIndex, const std::vector<UBO::Item>& items) {
+  UBORef buffer(new UBO(bindIndex, items));
 
   return buffer;
 }
 
 void UBO::writeBegin() {
+  _stack.clear();
+  _stack.push_back({0, &_block});
+  _stackDepth = 0;
+  _writePos = _writePoppedPos = 0;
   _writeBuffer.clear();
-  _writeBuffer.resize(_size);
-  _writePos = 0;
 }
 
 void UBO::writeEnd() {
   glBindBuffer(GL_UNIFORM_BUFFER, _id);
-  glBufferSubData(GL_UNIFORM_BUFFER, 0, _writeBuffer.size(), _writeBuffer.data());
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, std::min(_writePos, _size), _writeBuffer.data());
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void UBO::advanceCursor(uint32_t n) {
+  for (int i = 0; i < n; ++i) {
+    auto item = nextItem();
+    if (item != nullptr) {
+      _writePos = roundUpPow2(_writePos, item->alignPow2());
+      if (_writePoppedPos) {
+        _writePos = _writePoppedPos;
+      }
+      else {
+        _writePos += item->getSize();
+      }
+    }
+    else {
+      LOG_ERROR("[UBO] Advance cursor error, all items traversed");
+    }
+  }
+}
+
+void UBO::advanceArray(uint32_t n) {
+  if (_stackDepth < 0) return;
+
+  auto item = _stack[_stackDepth].second;
+
+  if (item->type == ItemType::Struct) {
+    item = &item->list[_stack[_stackDepth].first];
+    uint32_t  depthAdd = 0;
+    IndexStack stackAdd;
+
+    while (item->type == ItemType::Struct) {
+      depthAdd++;
+      stackAdd.push_back({0, item});
+      item = &item->list[0];
+    }
+
+    if (item->type != ItemType::Array) {
+      return;
+    }
+
+    // Found next array
+    _stackDepth += depthAdd + 1;
+    _stack.insert(_stack.end(), stackAdd.begin(), stackAdd.end());
+    _stack.push_back({0, item});
+  }
+
+  uint32_t finalIdx = _stack[_stackDepth].first + n;
+  uint32_t advanceCount = n;
+  if (finalIdx > _stack[_stackDepth].second->length) {
+    advanceCount = _stack[_stackDepth].second->length - _stack[_stackDepth].first;
+  }
+
+  _writePos += advanceCount * roundUpPow2(item->list[0].getSize(), item->alignPow2());
+  _writePoppedPos = _writePos;
+  if (pop()) {
+    _writePos = _writePoppedPos;
+  }
+
+  //LOG_INFO("[UBO]{} advanced array {} elements, new position {}", _bindIndex, advanceCount, _writePos);
 }
 
 void UBO::writeInt(int value) {
   const uint32_t size = sizeof(int);
-  const uint32_t alignment = 4;
 
-  write(&value, size, alignment);
+  write(&value, size);
 }
 
 void UBO::writeFloat(float value) {
   const uint32_t size = sizeof(float);
-  const uint32_t alignment = 4;
 
-  write(&value, size, alignment);
+  write(&value, size);
 }
 
 void UBO::writeVec2(const glm::vec2& value) {
   const uint32_t size = sizeof(float)*2;
-  const uint32_t alignment = 8;
 
-  write(&value, size, alignment);
+  write(&value, size);
 }
 
 void UBO::writeVec3(const glm::vec3& value) {
   const uint32_t size = sizeof(float)*3;
-  const uint32_t alignment = 16;
 
-  write(glm::value_ptr(value), size, alignment);
+  write(glm::value_ptr(value), size);
 }
 
 void UBO::writeVec4(const glm::vec4& value) {
   const uint32_t size = sizeof(float)*4;
-  const uint32_t alignment = 16;
 
-  write(glm::value_ptr(value), size, alignment);
+  write(glm::value_ptr(value), size);
 }
 
 void UBO::writeMat4(const glm::mat4& value) {
   const uint32_t size = sizeof(float)*16;
-  const uint32_t alignment = 16;
 
-  write(glm::value_ptr(value), size, alignment);
+  for (int i = 0; i < 4; ++i) {
+    writeVec4(value[i]);
+  }
 }
 
-void UBO::write(const void* data, uint32_t size, uint32_t alignment) {
-  _writePos = Align(_writePos, alignment);
+void UBO::write(const void* data, uint32_t size) {
+    auto item = nextItem();
 
-  if (_writePos + size <= _size) {
-    memcpy(_writeBuffer.data() + _writePos, data, size);
-    _writePos += size;
+    if (item != nullptr) {
+      _writePos = roundUpPow2(_writePos, item->alignPow2());
+
+      if (_writePos + size <= _size) {
+        //LOG_INFO("[UBO]{} write {} at position {} size {}/{}", _bindIndex, item->toStr(), _writePos, size, item->getSize());
+        memcpy(_writeBuffer.data() + _writePos, data, size);
+        if (_writePoppedPos) {
+          _writePos = _writePoppedPos;
+        }
+        else {
+          _writePos += item->getSize();
+        }
+      }
+      else {
+        LOG_ERROR("[UBO] Write error, buffer is full");
+      }
+    }
+    else {
+      LOG_ERROR("[UBO] Write error, all items traversed");
+    }
+}
+
+UBO::Item* UBO::nextItem() {
+  if (_stackDepth < 0) return nullptr;
+
+  auto currentItem = _stack[_stackDepth].second;
+
+  if (currentItem->type == ItemType::Struct) {
+    currentItem = &currentItem->list[_stack[_stackDepth].first];
   }
-  else {
-    LOG_ERROR("[UBO] Write error, buffer is full");
+  else { //array
+    currentItem = &currentItem->list[0];
   }
+
+  while (currentItem->type == ItemType::Struct || currentItem->type == ItemType::Array) {
+    _stackDepth++;
+    _stack.push_back({0, currentItem});
+    currentItem = &currentItem->list[0];
+  }
+
+  _writePoppedPos = roundUpPow2(_writePos, currentItem->alignPow2()) + currentItem->getSize();
+  if (!pop()) {
+    _writePoppedPos = 0;
+  }
+
+  return currentItem;
+}
+
+bool UBO::pop() {
+  bool pop = false;
+
+  for (int i = _stackDepth; i >= 0; i--) {
+    int nextIdx = ++_stack[i].first;
+    if (nextIdx >= _stack[i].second->length) {
+      _writePoppedPos = roundUpPow2(_writePoppedPos, _stack[i].second->alignPow2());
+      _stack.erase(_stack.begin() + i);
+      _stackDepth--;
+      pop = true;
+    }
+    else {
+      break;
+    }
+  }
+
+  return pop;
 }

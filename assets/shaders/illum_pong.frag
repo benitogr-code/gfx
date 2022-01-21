@@ -80,7 +80,7 @@ void main() {
 
   result += calculateDirectionalLight(lights.main, diffColor, specColor, normal, viewDir, shininess);
 
-  for (int i = 0; i < 1; ++i) {
+  for (int i = 0; i < lights.numPointLights; ++i) {
     result += calculatePointLight(lights.points[i], diffColor, specColor, vtx_fragpos, normal, viewDir, shininess);
   }
 

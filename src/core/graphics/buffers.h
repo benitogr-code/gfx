@@ -150,32 +150,160 @@ private:
 class UBO;
 typedef std::shared_ptr<UBO> UBORef;
 
+#define UBO_WORDSIZE 4
+
 class UBO {
 public:
-  class Layout : public BufferLayout {
-  public:
-    Layout() {
-      _repeat = 1;
-    }
 
-    Layout(std::initializer_list<BufferItem> items): Layout(1, items) {
-    }
-
-    Layout(uint32_t repeat, std::initializer_list<BufferItem> items): BufferLayout(items) {
-      _repeat = repeat;
-    }
-
-    uint32_t repeat() const { return _repeat; }
-
-  protected:
-    uint32_t _repeat;
+  enum class ItemType : uint8_t {
+    Scalar = 0,
+    Vec2,
+    Vec3,
+    Vec4,
+    Array,
+    Struct,
+    Invalid
   };
+
+  struct Item {
+    Item(ItemType type = ItemType::Scalar)
+      : type(type)
+      , length(0) {
+
+      switch(type) {
+        case ItemType::Scalar:  baseAlign = UBO_WORDSIZE; break;
+        case ItemType::Vec2:    baseAlign = 2 * UBO_WORDSIZE; break;
+        case ItemType::Vec3:    baseAlign = 4 * UBO_WORDSIZE; break;
+        case ItemType::Vec4:    baseAlign = 4 * UBO_WORDSIZE; break;
+        case ItemType::Array:
+        case ItemType::Struct:
+        default:
+          baseAlign = 0;
+      }
+    }
+
+    uint32_t alignPow2() const {
+      switch(baseAlign) {
+        case 2: return 1;
+        case 4: return 2;
+        case 8: return 3;
+        case 16: return 4;
+        default: return 0;
+      }
+    }
+
+    uint32_t getSize() const {
+      switch(type) {
+        case ItemType::Scalar: return UBO_WORDSIZE;
+        case ItemType::Vec2:    return 2 * UBO_WORDSIZE;
+        case ItemType::Vec3:    return 3 * UBO_WORDSIZE;
+        case ItemType::Vec4:    return 4 * UBO_WORDSIZE;
+        case ItemType::Array:
+          return length * roundUpPow2(list[0].getSize(), alignPow2());
+        case ItemType::Struct: {
+          uint32_t offset = 0;
+          for (auto& item : list) {
+            offset = roundUpPow2(offset, item.alignPow2());
+            offset += item.getSize();
+          }
+          return offset;
+        }
+        default:
+          return 0;
+      }
+    }
+
+    std::string toStr() const {
+      switch(type) {
+        case ItemType::Scalar:  return "scalar";
+        case ItemType::Vec2:    return "vec2";
+        case ItemType::Vec3:    return "vec3";
+        case ItemType::Vec4:    return "vec4";
+        case ItemType::Array:   return std::string("array<").append(list[0].toStr()).append(">");
+        case ItemType::Struct:  return "struct";
+        case ItemType::Invalid: return "???";
+      }
+    }
+
+    ItemType type;
+    uint32_t length;          // lenght of array / members in struct
+    uint32_t baseAlign;
+    std::vector<Item> list;
+  };
+
+  static uint32_t roundUpPow2(uint32_t value, uint8_t n) {
+    uint32_t pow2n   = 1 << n;
+    uint32_t divisor = pow2n - 1;
+    uint32_t reminder = value & divisor;
+
+    return reminder != 0 ? (value + pow2n - reminder) : value;
+  }
+
+  static Item newScalar() {
+    return Item(ItemType::Scalar);
+  }
+
+  static Item newVec(uint8_t dimensions) {
+    switch(dimensions) {
+      case 2: return Item(ItemType::Vec2);
+      case 3: return Item(ItemType::Vec3);
+      case 4:
+      default:
+        return Item(ItemType::Vec4);
+    }
+  }
+
+  static Item newArray(uint32_t length, Item arrayItem) {
+    Item item(ItemType::Array);
+    item.length = length;
+    item.list = { arrayItem };
+    item.list.shrink_to_fit();
+
+    if (arrayItem.type == ItemType::Struct) {
+      item.baseAlign = arrayItem.baseAlign;
+    }
+    else {
+      item.baseAlign = roundUpPow2(arrayItem.baseAlign, 4);
+    }
+
+    return item;
+  }
+
+  static Item newStruct(std::vector<Item> items) {
+    Item item(ItemType::Struct);
+    item.list.insert(item.list.end(), items.begin(), items.end());
+    item.list.shrink_to_fit();
+    item.length = item.list.size();
+
+    if (items.size() > 0) {
+      for (Item& i : items) {
+        item.baseAlign = std::max(item.baseAlign, i.baseAlign);
+      }
+
+      item.baseAlign = roundUpPow2(item.baseAlign, 4);
+    }
+
+    return item;
+  }
+
+  static Item newColumnMatrix(uint8_t columns, uint8_t rows) {
+    return newArray(columns, newVec(rows));
+  }
+
+  static Item newColumnMatrixArray(uint32_t count, uint8_t columns, uint8_t rows) {
+    return newArray(count * columns, newVec(rows));
+  }
 
 public:
   ~UBO();
 
+  static UBORef Create(uint32_t bindIndex, const std::vector<UBO::Item>& items);
+
   void writeBegin();
   void writeEnd();
+  void advanceCursor(uint32_t n);
+  void advanceArray(uint32_t n);
+
   void writeInt(int value);
   void writeFloat(float value);
   void writeVec2(const glm::vec2& value);
@@ -183,20 +311,26 @@ public:
   void writeVec4(const glm::vec4& value);
   void writeMat4(const glm::mat4& value);
 
-  static UBORef Create(uint32_t bindIndex, const Layout& layout);
-  static UBORef Create(uint32_t bindIndex, const std::vector<Layout>& layouts);
+private:
+  void write(const void* data, uint32_t size);
+  UBO::Item* nextItem();
+  bool pop();
 
 private:
-  UBO(uint32_t size, uint32_t bindIndex);
-  UBO(const UBO&) = delete;
+  typedef std::vector<std::pair<uint32_t, Item*>> IndexStack;
 
-  void write(const void* data, uint32_t size, uint32_t alignment);
+  UBO() = delete;
+  UBO(uint32_t bindIndex, std::vector<UBO::Item> items);
 
-private:
-  uint32_t _id;
-  uint32_t _bindIndex;
-  uint32_t _size;
+  uint32_t   _id;
+  uint32_t   _bindIndex;
+  uint32_t   _size;
+
+  UBO::Item  _block;
+  IndexStack _stack;
+  int        _stackDepth;
 
   std::vector<uint8_t> _writeBuffer;
-  uint32_t             _writePos;
+  uint32_t   _writePos;
+  uint32_t   _writePoppedPos;
 };

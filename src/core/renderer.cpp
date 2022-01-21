@@ -18,35 +18,33 @@ Renderer::Renderer()
 void Renderer::init() {
   _uboCamera = UBO::Create(
       UBO_CAMERA_IDX,
-      UBO::Layout({
-          { BufferItemType::Float3, "position" },
-          { BufferItemType::Mat4,   "view" },
-          { BufferItemType::Mat4,   "viewProj"}
-      })
+      {
+        UBO::newVec(3),             // position
+        UBO::newColumnMatrix(4, 4), // view
+        UBO::newColumnMatrix(4, 4), // view-projection
+      }
   );
 
   _uboLights = UBO::Create(
     UBO_LIGHTS_IDX,
       {
-      UBO::Layout({
-          { BufferItemType::Float3, "direction" },
-          { BufferItemType::Float3, "ambient" },
-          { BufferItemType::Float3, "diffuse" },
-          { BufferItemType::Float3, "specular" },
+      UBO::newStruct({  // Main Light
+        UBO::newVec(3), // - direction
+        UBO::newVec(3), // - ambient
+        UBO::newVec(3), // - diffuse
+        UBO::newVec(3)  // - specular
       }),
-      UBO::Layout({
-        { BufferItemType::Int, "pointLightCount"}
-      }),
-      UBO::Layout(MaxPointLights, {
-        { BufferItemType::Float3, "position" },
-        { BufferItemType::Float3, "ambient" },
-        { BufferItemType::Float3, "diffuse" },
-        { BufferItemType::Float3, "specular" },
-        { BufferItemType::Float,  "attConstant" },
-        { BufferItemType::Float,  "attLinear" },
-        { BufferItemType::Float,  "attQuadratic" },
-        { BufferItemType::Float,  "PAD" }
-      })
+      UBO::newScalar(), // Number of point lights
+      UBO::newArray(MaxPointLights, UBO::newStruct({  // Point Lights Array
+          UBO::newVec(3), // - position
+          UBO::newVec(3), // - ambient
+          UBO::newVec(3), // - diffuse
+          UBO::newVec(3), // - specular
+          UBO::newScalar(), // - attenuation constant
+          UBO::newScalar(), // - attenuation linear
+          UBO::newScalar(), // - attenuation quadratic
+        })
+      )
       }
   );
 
@@ -117,6 +115,7 @@ void Renderer::endFrame() {
   _uboLights->writeVec3(_mainLight.diffuse);
   _uboLights->writeVec3(_mainLight.specular);
 
+  _uboLights->writeInt((int)_pointLights.size());
   for (auto& light : _pointLights) {
     _uboLights->writeVec3(light.position);
     _uboLights->writeVec3(light.ambient);
@@ -125,9 +124,11 @@ void Renderer::endFrame() {
     _uboLights->writeFloat(light.attConstant);
     _uboLights->writeFloat(light.attLinear);
     _uboLights->writeFloat(light.attQuadratic);
-    _uboLights->writeFloat(0.0f);
   }
-  _uboLights->writeInt((int)_pointLights.size());
+  auto skip = (int)MaxPointLights - _pointLights.size();
+  if (skip > 0) {
+    _uboLights->advanceArray(skip);
+  }
   _uboLights->writeEnd();
 
   // Go through render list
