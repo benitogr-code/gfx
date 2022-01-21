@@ -40,6 +40,7 @@ public:
   void setParamVec3(const char* name, const glm::vec3& value);
 
   static MaterialRef Create(ShaderRef shader);
+  static MaterialRef Clone(MaterialRef material);
 
 private:
   Material(ShaderRef shader);

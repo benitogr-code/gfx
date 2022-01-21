@@ -77,6 +77,7 @@ private:
   Entity    _ground;
   Entity    _box;
   Entity    _cyborg;
+  Entity    _pointLight;
 
   ColorRGB _lightColor;
   float    _lightAmbientFactor;

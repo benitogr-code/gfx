@@ -17,6 +17,14 @@ Material::Material(ShaderRef shader)
   return material;
 }
 
+/*static*/ MaterialRef Material::Clone(MaterialRef material) {
+  MaterialRef cloned(new Material(material->getShader()));
+  cloned->_textures = material->_textures;
+  cloned->_params = material->_params;
+
+  return cloned;
+}
+
 void Material::apply() {
   int textureSlots = 0;
   for (int slot = 0; slot < _textures.size(); ++slot) {

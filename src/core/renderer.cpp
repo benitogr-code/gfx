@@ -125,10 +125,6 @@ void Renderer::endFrame() {
     _uboLights->writeFloat(light.attLinear);
     _uboLights->writeFloat(light.attQuadratic);
   }
-  auto skip = (int)MaxPointLights - _pointLights.size();
-  if (skip > 0) {
-    _uboLights->advanceArray(skip);
-  }
   _uboLights->writeEnd();
 
   // Go through render list

@@ -25,6 +25,13 @@ bool SandboxApp::onInit() {
     getAssetManager()->loadModel("models/cyborg.gfx"),
     glm::vec3(-3.0f, 0.0f, 0.0f)
   );
+  _pointLight = Entity(
+    getAssetManager()->loadModel("models/point_light.gfx"),
+    glm::vec3(1.5f, 3.75f, 0.75f)
+  );
+  _pointLight.model->setMaterial(Material::Clone(_pointLight.model->getMaterial()));
+  _pointLight.model->getMaterial()->setParamVec3("material.color", ColorRGB(0.20f, 0.80f, 0.63f));
+  _pointLight.worldTM = glm::scale(_pointLight.worldTM, glm::vec3(0.1f));
 
   _camera.position = glm::vec3(-1.2f, 3.44f, 5.71f);
   _camera.pitch = -18.8f;
@@ -124,6 +131,7 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   pointLight.attQuadratic = 0.07f;
   renderer.drawLight(pointLight);
 
+  Entity::Render(_pointLight, renderer);
   Entity::Render(_cyborg, renderer);
   Entity::Render(_box, renderer);
   Entity::Render(_ground, renderer);

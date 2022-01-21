@@ -1,0 +1,4 @@
+{
+  "geometry": "models/sphere.obj",
+  "material": "point_light",
+}
