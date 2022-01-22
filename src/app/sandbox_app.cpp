@@ -14,24 +14,18 @@ bool SandboxApp::onInit() {
   auto matDefault = getAssetManager()->getDefaultMaterial();
   auto matBox = getAssetManager()->getMaterial("crate");
 
-  _box = Entity(
-    GfxModel::Create(MeshUtils::CreateCube(2.0f), matBox),
-    glm::vec3(3.0f, 1.5f, 0.5f)
-  );
-  _ground = Entity(
-    GfxModel::Create(MeshUtils::CreateGroundPlane(2.0f, 50), matDefault)
-  );
-  _cyborg = Entity(
-    getAssetManager()->loadModel("models/cyborg.gfx"),
-    glm::vec3(-3.0f, 0.0f, 0.0f)
-  );
-  _pointLight = Entity(
-    getAssetManager()->loadModel("models/point_light.gfx"),
-    glm::vec3(1.5f, 3.75f, 0.75f)
-  );
-  _pointLight.model->setMaterial(Material::Clone(_pointLight.model->getMaterial()));
-  _pointLight.model->getMaterial()->setParamVec3("material.color", ColorRGB(0.20f, 0.80f, 0.63f));
-  _pointLight.worldTM = glm::scale(_pointLight.worldTM, glm::vec3(0.1f));
+  _box.attachModel(GfxModel::Create(MeshUtils::CreateCube(2.0f), matBox));
+  _box.setPosition(glm::vec3(3.0f, 1.5f, 0.5f));
+
+  _ground.attachModel(GfxModel::Create(MeshUtils::CreateGroundPlane(2.0f, 50), matDefault));
+  _cyborg.attachModel(getAssetManager()->loadModel("models/cyborg.gfx"));
+  _cyborg.setPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
+
+  _pointLight.attachModel(getAssetManager()->loadModel("models/point_light.gfx"));
+  _pointLight.cloneModelMaterial();
+  _pointLight.getModelMaterial()->setParamVec3("material.color", ColorRGB(0.20f, 0.80f, 0.63f));
+  _pointLight.setPosition(glm::vec3(1.5f, 3.75f, 0.75f));
+  _pointLight.setScale(glm::vec3(0.1f));
 
   _camera.position = glm::vec3(-1.2f, 3.44f, 5.71f);
   _camera.pitch = -18.8f;
@@ -131,10 +125,10 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   pointLight.attQuadratic = 0.07f;
   renderer.drawLight(pointLight);
 
-  Entity::Render(_pointLight, renderer);
-  Entity::Render(_cyborg, renderer);
-  Entity::Render(_box, renderer);
-  Entity::Render(_ground, renderer);
+  _pointLight.render(renderer);
+  _cyborg.render(renderer);
+  _box.render(renderer);
+  _ground.render(renderer);
 }
 
 void SandboxApp::onGUI() {
