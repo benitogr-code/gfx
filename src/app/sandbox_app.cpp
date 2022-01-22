@@ -4,8 +4,7 @@
 #include <imgui.h>
 
 SandboxApp::SandboxApp()
-  : _bgColor(0.0f, 0.0f, 0.0f)
-  , _inputFlags(0)
+  : _inputFlags(0)
   , _mousePosition(0.0f, 0.0f) {
 
 }
@@ -27,13 +26,18 @@ bool SandboxApp::onInit() {
   _pointLight.setPosition(glm::vec3(1.5f, 3.75f, 0.75f));
   _pointLight.setScale(glm::vec3(0.1f));
 
+  Light::Properties props;
+  props.color = ColorRGB(0.20f, 0.80f, 0.63f);
+  props.ambientMultiplier = 0.1f;
+  props.specularMultiplier = 1.2f;
+  props.attenuationConstant = 1.0f;
+  props.attenuationLinear = 0.14f;
+  props.attenuationQuadratic = 0.07f;
+  _pointLight.attachLight(props);
+
   _camera.position = glm::vec3(-1.2f, 3.44f, 5.71f);
   _camera.pitch = -18.8f;
   _camera.yaw = -6.6f;
-
-  _lightColor = ColorRGB(1.0f);
-  _lightAmbientFactor = 0.2f;
-  _lightSpecularFactor = 0.85f;
 
   return true;
 }
@@ -106,24 +110,7 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   viewCamera.setFov(_camera.fov);
 
   // Render scene
-  renderer.setClearColor(_bgColor);
-
-  DirectionalLight light;
-  light.direction = glm::normalize(glm::vec3(-0.2f, -0.3f, -1.0f));
-  light.diffuse = _lightColor;
-  light.ambient = _lightAmbientFactor * _lightColor;
-  light.specular = _lightSpecularFactor * _lightColor;
-  renderer.setMainLight(light);
-
-  PointLight pointLight;
-  pointLight.position = glm::vec3(1.5f, 3.75f, 0.75f);
-  pointLight.ambient = ColorRGB(0.02f, 0.08f, 0.06f);
-  pointLight.diffuse = ColorRGB(0.20f, 0.80f, 0.63f);
-  pointLight.specular = ColorRGB(0.24f, 0.96f, 0.75f);
-  pointLight.attConstant = 1.0f;
-  pointLight.attLinear = 0.14f;
-  pointLight.attQuadratic = 0.07f;
-  renderer.drawLight(pointLight);
+  renderer.setClearColor(ColorRGB(0.0f));
 
   _pointLight.render(renderer);
   _cyborg.render(renderer);
@@ -133,31 +120,29 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
 
 void SandboxApp::onGUI() {
   // Settings ///
-  static float ambient = 0.2f;
-  static float specular = 0.8f;
-
   ImGui::SetNextWindowPos(ImVec2(5.0f, 5.0f));
-  //ImGui::SetNextWindowCollapsed(true, ImGuiCond_Once);
-  if (ImGui::Begin("Settings", nullptr)) {
-    ImGui::BeginGroup();
-      ImGui::Text("Scene");
-      ImGui::ColorEdit3("Light diffuse", glm::value_ptr(_lightColor));
-      ImGui::SliderFloat("Ambient factor", &_lightAmbientFactor, 0.05f, 0.4f);
-      ImGui::SliderFloat("Specular factor", &_lightSpecularFactor, 0.3f, 1.0f);
-      ImGui::ColorEdit3("Background color", glm::value_ptr(_bgColor));
-      if (ImGui::Button("Toggle wireframe")) {
-        getRenderer()->toggleWireframe();
-      }
-    ImGui::EndGroup();
 
-    ImGui::Spacing();
+  if (ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (ImGui::CollapsingHeader("Scene lighting")){
+      Light& mainLight = getRenderer()->getMainLight();
 
-    ImGui::BeginGroup();
-      ImGui::Text("Camera");
+      ImGui::ColorEdit3("Color", glm::value_ptr(mainLight.properties.color));
+      ImGui::SliderFloat("Ambient mult", &mainLight.properties.ambientMultiplier, 0.05f, 0.4f);
+      ImGui::SliderFloat("Specular mult", &mainLight.properties.specularMultiplier, 0.3f, 1.5f);
+      ImGui::SliderFloat("Position", &mainLight.position.x, -200.0f, 200.0f);
+    }
+
+    if (ImGui::CollapsingHeader("Camera")) {
       ImGui::SliderFloat("Fov", &_camera.fov, 45.0f, 90.0f);
       ImGui::SliderFloat("Speed", &_camera.movementSpeed, 0.1f, 10.0f);
       ImGui::SliderFloat("Mouse sensitivity", &_camera.mouseSensitivity, 0.01f, 0.3f);
-    ImGui::EndGroup();
+    }
+
+    if (ImGui::CollapsingHeader("Debug")) {
+      if (ImGui::Button("Toggle wireframe")) {
+        getRenderer()->toggleWireframe();
+      }
+    }
 
     ImGui::End();
   }

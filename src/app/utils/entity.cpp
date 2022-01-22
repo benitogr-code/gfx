@@ -27,8 +27,14 @@ void Entity::attachModel(GfxModelRef model) {
   _model = model;
 }
 
+void Entity::attachLight(const Light::Properties& properties) {
+  _light.reset(new Light(Light::Type::Point));
+  _light->position = _position;
+  _light->properties = properties;
+}
+
 void Entity::cloneModelMaterial() {
-  if (_model != nullptr) {
+  if (_model) {
     _model->setMaterial(Material::Clone(_model->getMaterial()));
   }
 }
@@ -39,7 +45,11 @@ MaterialRef Entity::getModelMaterial() const {
 
 
 void Entity::render(Renderer& renderer) {
-  if (_model != nullptr) {
+  if (_light) {
+    renderer.drawLight(*_light);
+  }
+
+  if (_model) {
     for (uint32_t idx = 0; idx < _model->getMeshCount(); ++idx) {
       renderer.drawMesh(_model->getMesh(idx), _model->getMaterial(), _worldTM);
     }
@@ -50,5 +60,9 @@ void Entity::updateWorldTM() {
   auto s = glm::scale(glm::mat4(1.0f), _scale);
   auto r = glm::toMat4(_rotation);
   auto t = glm::translate(glm::mat4(1.0f), _position);
+
   _worldTM = t * r * s;
+
+  if (_light)
+    _light->position = _position;
 }

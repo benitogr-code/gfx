@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/gfx_model.h"
+#include "core/graphics/lights.h"
 
 class Renderer;
 
@@ -17,6 +18,8 @@ public:
   glm::vec3 getScale() const { return _scale; }
 
   void attachModel(GfxModelRef model);
+  void attachLight(const Light::Properties& properties);
+
   void cloneModelMaterial();
   MaterialRef getModelMaterial() const;
 
@@ -27,6 +30,7 @@ private:
 
 private:
   GfxModelRef _model;
+  std::unique_ptr<Light> _light;
 
   glm::vec3   _position;
   glm::quat   _rotation;

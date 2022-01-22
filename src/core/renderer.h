@@ -5,16 +5,16 @@
 #include "graphics/material.h"
 #include "graphics/mesh.h"
 
-struct RenderItem {
-  MeshRef     mesh;
-  MaterialRef material;
-  glm::mat4   modelTM;
-};
-
 class Renderer {
 private:
-  typedef std::vector<RenderItem> RenderList;
-  typedef std::vector<PointLight> PointLights;
+  struct RenderItem {
+    MeshRef     mesh;
+    MaterialRef material;
+    glm::mat4   modelTM;
+  };
+
+  typedef std::vector<RenderItem>  RenderList;
+  typedef std::vector<Light> LightsList;
 
   enum {
     MaxPointLights = 8,
@@ -28,12 +28,14 @@ public:
   Camera& getViewCamera() { return _viewCamera; };
   const Camera& getViewCamera() const { return _viewCamera; }
 
+  Light& getMainLight() { return _mainLight; }
+  const Light& getMainLight() const { return _mainLight; }
+
   void setClearColor(const ColorRGB& c) { _clearColor = c; }
-  void setMainLight(const DirectionalLight& light) { _mainLight = light; }
   void toggleWireframe();
 
-  void drawLight(const PointLight& light);
-  void drawMesh(MeshRef mesh, MaterialRef material, const glm::mat4& modelMtx);
+  void drawLight(const Light& light);
+  void drawMesh(MeshRef mesh, MaterialRef material, const glm::mat4& worldTM);
 
   void beginFrame();
   void endFrame();
@@ -44,9 +46,9 @@ private:
   UBORef   _uboLights;
 
   RenderList _renderList;
+  Light      _mainLight;
+  LightsList _lightsList;
 
-  DirectionalLight _mainLight;
-  PointLights      _pointLights;
   ColorRGB _clearColor;
   bool     _wireframeEnabled;
 };

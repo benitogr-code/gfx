@@ -48,10 +48,10 @@ void Renderer::init() {
       }
   );
 
-  _mainLight.direction = glm::normalize(glm::vec3(-0.2f, -0.3f, -1.0f));
-  _mainLight.ambient = ColorRGB(0.2f);
-  _mainLight.diffuse = ColorRGB(1.0f);
-  _mainLight.specular = ColorRGB(0.85f);
+  _mainLight.position = glm::vec3(20.0f, 30.0f, 100.0f);
+  _mainLight.properties.color = ColorRGB(1.0f);
+  _mainLight.properties.ambientMultiplier = 0.2f;
+  _mainLight.properties.specularMultiplier = 0.85f;
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -60,7 +60,6 @@ void Renderer::init() {
   glCullFace(GL_BACK);
   glFrontFace(GL_CCW);
 }
-
 
 void Renderer::toggleWireframe() {
   _wireframeEnabled = !_wireframeEnabled;
@@ -74,17 +73,17 @@ void Renderer::toggleWireframe() {
   }
 }
 
-void Renderer::drawLight(const PointLight& light) {
-  if (_pointLights.size() < MaxPointLights) {
-    _pointLights.push_back(light);
+void Renderer::drawLight(const Light& light) {
+  if (_lightsList.size() < MaxPointLights) {
+    _lightsList.push_back(light);
   }
 }
 
-void Renderer::drawMesh(MeshRef mesh, MaterialRef material, const glm::mat4& modelMtx) {
+void Renderer::drawMesh(MeshRef mesh, MaterialRef material, const glm::mat4& worldTM) {
   RenderItem item;
   item.mesh = mesh;
   item.material = material;
-  item.modelTM = modelMtx;
+  item.modelTM = worldTM;
 
   _renderList.push_back(item);
 }
@@ -98,7 +97,7 @@ void Renderer::beginFrame() {
   ImGui::NewFrame();
 
   _renderList.clear();
-  _pointLights.clear();
+  _lightsList.clear();
 }
 
 void Renderer::endFrame() {
@@ -110,22 +109,23 @@ void Renderer::endFrame() {
   _uboCamera->writeEnd();
 
   _uboLights->writeBegin();
-  _uboLights->writeVec3(_mainLight.direction);
-  _uboLights->writeVec3(_mainLight.ambient);
-  _uboLights->writeVec3(_mainLight.diffuse);
-  _uboLights->writeVec3(_mainLight.specular);
+  _uboLights->writeVec3(-glm::normalize(_mainLight.position));
+  _uboLights->writeVec3(_mainLight.properties.color * _mainLight.properties.ambientMultiplier);
+  _uboLights->writeVec3(_mainLight.properties.color);
+  _uboLights->writeVec3(_mainLight.properties.color * _mainLight.properties.specularMultiplier);
 
-  _uboLights->writeInt((int)_pointLights.size());
-  for (auto& light : _pointLights) {
+  _uboLights->writeInt((int)_lightsList.size());
+  for (auto& light : _lightsList) {
     _uboLights->writeVec3(light.position);
-    _uboLights->writeVec3(light.ambient);
-    _uboLights->writeVec3(light.diffuse);
-    _uboLights->writeVec3(light.specular);
-    _uboLights->writeFloat(light.attConstant);
-    _uboLights->writeFloat(light.attLinear);
-    _uboLights->writeFloat(light.attQuadratic);
+    _uboLights->writeVec3(light.properties.color * light.properties.ambientMultiplier);
+    _uboLights->writeVec3(light.properties.color);
+    _uboLights->writeVec3(light.properties.color * light.properties.specularMultiplier);
+    _uboLights->writeFloat(light.properties.attenuationConstant);
+    _uboLights->writeFloat(light.properties.attenuationLinear);
+    _uboLights->writeFloat(light.properties.attenuationQuadratic);
   }
   _uboLights->writeEnd();
+
 
   // Go through render list
   for (auto item : _renderList) {
