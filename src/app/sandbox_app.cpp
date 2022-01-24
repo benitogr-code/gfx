@@ -39,6 +39,9 @@ bool SandboxApp::onInit() {
   _camera.pitch = -18.8f;
   _camera.yaw = -6.6f;
 
+  _mainLightLat = 30.0f;
+  _mainLightLong = 70.0f;
+
   return true;
 }
 
@@ -111,6 +114,16 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   viewCamera.setWorldLocation(_camera.position, _camera.getQuat());
   viewCamera.setFov(_camera.fov);
 
+  const float latitude = glm::radians(_mainLightLat);
+  const float longitude = glm::radians(_mainLightLong);
+
+  glm::vec3 sunPosition;
+  sunPosition.x = 1000.0f * cosf(latitude) * cosf(longitude);
+  sunPosition.y = 1000.0f * sinf(latitude);
+  sunPosition.z = 1000.0f * cosf(latitude) * sinf(longitude);
+
+  renderer.getMainLight().position = sunPosition;
+
   // Render scene
   _pointLight.setPosition(glm::vec3(sinf(_time)*4.5f, 5.0f, 0.75f));
   _pointLight.render(renderer);
@@ -131,7 +144,8 @@ void SandboxApp::onGUI() {
       ImGui::ColorEdit3("Color", glm::value_ptr(mainLight.properties.color));
       ImGui::SliderFloat("Ambient mult", &mainLight.properties.ambientMultiplier, 0.05f, 0.4f);
       ImGui::SliderFloat("Specular mult", &mainLight.properties.specularMultiplier, 0.3f, 1.5f);
-      ImGui::SliderFloat("Position", &mainLight.position.x, -200.0f, 200.0f);
+      ImGui::SliderFloat("Longitude", &_mainLightLong, 0.0f, 360.0f);
+      ImGui::SliderFloat("Latitude", &_mainLightLat, -5.0f, 85.0f);
     }
 
     if (ImGui::CollapsingHeader("Camera")) {

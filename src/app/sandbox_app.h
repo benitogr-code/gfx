@@ -74,6 +74,8 @@ private:
   uint32_t       _inputFlags;
   glm::ivec2     _mousePosition;
   float          _time;
+  float          _mainLightLong;
+  float          _mainLightLat;
 
   Entity    _ground;
   Entity    _box;
