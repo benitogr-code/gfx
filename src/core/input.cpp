@@ -15,6 +15,11 @@ Input::Input() {
   _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_S, KeyboardKey_S));
   _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_D, KeyboardKey_D));
   _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_W, KeyboardKey_W));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_1, KeyboardKey_1));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_2, KeyboardKey_2));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_3, KeyboardKey_3));
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_4, KeyboardKey_4));
+
 
   _mouseButtonCodes.insert(ButtonCodes::value_type(SDL_BUTTON_LEFT, MouseButton_Left));
   _mouseButtonCodes.insert(ButtonCodes::value_type(SDL_BUTTON_RIGHT, MouseButton_Left));

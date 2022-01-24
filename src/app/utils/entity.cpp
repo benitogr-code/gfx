@@ -8,6 +8,17 @@ Entity::Entity() {
   updateWorldTM();
 }
 
+void Entity::setFlag(Flags flag, bool set) {
+  if (set)
+    _flags |= (uint32_t)flag;
+  else
+    _flags &= ~(uint32_t)flag;
+}
+
+bool Entity::hasFlag(Flags flag) const {
+  return (_flags & (uint32_t)flag) != 0;
+}
+
 void Entity::setPosition(const glm::vec3& position) {
   _position = position;
   updateWorldTM();
@@ -45,6 +56,8 @@ MaterialRef Entity::getModelMaterial() const {
 
 
 void Entity::render(Renderer& renderer) {
+  if (hasFlag(Flags::Hidden)) return;
+
   if (_light) {
     renderer.drawLight(*_light);
   }

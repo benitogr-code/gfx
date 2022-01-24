@@ -13,7 +13,12 @@ enum KeyboardKey {
   KeyboardKey_A,
   KeyboardKey_S,
   KeyboardKey_D,
-  KeyboardKey_W
+  KeyboardKey_W,
+
+  KeyboardKey_1,
+  KeyboardKey_2,
+  KeyboardKey_3,
+  KeyboardKey_4,
 };
 
 enum MouseButton {

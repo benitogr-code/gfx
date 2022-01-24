@@ -49,6 +49,7 @@ void SandboxApp::onShutdown() {
 }
 
 void SandboxApp::onInputEvent(const InputEvent& event) {
+  const bool pressed = (event.state == InputState_Pressed);
   const bool released = (event.state == InputState_Released);
 
   if (event.key == KeyboardKey_A) {
@@ -62,6 +63,11 @@ void SandboxApp::onInputEvent(const InputEvent& event) {
   }
   else if (event.key == KeyboardKey_S) {
     setInputFlag(InputFlag_MoveBackward, !released);
+  }
+
+  if (pressed && event.key == KeyboardKey_1) {
+    const bool hide = _pointLight.hasFlag(Entity::Flags::Hidden);
+    _pointLight.setFlag(Entity::Flags::Hidden, !hide);
   }
 }
 
