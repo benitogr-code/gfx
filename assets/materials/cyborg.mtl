@@ -2,7 +2,8 @@
   "shader": "illum_pong",
   "texture_maps": {
     "diffuse": "textures/cyborg_diffuse.png",
-    "specular": "textures/cyborg_specular.png"
+    "specular": "textures/cyborg_specular.png",
+    "normal": "textures/cyborg_normal.png"
   },
   "properties": {
     "color": [1.0, 1.0, 1.0],

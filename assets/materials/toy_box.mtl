@@ -1,0 +1,12 @@
+{
+  "shader": "illum_pong",
+  "texture_maps": {
+    "diffuse": "textures/toy_box_diffuse.png",
+    "normal": "textures/toy_box_normal.png"
+  },
+  "properties": {
+    "color": [0.5, 0.0, 0.0],
+    "specular": [0.7, 0.6, 0.6],
+    "shininess": 128.0
+  }
+}

@@ -73,6 +73,7 @@ private:
   CameraSettings _camera;
   uint32_t       _inputFlags;
   glm::ivec2     _mousePosition;
+  float          _time;
 
   Entity    _ground;
   Entity    _box;

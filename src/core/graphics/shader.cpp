@@ -51,6 +51,10 @@ void Shader::setUniformInt(const char* name, int value) {
   glUniform1i(getUniformLocation(name), value);
 }
 
+void Shader::setUniformUInt(const char* name, uint value) {
+  glUniform1ui(getUniformLocation(name), value);
+}
+
 void Shader::setUniformVec2(const char* name, const glm::vec2& value){
   glUniform2fv(getUniformLocation(name), 1, glm::value_ptr(value));
 }

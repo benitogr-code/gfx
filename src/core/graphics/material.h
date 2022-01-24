@@ -9,6 +9,7 @@ typedef std::shared_ptr<Material> MaterialRef;
 enum TextureType {
   TextureType_Diffuse = 0,
   TextureType_Specular,
+  TextureType_Normal,
   TextureType_Count
 };
 

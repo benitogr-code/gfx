@@ -33,6 +33,7 @@ namespace JsonHelper {
     if (root["texture_maps"].isObject()){
       std::string diffuseTexture = JsonHelper::readString(root["texture_maps"], "diffuse", "");
       std::string specularTexture = JsonHelper::readString(root["texture_maps"], "specular", "");
+      std::string normalTexture = JsonHelper::readString(root["texture_maps"], "normal", "");
 
       if (diffuseTexture.length() > 0) {
         snprintf(textureFile, sizeof(textureFile), "materials/%s", diffuseTexture.c_str());
@@ -52,6 +53,16 @@ namespace JsonHelper {
         TextureCreateParams params;
         params.filePath = textureFile;
         material->setTexture(TextureType_Specular, Texture::Create(params));
+      }
+
+      if (normalTexture.length() > 0) {
+        snprintf(textureFile, sizeof(textureFile), "materials/%s", normalTexture.c_str());
+
+        LOG_INFO("[AssetManager] Loading texture {}", textureFile);
+
+        TextureCreateParams params;
+        params.filePath = textureFile;
+        material->setTexture(TextureType_Normal, Texture::Create(params));
       }
     }
 
@@ -95,6 +106,10 @@ namespace AssimpHelper {
       vertex.normal.x = mesh->mNormals[i].x;
       vertex.normal.y = mesh->mNormals[i].y;
       vertex.normal.z = mesh->mNormals[i].z;
+      vertex.tangent.x = mesh->mTangents[i].x;
+      vertex.tangent.y = mesh->mTangents[i].y;
+      vertex.tangent.z = mesh->mTangents[i].z;
+
       if(mesh->HasTextureCoords(0)) {
         vertex.texCoords.x = mesh->mTextureCoords[0][i].x;
         vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
@@ -102,6 +117,7 @@ namespace AssimpHelper {
       else {
         vertex.texCoords = glm::vec2(0.0f, 0.0f);
       }
+
 
       params.vertices.push_back(vertex);
     }

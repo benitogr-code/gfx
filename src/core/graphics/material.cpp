@@ -4,7 +4,8 @@
 
 const char* TEXTURE_SLOT_NAMES[TextureType_Count] = {
   "material.texture_diffuse",
-  "material.texture_specular"
+  "material.texture_specular",
+  "material.texture_normal"
 };
 
 Material::Material(ShaderRef shader)
@@ -26,7 +27,7 @@ Material::Material(ShaderRef shader)
 }
 
 void Material::apply() {
-  int textureSlots = 0;
+  uint textureSlots = 0;
   for (int slot = 0; slot < _textures.size(); ++slot) {
     auto texture = _textures[slot];
     if (texture) {
@@ -38,7 +39,7 @@ void Material::apply() {
     }
   }
 
-  _shader->setUniformInt("material.texture_slots", textureSlots);
+  _shader->setUniformUInt("material.texture_flags", textureSlots);
 
   for (auto iter = _params.begin(); iter != _params.end(); ++iter) {
     switch (iter->second.type)

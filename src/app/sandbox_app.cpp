@@ -5,13 +5,14 @@
 
 SandboxApp::SandboxApp()
   : _inputFlags(0)
-  , _mousePosition(0.0f, 0.0f) {
+  , _mousePosition(0.0f, 0.0f)
+  , _time(0.0f) {
 
 }
 
 bool SandboxApp::onInit() {
   auto matDefault = getAssetManager()->getDefaultMaterial();
-  auto matBox = getAssetManager()->getMaterial("crate");
+  auto matBox = getAssetManager()->getMaterial("toy_box");
 
   _box.attachModel(GfxModel::Create(MeshUtils::CreateCube(2.0f), matBox));
   _box.setPosition(glm::vec3(3.0f, 1.5f, 0.5f));
@@ -23,15 +24,15 @@ bool SandboxApp::onInit() {
   _pointLight.attachModel(getAssetManager()->loadModel("models/point_light.gfx"));
   _pointLight.cloneModelMaterial();
   _pointLight.getModelMaterial()->setParamVec3("material.color", ColorRGB(0.20f, 0.80f, 0.63f));
-  _pointLight.setPosition(glm::vec3(1.5f, 3.75f, 0.75f));
+  _pointLight.setPosition(glm::vec3(0.0f, 5.0f, 0.75f));
   _pointLight.setScale(glm::vec3(0.1f));
 
   Light::Properties props;
   props.color = ColorRGB(0.20f, 0.80f, 0.63f);
   props.ambientMultiplier = 0.1f;
   props.specularMultiplier = 1.2f;
-  props.attenuationConstant = 1.0f;
-  props.attenuationLinear = 0.14f;
+  props.attenuationConstant = 0.01f;
+  props.attenuationLinear = 0.15f;
   props.attenuationQuadratic = 0.07f;
   _pointLight.attachLight(props);
 
@@ -87,6 +88,8 @@ void SandboxApp::onMouseEvent(const MouseEvent& event) {
 }
 
 void SandboxApp::onUpdate(const UpdateContext& ctx) {
+  _time += ctx.frameTime;
+
   // Update camera
   const float cameraSpeed = _camera.movementSpeed * ctx.frameTime;
   if (hasInputFlag(InputFlag_MoveLeft)) {
@@ -110,9 +113,9 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   viewCamera.setFov(_camera.fov);
 
   // Render scene
-  renderer.setClearColor(ColorRGB(0.0f));
-
+  _pointLight.setPosition(glm::vec3(sinf(_time)*4.5f, 5.0f, 0.75f));
   _pointLight.render(renderer);
+
   _cyborg.render(renderer);
   _box.render(renderer);
   _ground.render(renderer);

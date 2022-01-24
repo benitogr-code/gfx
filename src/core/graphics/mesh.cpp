@@ -22,7 +22,8 @@ void Mesh::setup() {
         BufferLayout({
             { BufferItemType::Float3, "position" },
             { BufferItemType::Float3, "normal" },
-            { BufferItemType::Float2, "texCoords" }
+            { BufferItemType::Float2, "texCoords" },
+            { BufferItemType::Float3, "tangent" }
         })
     );
 
