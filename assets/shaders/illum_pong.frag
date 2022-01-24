@@ -79,7 +79,7 @@ void main() {
 
   if ((material.texture_flags & TextureFlag_Diffuse) != 0) {
       diffColor = texture(material.texture_diffuse, vtx_texcoords).rgb;
-      specColor = diffColor;
+      //specColor = diffColor;
   }
   if ((material.texture_flags & TextureFlag_Specular) != 0) {
       specColor = texture(material.texture_specular, vtx_texcoords).rgb;

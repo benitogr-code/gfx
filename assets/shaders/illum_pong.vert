@@ -16,7 +16,6 @@ out mat3 vtx_tbn;
 
 void main() {
     vec3 t = normalize(vec3(mtx_model * vec4(attr_tangent, 0.0f)));
-    //vec3 b = normalize(vec3(mtx_model * vec4(attr_bitangent, 0.0f)));
     vec3 n = normalize(vec3(mtx_model * vec4(attr_normal, 0.0f)));
     vec3 b = cross(n, t);
 

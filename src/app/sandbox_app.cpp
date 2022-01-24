@@ -12,9 +12,8 @@ SandboxApp::SandboxApp()
 
 bool SandboxApp::onInit() {
   auto matDefault = getAssetManager()->getDefaultMaterial();
-  auto matBox = getAssetManager()->getMaterial("toy_box");
 
-  _box.attachModel(GfxModel::Create(MeshUtils::CreateCube(2.0f), matBox));
+  _box.attachModel(getAssetManager()->loadModel("models/wooden_crate.gfx"));
   _box.setPosition(glm::vec3(3.0f, 1.5f, 0.5f));
 
   _ground.attachModel(GfxModel::Create(MeshUtils::CreateGroundPlane(2.0f, 50), matDefault));
