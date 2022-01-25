@@ -5,6 +5,7 @@ Entity::Entity() {
   _position = glm::vec3(0.0f);
   _rotation = glm::identity<glm::quat>();
   _scale = glm::vec3(1.0f);
+  _flags = 0;
   updateWorldTM();
 }
 
@@ -46,11 +47,15 @@ void Entity::attachLight(const Light::Properties& properties) {
 
 void Entity::cloneModelMaterial() {
   if (_model) {
-    _model->setMaterial(Material::Clone(_model->getMaterial()));
+    _overrideMaterial = Material::Clone(_model->getMaterial());
   }
 }
 
 MaterialRef Entity::getModelMaterial() const {
+  if (_overrideMaterial) {
+    return _overrideMaterial;
+  }
+
   return _model != nullptr ? _model->getMaterial() : nullptr;
 }
 
@@ -63,8 +68,9 @@ void Entity::render(Renderer& renderer) {
   }
 
   if (_model) {
+    MaterialRef material = _overrideMaterial ? _overrideMaterial : _model->getMaterial();
     for (uint32_t idx = 0; idx < _model->getMeshCount(); ++idx) {
-      renderer.drawMesh(_model->getMesh(idx), _model->getMaterial(), _worldTM);
+      renderer.drawMesh(_model->getMesh(idx), material, _worldTM);
     }
   }
 }

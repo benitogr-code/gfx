@@ -49,7 +49,7 @@ void Renderer::init() {
   );
 
   _mainLight.position = glm::vec3(20.0f, 30.0f, 100.0f);
-  _mainLight.properties.color = ColorRGB(1.0f);
+  _mainLight.properties.color = ColorRGB(0.6f);
   _mainLight.properties.ambientMultiplier = 0.2f;
   _mainLight.properties.specularMultiplier = 0.85f;
 

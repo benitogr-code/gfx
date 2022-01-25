@@ -37,6 +37,7 @@ private:
 
 private:
   GfxModelRef _model;
+  MaterialRef _overrideMaterial;
   std::unique_ptr<Light> _light;
 
   uint32_t    _flags;
