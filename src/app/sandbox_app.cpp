@@ -11,7 +11,7 @@ SandboxApp::SandboxApp()
 }
 
 bool SandboxApp::onInit() {
-  auto matDefault = getAssetManager()->getDefaultMaterial();
+  auto floorMaterial = getAssetManager()->getMaterial("stone_floor");
 
   _boxes[0].attachModel(getAssetManager()->loadModel("models/wooden_crate.gfx"));
   _boxes[0].setPosition(glm::vec3(3.0f, 1.0f, 0.5f));
@@ -20,7 +20,7 @@ bool SandboxApp::onInit() {
   _boxes[1].attachModel(getAssetManager()->loadModel("models/wooden_crate.gfx"));
   _boxes[1].setPosition(glm::vec3(-3.0f, 1.0f, 0.5f));
 
-  _ground.attachModel(GfxModel::Create(MeshUtils::CreateGroundPlane(2.0f, 50), matDefault));
+  _ground.attachModel(GfxModel::Create(MeshUtils::CreateGroundPlane(2.0f, 15, 2.0f), floorMaterial));
 
   _cyborg.attachModel(getAssetManager()->loadModel("models/cyborg.gfx"));
   _cyborg.setPosition(glm::vec3(0.0f, 0.2f, -0.7f));
@@ -153,7 +153,7 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
   _boxes[0].render(renderer);
   _boxes[1].render(renderer);
 
-  _cyborg.setRotation(glm::angleAxis(_time, glm::vec3(0.0f, 1.0f, 0.0f)));
+  _cyborg.setRotation(glm::angleAxis(_time*0.7f, glm::vec3(0.0f, 1.0f, 0.0f)));
   _cyborg.render(renderer);
 }
 

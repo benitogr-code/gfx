@@ -69,7 +69,7 @@ namespace MeshUtils {
         return Mesh::Create(params);
     }
 
-    MeshRef CreateGroundPlane(float cellSize, uint32_t cellCount) {
+    MeshRef CreateGroundPlane(float cellSize, uint32_t cellCount, float textureScale = 1.0f) {
         MeshCreateParams params;
         params.vertices.reserve((cellCount+1)*(cellCount+1));
         params.indices.reserve(cellCount*cellCount*6);
@@ -79,10 +79,12 @@ namespace MeshUtils {
 
         for(uint32_t i = 0; i <= cellCount; ++i) {
             for (uint32_t j = 0; j <= cellCount; ++j) {
+                auto position = glm::vec3(xStart + (j*cellSize), 0.0f, zStart - (i*cellSize));
+                auto scale = 1.0f / (cellSize * textureScale);
                 params.vertices.push_back(Vertex({
-                    glm::vec3(xStart + (j*cellSize), 0.0f, zStart - (i*cellSize)),
+                    position,
                     glm::vec3(0.0f, 1.0f, 0.0f),
-                    glm::vec2()
+                    glm::vec2(position.x * scale, position.z * scale)
                 }));
             }
         }
