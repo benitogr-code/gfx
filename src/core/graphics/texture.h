@@ -28,8 +28,8 @@ struct Texture3DCreateParams {
     Left,
     Top,
     Bottom,
-    Back,
     Front,
+    Back,
     Count
   };
 

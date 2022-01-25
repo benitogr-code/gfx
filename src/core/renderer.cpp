@@ -21,7 +21,9 @@ void Renderer::init() {
       {
         UBO::newVec(3),             // position
         UBO::newColumnMatrix(4, 4), // view
+        UBO::newColumnMatrix(4, 4), // projection
         UBO::newColumnMatrix(4, 4), // view-projection
+        UBO::newColumnMatrix(4, 4), // view-rotation
       }
   );
 
@@ -54,7 +56,7 @@ void Renderer::init() {
   _mainLight.properties.specularMultiplier = 0.85f;
 
   glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
+  glDepthFunc(GL_LEQUAL);
 
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -105,7 +107,9 @@ void Renderer::endFrame() {
   _uboCamera->writeBegin();
   _uboCamera->writeVec3(_viewCamera.getPosition());
   _uboCamera->writeMat4(_viewCamera.getView());
+  _uboCamera->writeMat4(_viewCamera.getProjection());
   _uboCamera->writeMat4(_viewCamera.getViewProjection());
+  _uboCamera->writeMat4(glm::mat4(glm::mat3(_viewCamera.getView())));
   _uboCamera->writeEnd();
 
   _uboLights->writeBegin();
@@ -125,7 +129,6 @@ void Renderer::endFrame() {
     _uboLights->writeFloat(light.properties.attenuationQuadratic);
   }
   _uboLights->writeEnd();
-
 
   // Go through render list
   for (auto item : _renderList) {

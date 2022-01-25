@@ -113,4 +113,55 @@ namespace MeshUtils {
 
         return Mesh::Create(params);
     }
+
+    MeshRef CreateSkybox() {
+        const float s = 1.0f;
+
+        MeshCreateParams params;
+        params.vertices = {
+          { glm::vec3(-1.0f, -1.0f,  1.0f) }, // Left
+          { glm::vec3(-1.0f, -1.0f, -1.0f) },
+          { glm::vec3(-1.0f,  1.0f, -1.0f) },
+          { glm::vec3(-1.0f,  1.0f, -1.0f) },
+          { glm::vec3(-1.0f,  1.0f,  1.0f) },
+          { glm::vec3(-1.0f, -1.0f,  1.0f) },
+
+          { glm::vec3(1.0f, -1.0f, -1.0f) }, // Right
+          { glm::vec3(1.0f, -1.0f,  1.0f) },
+          { glm::vec3(1.0f,  1.0f,  1.0f) },
+          { glm::vec3(1.0f,  1.0f,  1.0f) },
+          { glm::vec3(1.0f,  1.0f, -1.0f) },
+          { glm::vec3(1.0f, -1.0f, -1.0f) },
+
+          { glm::vec3(-1.0f, -1.0f,  1.0f) }, // Front
+          { glm::vec3(-1.0f,  1.0f,  1.0f) },
+          { glm::vec3( 1.0f,  1.0f,  1.0f) },
+          { glm::vec3( 1.0f,  1.0f,  1.0f) },
+          { glm::vec3( 1.0f, -1.0f,  1.0f) },
+          { glm::vec3(-1.0f, -1.0f,  1.0f) },
+
+          { glm::vec3(-1.0f,  1.0f, -1.0f) }, // Back
+          { glm::vec3(-1.0f, -1.0f, -1.0f) },
+          { glm::vec3( 1.0f, -1.0f, -1.0f) },
+          { glm::vec3( 1.0f, -1.0f, -1.0f) },
+          { glm::vec3( 1.0f,  1.0f, -1.0f) },
+          { glm::vec3(-1.0f,  1.0f, -1.0f) },
+
+          { glm::vec3(-1.0f,  1.0f, -1.0f) }, // Top
+          { glm::vec3( 1.0f,  1.0f, -1.0f) },
+          { glm::vec3( 1.0f,  1.0f,  1.0f) },
+          { glm::vec3( 1.0f,  1.0f,  1.0f) },
+          { glm::vec3(-1.0f,  1.0f,  1.0f) },
+          { glm::vec3(-1.0f,  1.0f, -1.0f) },
+
+          { glm::vec3(-1.0f, -1.0f, -1.0f) }, // Bottom
+          { glm::vec3(-1.0f, -1.0f,  1.0f) },
+          { glm::vec3( 1.0f, -1.0f, -1.0f) },
+          { glm::vec3( 1.0f, -1.0f, -1.0f) },
+          { glm::vec3(-1.0f, -1.0f,  1.0f) },
+          { glm::vec3( 1.0f, -1.0f,  1.0f) }
+        };
+
+        return Mesh::Create(params);
+    }
 };

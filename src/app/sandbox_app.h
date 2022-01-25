@@ -78,6 +78,7 @@ private:
   float          _mainLightLat;
 
   Entity    _ground;
+  Entity    _skybox;
   Entity    _boxes[2];
   Entity    _cyborg;
   Entity    _pointLights[2];

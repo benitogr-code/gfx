@@ -88,6 +88,24 @@ namespace JsonHelper {
       material->setParamVec3("material.color", color);
     }
   }
+
+  void readSkyboxShaderParameters(const Json::Value& root, MaterialRef material) {
+    const char* faces[Texture3DCreateParams::Faces::Count] = {
+      "right", "left", "top", "bottom", "front", "back"
+    };
+
+    if (root["texture_maps"].isObject()){
+      Texture3DCreateParams params;
+      for (int i = 0; i < Texture3DCreateParams::Faces::Count; ++i) {
+        std::string path = JsonHelper::readString(root["texture_maps"], faces[i], "");
+        params.filePaths[i] = std::string("materials/") + path;
+      }
+
+      LOG_INFO("[AssetManager] Loading 3d textures");
+
+      material->setTexture(TextureType_Cubemap_Skybox, Texture::CreateCubemap(params));
+    }
+  }
 }
 
 // Assimp Helper
@@ -152,10 +170,11 @@ AssetManager::~AssetManager() {
 }
 
 void AssetManager::init() {
-  const uint32_t SHADER_COUNT = 2;
+  const uint32_t SHADER_COUNT = 3;
   const char* SHADERS[SHADER_COUNT] = {
     "color",
-    "illum_pong"
+    "illum_pong",
+    "skybox"
   };
 
   for (uint32_t i = 0; i < SHADER_COUNT; ++i) {
@@ -275,6 +294,9 @@ MaterialRef AssetManager::loadMaterial(const char* name) {
   }
   else if (shaderName.compare("illum_pong")== 0) {
     JsonHelper::readIllumPongShaderParameters(root, material);
+  }
+  else if (shaderName.compare("skybox") == 0) {
+    JsonHelper::readSkyboxShaderParameters(root, material);
   }
 
   _materials.insert_or_assign(std::string(name), material);

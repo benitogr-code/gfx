@@ -43,13 +43,14 @@ bool FileUtils::readTextFile(const char* filePath, std::vector<char>& data) {
   return true;
 }
 
-bool FileUtils::readPngFile(const char* filePath, ImageData& data) {
+bool FileUtils::readImageFile(const char* filePath, ImageData& data) {
   const auto absolutePath = getAbsolutePath(filePath);
 
   const int kRequiredComponents = 4;
   int width, height, components;
 
-  stbi_set_flip_vertically_on_load(true);
+  const bool flip = std::filesystem::path(filePath).extension().generic_string().compare(".png") == 0;
+  stbi_set_flip_vertically_on_load(flip);
   unsigned char* pData = stbi_load(absolutePath.c_str(), &width, &height, &components, kRequiredComponents);
 
   if (pData == nullptr) {

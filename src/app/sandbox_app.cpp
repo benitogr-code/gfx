@@ -12,6 +12,7 @@ SandboxApp::SandboxApp()
 
 bool SandboxApp::onInit() {
   auto floorMaterial = getAssetManager()->getMaterial("stone_floor");
+  auto skyboxMaterial = getAssetManager()->getMaterial("skybox");
 
   _boxes[0].attachModel(getAssetManager()->loadModel("models/wooden_crate.gfx"));
   _boxes[0].setPosition(glm::vec3(3.0f, 1.0f, 0.5f));
@@ -21,6 +22,7 @@ bool SandboxApp::onInit() {
   _boxes[1].setPosition(glm::vec3(-3.0f, 1.0f, 0.5f));
 
   _ground.attachModel(GfxModel::Create(MeshUtils::CreateGroundPlane(2.0f, 15, 2.0f), floorMaterial));
+  _skybox.attachModel(GfxModel::Create(MeshUtils::CreateSkybox(), skyboxMaterial));
 
   _cyborg.attachModel(getAssetManager()->loadModel("models/cyborg.gfx"));
   _cyborg.setPosition(glm::vec3(0.0f, 0.2f, -0.7f));
@@ -46,8 +48,8 @@ bool SandboxApp::onInit() {
   _camera.pitch = -18.8f;
   _camera.yaw = -6.6f;
 
-  _mainLightLat = 30.0f;
-  _mainLightLong = 70.0f;
+  _mainLightLat = 50.0f;
+  _mainLightLong = 265.0f;
 
   return true;
 }
@@ -155,6 +157,8 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
 
   _cyborg.setRotation(glm::angleAxis(_time*0.7f, glm::vec3(0.0f, 1.0f, 0.0f)));
   _cyborg.render(renderer);
+
+  _skybox.render(renderer);
 }
 
 void SandboxApp::onGUI() {

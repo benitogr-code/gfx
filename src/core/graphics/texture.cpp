@@ -67,7 +67,7 @@ void Texture::load3DImage(const std::vector<ImageData>& images) {
   TextureRef texture(new Texture());
 
   ImageData image;
-  if (FileUtils::readPngFile(params.filePath, image)) {
+  if (FileUtils::readImageFile(params.filePath, image)) {
     texture->load2DImage(image, params.wrapmode);
   }
 
@@ -84,7 +84,7 @@ void Texture::load3DImage(const std::vector<ImageData>& images) {
   images.resize(fileCount);
   int texturesLoaded = 0;
   for (int i = 0; i < fileCount; ++i) {
-    if (FileUtils::readPngFile(params.filePaths[i].c_str(), images[i])) {
+    if (FileUtils::readImageFile(params.filePaths[i].c_str(), images[i])) {
       texturesLoaded++;
     }
   }

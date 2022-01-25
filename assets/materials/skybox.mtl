@@ -1,0 +1,11 @@
+{
+  "shader": "skybox",
+  "texture_maps": {
+    "right": "textures/skybox/right.jpg",
+    "left": "textures/skybox/left.jpg",
+    "top": "textures/skybox/top.jpg",
+    "bottom": "textures/skybox/bottom.jpg",
+    "back": "textures/skybox/back.jpg",
+    "front": "textures/skybox/front.jpg"
+  }
+}

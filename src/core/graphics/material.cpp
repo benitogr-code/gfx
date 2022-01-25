@@ -5,7 +5,8 @@
 const char* TEXTURE_SLOT_NAMES[TextureType_Count] = {
   "material.texture_diffuse",
   "material.texture_specular",
-  "material.texture_normal"
+  "material.texture_normal",
+  "material.cubemap_skybox"
 };
 
 Material::Material(ShaderRef shader)
@@ -33,7 +34,9 @@ void Material::apply() {
     if (texture) {
       glActiveTexture(GL_TEXTURE0 + slot);
       _shader->setUniformInt(TEXTURE_SLOT_NAMES[slot], slot);
-      glBindTexture(GL_TEXTURE_2D, texture->id());
+
+      GLenum target = slot >= TextureType_Cubemap_Skybox ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+      glBindTexture(target, texture->id());
 
       textureSlots |= BIT(slot);
     }
