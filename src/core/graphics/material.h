@@ -22,6 +22,15 @@ enum MaterialParamType {
   MaterialParamType_Vec3
 };
 
+enum MaterialSlotId {
+  MaterialSlotId_0 = 0,
+  MaterialSlotId_1,
+  MaterialSlotId_2,
+  MaterialSlotId_3,
+  MaterialSlotId_Count,
+  MaterialSlotId_Invalid = MaterialSlotId_Count,
+};
+
 struct MaterialParam {
   MaterialParamType type;
   union {
@@ -30,9 +39,14 @@ struct MaterialParam {
   } value;
 };
 
+struct MaterialSlot {
+  std::string    name;
+  TextureRef     texture;
+};
+
 class Material {
 private:
-  typedef std::array<TextureRef, TextureType_Count> TextureSlots;
+  typedef std::array<MaterialSlot, MaterialSlotId_Count> MaterialSlots;
   typedef std::map<std::string, MaterialParam> MaterialParams;
 
 public:
@@ -40,7 +54,7 @@ public:
 
   ShaderRef& getShader() { return _shader; }
 
-  void setTexture(TextureType type, TextureRef texture);
+  void setTextureSlot(MaterialSlotId id, const char* name, TextureRef texture);
   void setParamFloat(const char* name, float value);
   void setParamVec3(const char* name, const glm::vec3& value);
 
@@ -53,6 +67,6 @@ private:
 
 private:
   ShaderRef _shader;
-  TextureSlots   _textures;
+  MaterialSlots  _slots;
   MaterialParams _params;
 };

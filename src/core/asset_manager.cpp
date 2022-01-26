@@ -42,7 +42,7 @@ namespace JsonHelper {
 
         TextureCreateParams params;
         params.filePath = textureFile;
-        material->setTexture(TextureType_Diffuse, Texture::Create(params));
+        material->setTextureSlot(MaterialSlotId_0, "material.texture_diffuse", Texture::Create(params));
       }
 
       if (specularTexture.length() > 0) {
@@ -52,7 +52,7 @@ namespace JsonHelper {
 
         TextureCreateParams params;
         params.filePath = textureFile;
-        material->setTexture(TextureType_Specular, Texture::Create(params));
+        material->setTextureSlot(MaterialSlotId_1, "material.texture_specular", Texture::Create(params));
       }
 
       if (normalTexture.length() > 0) {
@@ -62,7 +62,7 @@ namespace JsonHelper {
 
         TextureCreateParams params;
         params.filePath = textureFile;
-        material->setTexture(TextureType_Normal, Texture::Create(params));
+        material->setTextureSlot(MaterialSlotId_2, "material.texture_normal", Texture::Create(params));
       }
     }
 
@@ -103,7 +103,7 @@ namespace JsonHelper {
 
       LOG_INFO("[AssetManager] Loading 3d textures");
 
-      material->setTexture(TextureType_Cubemap_Skybox, Texture::CreateCubemap(params));
+      material->setTextureSlot(MaterialSlotId_0, "material.cubemap_skybox", Texture::CreateCubemap(params));
     }
   }
 }

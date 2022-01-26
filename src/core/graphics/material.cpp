@@ -2,16 +2,9 @@
 
 #include <glad/glad.h>
 
-const char* TEXTURE_SLOT_NAMES[TextureType_Count] = {
-  "material.texture_diffuse",
-  "material.texture_specular",
-  "material.texture_normal",
-  "material.cubemap_skybox"
-};
-
 Material::Material(ShaderRef shader)
   : _shader(shader) {
-    _textures.fill(nullptr);
+    _slots.fill(MaterialSlot());
 }
 
 /*static*/ MaterialRef Material::Create(ShaderRef shader) {
@@ -21,27 +14,27 @@ Material::Material(ShaderRef shader)
 
 /*static*/ MaterialRef Material::Clone(MaterialRef material) {
   MaterialRef cloned(new Material(material->getShader()));
-  cloned->_textures = material->_textures;
+  cloned->_slots = material->_slots;
   cloned->_params = material->_params;
 
   return cloned;
 }
 
 void Material::apply() {
-  uint textureSlots = 0;
-  for (int slot = 0; slot < _textures.size(); ++slot) {
-    auto texture = _textures[slot];
-    if (texture) {
-      glActiveTexture(GL_TEXTURE0 + slot);
-      _shader->setUniformInt(TEXTURE_SLOT_NAMES[slot], slot);
+  uint activeSlots = 0;
+  for (int i = 0; i < _slots.size(); ++i) {
+    auto& slot = _slots[i];
+    if (slot.texture) {
+      glActiveTexture(GL_TEXTURE0 + i);
+      _shader->setUniformInt(slot.name.c_str(), i);
 
-      glBindTexture(texture->target(), texture->id());
+      glBindTexture(slot.texture->target(), slot.texture->id());
 
-      textureSlots |= BIT(slot);
+      activeSlots |= BIT(i);
     }
   }
 
-  _shader->setUniformUInt("material.texture_flags", textureSlots);
+  _shader->setUniformUInt("material.active_slots", activeSlots);
 
   for (auto iter = _params.begin(); iter != _params.end(); ++iter) {
     switch (iter->second.type)
@@ -60,8 +53,11 @@ void Material::apply() {
   }
 }
 
-void Material::setTexture(TextureType type, TextureRef texture) {
-  _textures[type] = texture;
+void Material::setTextureSlot(MaterialSlotId id, const char* name, TextureRef texture) {
+  if (id >= 0 && id < _slots.max_size()) {
+    _slots[id].name = name;
+    _slots[id].texture = texture;
+  }
 }
 
 void Material::setParamFloat(const char* name, float value) {

@@ -2,9 +2,9 @@
 
 //#common.inc
 
-const uint TextureFlag_Diffuse  = 0x00000001u;
-const uint TextureFlag_Specular = 0x00000002u;
-const uint TextureFlag_Normal   = 0x00000004u;
+const uint SlotFlag_Diffuse  = 0x00000001u;
+const uint SlotFlag_Specular = 0x00000002u;
+const uint SlotFlag_Normal   = 0x00000004u;
 
 in vec3 vtx_fragpos;
 in vec3 vtx_normal;
@@ -12,7 +12,7 @@ in vec2 vtx_texcoords;
 in mat3 vtx_tbn;
 
 struct Material {
-  uint      texture_flags;
+  uint      active_slots;
   sampler2D texture_diffuse;
   sampler2D texture_specular;
   sampler2D texture_normal;
@@ -77,14 +77,13 @@ void main() {
   vec3 normal = normalize(vtx_normal);
   vec3 viewDir = normalize(camera.pos.xyz - vtx_fragpos);
 
-  if ((material.texture_flags & TextureFlag_Diffuse) != 0) {
+  if ((material.active_slots & SlotFlag_Diffuse) != 0) {
       diffColor = texture(material.texture_diffuse, vtx_texcoords).rgb;
-      //specColor = diffColor;
   }
-  if ((material.texture_flags & TextureFlag_Specular) != 0) {
+  if ((material.active_slots & SlotFlag_Specular) != 0) {
       specColor = texture(material.texture_specular, vtx_texcoords).rgb;
   }
-  if ((material.texture_flags & TextureFlag_Normal) != 0) {
+  if ((material.active_slots & SlotFlag_Normal) != 0) {
     normal = texture(material.texture_normal, vtx_texcoords).rgb;
     normal = normalize(normal * 2.0f - 1.0f);
     normal = normalize(vtx_tbn * normal);
