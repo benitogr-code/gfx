@@ -1,5 +1,5 @@
 {
-  "shader": "illum_pong",
+  "shader": "illum",
   "texture_maps": {
     "diffuse": "textures/wooden_crate_diffuse.png",
     "normal": "textures/wooden_crate_normal.png"

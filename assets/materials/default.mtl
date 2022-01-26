@@ -1,5 +1,5 @@
 {
-  "shader": "illum_pong",
+  "shader": "illum",
   "texture_maps": {
     "diffuse": "",
     "specular": ""

@@ -1,5 +1,5 @@
 {
-  "shader": "illum_pong",
+  "shader": "illum",
   "texture_maps": {
     "diffuse": "textures/stone_floor_basecolor.png",
     "normal": "textures/stone_floor_normal.png"

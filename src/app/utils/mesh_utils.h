@@ -3,7 +3,7 @@
 #include "core/graphics/mesh.h"
 
 namespace MeshUtils {
-    void CalculateTangent(Vertex& v1, Vertex& v2, Vertex& v3) {
+    static void CalculateTangent(Vertex& v1, Vertex& v2, Vertex& v3) {
       auto edge1 = v2.position-v1.position;
       auto edge2 = v3.position-v1.position;
       auto deltaUV1 = v2.texCoords-v1.texCoords;
@@ -14,7 +14,7 @@ namespace MeshUtils {
       v1.tangent = v2.tangent = v3.tangent = tangent;
     }
 
-    MeshRef CreateCube(float size) {
+    static MeshRef CreateCube(float size) {
         const float s = size * 0.5f;
 
         MeshCreateParams params;
@@ -69,7 +69,7 @@ namespace MeshUtils {
         return Mesh::Create(params);
     }
 
-    MeshRef CreateGroundPlane(float cellSize, uint32_t cellCount, float textureScale = 1.0f) {
+    static MeshRef CreateGroundPlane(float cellSize, uint32_t cellCount, float textureScale = 1.0f) {
         MeshCreateParams params;
         params.vertices.reserve((cellCount+1)*(cellCount+1));
         params.indices.reserve(cellCount*cellCount*6);
@@ -114,7 +114,7 @@ namespace MeshUtils {
         return Mesh::Create(params);
     }
 
-    MeshRef CreateSkybox() {
+    static MeshRef CreateSkybox() {
         const float s = 1.0f;
 
         MeshCreateParams params;

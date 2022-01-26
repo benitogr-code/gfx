@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/application.h"
-#include "utils/entity.h"
+#include "demos/scene.h"
 
 class SandboxApp: public Application {
 private:
@@ -45,12 +45,12 @@ private:
   };
 
   enum {
-    InputFlag_MoveForward  = 0x00000001,
-    InputFlag_MoveBackward = 0x00000002,
-    InputFlag_MoveLeft     = 0x00000004,
-    InputFlag_MoveRight    = 0x00000008,
-    InputFlag_MouseLeft    = 0x00000010,
-    InputFlag_MouseRight   = 0x00000020,
+    InputFlag_MoveForward  = BIT(0),
+    InputFlag_MoveBackward = BIT(1),
+    InputFlag_MoveLeft     = BIT(2),
+    InputFlag_MoveRight    = BIT(3),
+    InputFlag_MouseLeft    = BIT(4),
+    InputFlag_MouseRight   = BIT(5),
   };
 
 public:
@@ -73,13 +73,6 @@ private:
   CameraSettings _camera;
   uint32_t       _inputFlags;
   glm::ivec2     _mousePosition;
-  float          _time;
-  float          _mainLightLong;
-  float          _mainLightLat;
 
-  Entity    _ground;
-  Entity    _skybox;
-  Entity    _boxes[2];
-  Entity    _cyborg;
-  Entity    _pointLights[2];
+  std::unique_ptr<Scene> _scene;
 };

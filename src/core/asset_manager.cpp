@@ -173,7 +173,7 @@ void AssetManager::init() {
   const uint32_t SHADER_COUNT = 3;
   const char* SHADERS[SHADER_COUNT] = {
     "color",
-    "illum_pong",
+    "illum",
     "skybox"
   };
 
@@ -292,7 +292,7 @@ MaterialRef AssetManager::loadMaterial(const char* name) {
   if (shaderName.compare("color") == 0) {
     JsonHelper::readColorShaderParameters(root, material);
   }
-  else if (shaderName.compare("illum_pong")== 0) {
+  else if (shaderName.compare("illum")== 0) {
     JsonHelper::readIllumPongShaderParameters(root, material);
   }
   else if (shaderName.compare("skybox") == 0) {
