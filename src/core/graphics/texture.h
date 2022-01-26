@@ -43,7 +43,7 @@ public:
   ~Texture();
 
   unsigned int id() const { return _id; }
-  void bind();
+  unsigned int target() const { return _target; }
 
   static TextureRef Create(const TextureCreateParams& params);
   static TextureRef CreateCubemap(const Texture3DCreateParams& params);
@@ -57,4 +57,5 @@ private:
 
 private:
   unsigned int _id;
+  unsigned int _target;
 };

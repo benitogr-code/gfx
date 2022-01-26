@@ -35,8 +35,7 @@ void Material::apply() {
       glActiveTexture(GL_TEXTURE0 + slot);
       _shader->setUniformInt(TEXTURE_SLOT_NAMES[slot], slot);
 
-      GLenum target = slot >= TextureType_Cubemap_Skybox ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
-      glBindTexture(target, texture->id());
+      glBindTexture(texture->target(), texture->id());
 
       textureSlots |= BIT(slot);
     }

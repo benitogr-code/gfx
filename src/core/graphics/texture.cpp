@@ -21,10 +21,6 @@ Texture::~Texture() {
   glDeleteTextures(1, &_id);
 }
 
-void Texture::bind() {
-  glBindTexture(GL_TEXTURE_2D, _id);
-}
-
 void Texture::load2DImage(const ImageData& image, TextureWrapMode wrapMode) {
   glGenTextures(1, &_id);
   glBindTexture(GL_TEXTURE_2D, _id);
@@ -39,6 +35,8 @@ void Texture::load2DImage(const ImageData& image, TextureWrapMode wrapMode) {
   const GLenum format = image.bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
   glTexImage2D(GL_TEXTURE_2D, 0, format, image.width, image.height, 0, format, GL_UNSIGNED_BYTE, image.data.data());
   glGenerateMipmap(GL_TEXTURE_2D);
+
+  _target = GL_TEXTURE_2D;
 }
 
 void Texture::load3DImage(const std::vector<ImageData>& images) {
@@ -60,6 +58,8 @@ void Texture::load3DImage(const std::vector<ImageData>& images) {
     const GLenum format = image.bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, image.width, image.height, 0, format, GL_UNSIGNED_BYTE, image.data.data());
   }
+
+  _target = GL_TEXTURE_CUBE_MAP;
 }
 
 
