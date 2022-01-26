@@ -94,7 +94,7 @@ void ScenePlayground::onGUI() {
   if (ImGui::CollapsingHeader("Point lights", ImGuiTreeNodeFlags_DefaultOpen)){
     for (int i = 0; i < 2; ++i) {
       const bool off = _pointLights[i].hasFlag(Entity::Flags::Hidden);
-      ImGui::Text("Light %d [%s] (Toggle with key '%d')", i, off ? "OFF" : "ON", i);
+      ImGui::Text("Light %d [%s] (Toggle with key '%d')", i, off ? "OFF" : "ON", i+1);
     }
   }
 }

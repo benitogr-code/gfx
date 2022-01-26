@@ -97,8 +97,22 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
 }
 
 void SandboxApp::onGUI() {
+  // App menu bar ///
+  if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::BeginMenu("Scene")){
+      if (ImGui::MenuItem("Playground")) {
+        LOG_INFO("[MenuBar] Playground scene selected");
+      }
+      if (ImGui::MenuItem("Cubemaps")) {
+        LOG_INFO("[MenuBar] Cubemaps scene selected");
+      }
+      ImGui::EndMenu();
+    }
+    ImGui::EndMainMenuBar();
+  }
+
   // App settings ///
-  ImGui::SetNextWindowPos(ImVec2(5.0f, 5.0f));
+  ImGui::SetNextWindowPos(ImVec2(5.0f, ImGui::GetTextLineHeight() * 2.0f));
   if (ImGui::Begin("App settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
     if (ImGui::CollapsingHeader("Camera")) {
       ImGui::SliderFloat("Fov", &_camera.fov, 45.0f, 90.0f);
