@@ -44,9 +44,9 @@ bool SandboxApp::onInit() {
     _pointLights[i].attachLight(props);
   }
 
-  _camera.position = glm::vec3(-1.2f, 3.44f, 5.71f);
-  _camera.pitch = -18.8f;
-  _camera.yaw = -6.6f;
+  _camera.position = glm::vec3(0.0f, 3.5f, 6.0f);
+  _camera.pitch = -20.0f;
+  _camera.yaw = 0.0f;
 
   _mainLightLat = 50.0f;
   _mainLightLong = 265.0f;
