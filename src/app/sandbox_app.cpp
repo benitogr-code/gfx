@@ -1,17 +1,21 @@
 #include "sandbox_app.h"
+#include "demos/scene_cubemaps.h"
 #include "demos/scene_playground.h"
 
 #include <imgui.h>
 
+#define SCENE_PLAYGROUND 0
+#define SCENE_CUBEMAPS   1
+
 SandboxApp::SandboxApp()
   : _inputFlags(0)
-  , _mousePosition(0.0f, 0.0f) {
+  , _mousePosition(0.0f, 0.0f)
+  , _selectedScene(~0) {
 
 }
 
 bool SandboxApp::onInit() {
-  _scene.reset(new ScenePlayground(*getAssetManager()));
-  _scene->init();
+  changeScene(SCENE_PLAYGROUND);
 
   _camera.position = glm::vec3(0.0f, 3.5f, 6.0f);
   _camera.pitch = -20.0f;
@@ -99,12 +103,14 @@ void SandboxApp::onUpdate(const UpdateContext& ctx) {
 void SandboxApp::onGUI() {
   // App menu bar ///
   if (ImGui::BeginMainMenuBar()) {
-    if (ImGui::BeginMenu("Scene")){
-      if (ImGui::MenuItem("Playground")) {
-        LOG_INFO("[MenuBar] Playground scene selected");
+    if (ImGui::BeginMenu("Demo Scene")){
+      if (ImGui::MenuItem("Playground", nullptr, nullptr, _selectedScene != SCENE_PLAYGROUND)) {
+        LOG_INFO("[App] Swiching to playground scene");
+        changeScene(SCENE_PLAYGROUND);
       }
-      if (ImGui::MenuItem("Cubemaps")) {
-        LOG_INFO("[MenuBar] Cubemaps scene selected");
+      if (ImGui::MenuItem("Cubemaps", nullptr, nullptr, _selectedScene != SCENE_CUBEMAPS)) {
+        LOG_INFO("[App] Switching to cubemaps scene");
+        changeScene(SCENE_CUBEMAPS);
       }
       ImGui::EndMenu();
     }
@@ -154,6 +160,21 @@ void SandboxApp::onGUI() {
     ImGui::Text("Frame time %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
     ImGui::End();
+  }
+}
+
+void SandboxApp::changeScene(uint32_t id) {
+  if (_selectedScene == id) return;
+
+  if (id == SCENE_PLAYGROUND) {
+    _scene.reset(new ScenePlayground(*getAssetManager()));
+    _scene->init();
+    _selectedScene = id;
+  }
+  else if (id == SCENE_CUBEMAPS) {
+    _scene.reset(new SceneCubemaps(*getAssetManager()));
+    _scene->init();
+    _selectedScene = id;
   }
 }
 

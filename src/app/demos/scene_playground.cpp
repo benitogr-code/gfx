@@ -5,7 +5,6 @@
 
 void ScenePlayground::init() {
   auto floorMaterial = getAssetManager().getMaterial("stone_floor");
-  auto skyboxMaterial = getAssetManager().getMaterial("skybox");
 
   _boxes[0].attachModel(getAssetManager().loadModel("models/wooden_crate.gfx"));
   _boxes[0].setPosition(glm::vec3(3.0f, 1.0f, 0.5f));

@@ -66,6 +66,7 @@ protected:
   virtual void onGUI() override;
 
 private:
+  void changeScene(uint32_t id);
   void setInputFlag(uint32_t flag, bool set);
   bool hasInputFlag(uint32_t flag) const;
 
@@ -75,4 +76,5 @@ private:
   glm::ivec2     _mousePosition;
 
   std::unique_ptr<Scene> _scene;
+  uint32_t               _selectedScene;
 };
