@@ -13,6 +13,20 @@ private:
     glm::mat4   modelTM;
   };
 
+  struct Stats {
+    Stats() {
+      reset();
+    }
+
+    void reset() {
+      drawcalls =  0;
+      pointlights = 0;
+    }
+
+    uint32_t drawcalls;
+    uint32_t pointlights;
+  };
+
   typedef std::vector<RenderItem>  RenderList;
   typedef std::vector<Light> LightsList;
 
@@ -30,6 +44,8 @@ public:
 
   Light& getMainLight() { return _mainLight; }
   const Light& getMainLight() const { return _mainLight; }
+
+  const Stats& getStats() const { return _stats; }
 
   void setClearColor(const ColorRGB& c) { _clearColor = c; }
   void toggleWireframe();
@@ -49,6 +65,7 @@ private:
   Light      _mainLight;
   LightsList _lightsList;
 
+  Stats    _stats;
   ColorRGB _clearColor;
   bool     _wireframeEnabled;
 };

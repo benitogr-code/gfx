@@ -153,10 +153,13 @@ void SandboxApp::onGUI() {
   ImGui::SetNextWindowBgAlpha(0.35f);
   if (ImGui::Begin("Overlay", nullptr, overlayFlags))
   {
+    auto& stats = getRenderer()->getStats();
+
     ImGui::Text(
       "Camera Position [%.3f, %.3f, %.3f] | Pitch %.2f, Yaw %.2f",
       _camera.position.x, _camera.position.y, _camera.position.z, _camera.pitch, _camera.yaw
     );
+    ImGui::Text("Drawcalls %d | Point lights %d", stats.drawcalls, stats.pointlights);
     ImGui::Text("Frame time %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
     ImGui::End();

@@ -103,6 +103,8 @@ void Renderer::beginFrame() {
 }
 
 void Renderer::endFrame() {
+  _stats.reset();
+
   // Prepare UBOs
   _uboCamera->writeBegin();
   _uboCamera->writeVec3(_viewCamera.getPosition());
@@ -130,6 +132,7 @@ void Renderer::endFrame() {
   }
   _uboLights->writeEnd();
 
+  uint32_t drawcalls = 0;
   // Go through render list
   for (auto item : _renderList) {
     auto shader = item.material->getShader();
@@ -139,10 +142,15 @@ void Renderer::endFrame() {
     shader->setUniformMatrix4("mtx_model", item.modelTM);
     item.material->apply();
     item.mesh->draw();
+
+    drawcalls++;
   }
 
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+  _stats.pointlights = _lightsList.size();
+  _stats.drawcalls = drawcalls;
 
   GL_CHECK_ERROR();
 }
