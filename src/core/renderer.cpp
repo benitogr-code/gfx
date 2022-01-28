@@ -94,7 +94,7 @@ void Renderer::toggleWireframe() {
   }
 }
 
-void Renderer::drawText(const std::string& text, const glm::vec3& position, bool center, float scale) {
+void Renderer::drawText(const std::string& text, const glm::vec3& position, const ColorRGB& color, bool center, float scale) {
   float xOffset = 0.0f;
 
   glm::vec3 screenPos = _viewCamera.worldToScreenCoordinates(position);
@@ -125,12 +125,12 @@ void Renderer::drawText(const std::string& text, const glm::vec3& position, bool
       const float h = charInfo->size.y * scale;
       const auto& offsets = charInfo->atlasOffsets;
 
-      _textVertices.push_back({ glm::vec3(xpos, ypos + h, zpos),     glm::vec2(offsets[0], 0.0f)});
-      _textVertices.push_back({ glm::vec3(xpos, ypos, zpos),         glm::vec2(offsets[0], 1.0f)});
-      _textVertices.push_back({ glm::vec3(xpos + w, ypos, zpos),     glm::vec2(offsets[1], 1.0f)});
-      _textVertices.push_back({ glm::vec3(xpos, ypos + h, zpos),     glm::vec2(offsets[0], 0.0f)});
-      _textVertices.push_back({ glm::vec3(xpos + w, ypos, zpos),     glm::vec2(offsets[1], 1.0f)});
-      _textVertices.push_back({ glm::vec3(xpos + w, ypos + h, zpos), glm::vec2(offsets[1], 0.0f)});
+      _textVertices.push_back({ glm::vec3(xpos, ypos + h, zpos),     glm::vec2(offsets[0], 0.0f), color });
+      _textVertices.push_back({ glm::vec3(xpos, ypos, zpos),         glm::vec2(offsets[0], 1.0f), color });
+      _textVertices.push_back({ glm::vec3(xpos + w, ypos, zpos),     glm::vec2(offsets[1], 1.0f), color });
+      _textVertices.push_back({ glm::vec3(xpos, ypos + h, zpos),     glm::vec2(offsets[0], 0.0f), color });
+      _textVertices.push_back({ glm::vec3(xpos + w, ypos, zpos),     glm::vec2(offsets[1], 1.0f), color });
+      _textVertices.push_back({ glm::vec3(xpos + w, ypos + h, zpos), glm::vec2(offsets[1], 0.0f), color });
 
       xOffset += (charInfo->advance.x * scale);
     }

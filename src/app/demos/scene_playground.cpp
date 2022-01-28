@@ -54,7 +54,6 @@ void ScenePlayground::render(Renderer& renderer) {
   mainLight.properties.specularMultiplier = _sunSpecularMult;
 
   const char* labels[2] = { "Light 1", "Light 2" };
-
   for (int i = 0; i < 2 ; i++) {
     _pointLights[i].render(renderer);
     renderer.drawText(labels[i], _pointLights[i].getPosition() + glm::vec3(0.0f, 0.0f, 0.2f));

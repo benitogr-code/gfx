@@ -41,7 +41,8 @@ void TextBuffer::setup() {
     _maxSize,
     BufferLayout({
       { BufferItemType::Float3, "position" },
-      { BufferItemType::Float2, "texCoords"}
+      { BufferItemType::Float2, "texCoords"},
+      { BufferItemType::Float3, "color" }
     })
   );
 

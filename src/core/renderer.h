@@ -52,7 +52,7 @@ public:
   void setClearColor(const ColorRGB& c) { _clearColor = c; }
   void toggleWireframe();
 
-  void drawText(const std::string& text, const glm::vec3& position, bool center = true, float scale = 1.0f);
+  void drawText(const std::string& text, const glm::vec3& position, const ColorRGB& = ColorRGB(1.0f), bool center = true, float scale = 1.0f);
   void drawLight(const Light& light);
   void drawMesh(MeshRef mesh, MaterialRef material, const glm::mat4& worldTM);
 
