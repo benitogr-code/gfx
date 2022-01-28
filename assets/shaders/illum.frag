@@ -6,10 +6,12 @@ const uint SlotFlag_Diffuse  = 0x00000001u;
 const uint SlotFlag_Specular = 0x00000002u;
 const uint SlotFlag_Normal   = 0x00000004u;
 
-in vec3 vtx_fragpos;
-in vec3 vtx_normal;
-in vec2 vtx_texcoords;
-in mat3 vtx_tbn;
+in VSOut {
+  vec3 fragpos;
+  vec3 normal;
+  vec2 texcoords;
+  mat3 tbn;
+} fs_in;
 
 struct Material {
   uint      active_slots;
@@ -74,19 +76,19 @@ void main() {
   vec3 specColor = material.specular;
   float shininess = material.shininess;
 
-  vec3 normal = normalize(vtx_normal);
-  vec3 viewDir = normalize(camera.pos.xyz - vtx_fragpos);
+  vec3 normal = normalize(fs_in.normal);
+  vec3 viewDir = normalize(camera.pos.xyz - fs_in.fragpos);
 
   if ((material.active_slots & SlotFlag_Diffuse) != 0) {
-      diffColor = texture(material.texture_diffuse, vtx_texcoords).rgb;
+      diffColor = texture(material.texture_diffuse, fs_in.texcoords).rgb;
   }
   if ((material.active_slots & SlotFlag_Specular) != 0) {
-      specColor = texture(material.texture_specular, vtx_texcoords).rgb;
+      specColor = texture(material.texture_specular, fs_in.texcoords).rgb;
   }
   if ((material.active_slots & SlotFlag_Normal) != 0) {
-    normal = texture(material.texture_normal, vtx_texcoords).rgb;
+    normal = texture(material.texture_normal, fs_in.texcoords).rgb;
     normal = normalize(normal * 2.0f - 1.0f);
-    normal = normalize(vtx_tbn * normal);
+    normal = normalize(fs_in.tbn * normal);
   }
 
   vec3 result = vec3(0.0, 0.0, 0.0);
@@ -94,7 +96,7 @@ void main() {
   result += calculateDirectionalLight(lights.main, diffColor, specColor, normal, viewDir, shininess);
 
   for (int i = 0; i < lights.numPointLights; ++i) {
-    result += calculatePointLight(lights.points[i], diffColor, specColor, vtx_fragpos, normal, viewDir, shininess);
+    result += calculatePointLight(lights.points[i], diffColor, specColor, fs_in.fragpos, normal, viewDir, shininess);
   }
 
   out_color = vec4(result, 1.0);

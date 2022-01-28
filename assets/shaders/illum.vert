@@ -9,20 +9,22 @@ layout (location = 3) in vec3 attr_tangent;
 
 uniform mat4 mtx_model;
 
-out vec3 vtx_fragpos;
-out vec3 vtx_normal;
-out vec2 vtx_texcoords;
-out mat3 vtx_tbn;
+out VSOut {
+  vec3 fragpos;
+  vec3 normal;
+  vec2 texcoords;
+  mat3 tbn;
+} vs_out;
 
 void main() {
     vec3 t = normalize(vec3(mtx_model * vec4(attr_tangent, 0.0f)));
     vec3 n = normalize(vec3(mtx_model * vec4(attr_normal, 0.0f)));
     vec3 b = cross(n, t);
 
-    vtx_fragpos = vec3(mtx_model * vec4(attr_pos, 1.0));
-    vtx_normal = vec3(mtx_model * vec4(attr_normal, 0.0f));
-    vtx_texcoords = attr_texcoords;
-    vtx_tbn = mat3(t, b, n);
+    vs_out.fragpos = vec3(mtx_model * vec4(attr_pos, 1.0));
+    vs_out.normal = vec3(mtx_model * vec4(attr_normal, 0.0f));
+    vs_out.texcoords = attr_texcoords;
+    vs_out.tbn = mat3(t, b, n);
 
-    gl_Position = camera.viewproj * mtx_model * vec4(attr_pos.x, attr_pos.y, attr_pos.z, 1.0);
+    gl_Position = camera.viewproj * mtx_model * vec4(attr_pos, 1.0);
 }
