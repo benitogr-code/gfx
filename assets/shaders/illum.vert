@@ -20,7 +20,7 @@ void main() {
     vec3 b = cross(n, t);
 
     vtx_fragpos = vec3(mtx_model * vec4(attr_pos, 1.0));
-    vtx_normal = attr_normal;
+    vtx_normal = vec3(mtx_model * vec4(attr_normal, 0.0f));
     vtx_texcoords = attr_texcoords;
     vtx_tbn = mat3(t, b, n);
 
