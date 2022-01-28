@@ -28,6 +28,7 @@ public:
   void attachLight(const Light::Properties& properties);
 
   void cloneModelMaterial();
+  void setOverrideMaterial(MaterialRef material);
   MaterialRef getModelMaterial() const;
 
   void render(Renderer& renderer);

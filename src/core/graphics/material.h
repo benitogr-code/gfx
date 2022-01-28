@@ -19,6 +19,7 @@ enum TextureType {
 
 enum MaterialParamType {
   MaterialParamType_Float = 0,
+  MaterialParamType_Int,
   MaterialParamType_Vec3
 };
 
@@ -35,6 +36,7 @@ struct MaterialParam {
   MaterialParamType type;
   union {
     float      _f;
+    int        _i;
     glm::vec3  _vec3;
   } value;
 };
@@ -56,6 +58,7 @@ public:
 
   void setTextureSlot(MaterialSlotId id, const char* name, TextureRef texture);
   void setParamFloat(const char* name, float value);
+  void setParamInt(const char* name, int value);
   void setParamVec3(const char* name, const glm::vec3& value);
 
   static MaterialRef Create(ShaderRef shader);

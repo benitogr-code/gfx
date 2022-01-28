@@ -51,6 +51,10 @@ void Entity::cloneModelMaterial() {
   }
 }
 
+void Entity::setOverrideMaterial(MaterialRef material) {
+  _overrideMaterial = material;
+}
+
 MaterialRef Entity::getModelMaterial() const {
   if (_overrideMaterial) {
     return _overrideMaterial;

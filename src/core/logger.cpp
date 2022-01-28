@@ -7,7 +7,7 @@ std::shared_ptr<spdlog::logger> Logger::_instance;
 
 /*static*/ void Logger::init() {
   if (_instance == nullptr) {
-    _instance = spdlog::stdout_color_mt("Tetris");
+    _instance = spdlog::stdout_color_mt("Gfx");
     _instance->set_pattern("[%D %T] %^[%l]%$ %v");
   }
 }

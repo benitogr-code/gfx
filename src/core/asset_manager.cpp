@@ -88,24 +88,6 @@ namespace JsonHelper {
       material->setParamVec3("material.color", color);
     }
   }
-
-  void readSkyboxShaderParameters(const Json::Value& root, MaterialRef material) {
-    const char* faces[Texture3DCreateParams::Faces::Count] = {
-      "right", "left", "top", "bottom", "front", "back"
-    };
-
-    if (root["texture_maps"].isObject()){
-      Texture3DCreateParams params;
-      for (int i = 0; i < Texture3DCreateParams::Faces::Count; ++i) {
-        std::string path = JsonHelper::readString(root["texture_maps"], faces[i], "");
-        params.filePaths[i] = std::string("materials/") + path;
-      }
-
-      LOG_INFO("[AssetManager] Loading 3d textures");
-
-      material->setTextureSlot(MaterialSlotId_0, "material.cubemap_skybox", Texture::CreateCubemap(params));
-    }
-  }
 }
 
 // Assimp Helper
@@ -170,9 +152,10 @@ AssetManager::~AssetManager() {
 }
 
 void AssetManager::init() {
-  const uint32_t SHADER_COUNT = 3;
+  const uint32_t SHADER_COUNT = 4;
   const char* SHADERS[SHADER_COUNT] = {
     "color",
+    "env_mapping",
     "illum",
     "skybox"
   };
@@ -200,6 +183,12 @@ MaterialRef AssetManager::getMaterial(const char* name) const {
   auto iter = _materials.find(std::string(name));
 
   return iter != _materials.end() ? iter->second : _defaultMaterial;
+}
+
+ShaderRef AssetManager::getShader(const char* name) const {
+  auto iter = _shaders.find(std::string(name));
+
+  return iter != _shaders.end() ? iter->second : nullptr;
 }
 
 GfxModelRef AssetManager::loadModel(const char* path) {
@@ -262,12 +251,6 @@ ShaderRef AssetManager::loadShader(const char* name) {
   return shader;
 }
 
-ShaderRef AssetManager::getShader(const char* name) const {
-  auto iter = _shaders.find(std::string(name));
-
-  return iter != _shaders.end() ? iter->second : nullptr;
-}
-
 MaterialRef AssetManager::loadMaterial(const char* name) {
   char materialFile[128];
   snprintf(materialFile, sizeof(materialFile), "materials/%s.mtl", name);
@@ -292,11 +275,8 @@ MaterialRef AssetManager::loadMaterial(const char* name) {
   if (shaderName.compare("color") == 0) {
     JsonHelper::readColorShaderParameters(root, material);
   }
-  else if (shaderName.compare("illum")== 0) {
+  else if (shaderName.compare("illum")  == 0) {
     JsonHelper::readIllumPongShaderParameters(root, material);
-  }
-  else if (shaderName.compare("skybox") == 0) {
-    JsonHelper::readSkyboxShaderParameters(root, material);
   }
 
   _materials.insert_or_assign(std::string(name), material);

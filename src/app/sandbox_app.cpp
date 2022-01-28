@@ -15,11 +15,7 @@ SandboxApp::SandboxApp()
 }
 
 bool SandboxApp::onInit() {
-  changeScene(SCENE_PLAYGROUND);
-
-  _camera.position = glm::vec3(0.0f, 3.5f, 6.0f);
-  _camera.pitch = -20.0f;
-  _camera.yaw = 0.0f;
+  changeScene(SCENE_CUBEMAPS);
 
   return true;
 }
@@ -105,7 +101,7 @@ void SandboxApp::onGUI() {
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("Demo Scene")){
       if (ImGui::MenuItem("Playground", nullptr, nullptr, _selectedScene != SCENE_PLAYGROUND)) {
-        LOG_INFO("[App] Swiching to playground scene");
+        LOG_INFO("[App] Switching to playground scene");
         changeScene(SCENE_PLAYGROUND);
       }
       if (ImGui::MenuItem("Cubemaps", nullptr, nullptr, _selectedScene != SCENE_CUBEMAPS)) {
@@ -173,11 +169,19 @@ void SandboxApp::changeScene(uint32_t id) {
     _scene.reset(new ScenePlayground(*getAssetManager()));
     _scene->init();
     _selectedScene = id;
+
+    _camera.position = glm::vec3(0.0f, 3.5f, 6.0f);
+    _camera.pitch = -20.0f;
+    _camera.yaw = 0.0f;
   }
   else if (id == SCENE_CUBEMAPS) {
     _scene.reset(new SceneCubemaps(*getAssetManager()));
     _scene->init();
     _selectedScene = id;
+
+    _camera.position = glm::vec3(2.76f, 0.84f, 5.54f);
+    _camera.pitch = 4.6f;
+    _camera.yaw = 19.0f;
   }
 }
 

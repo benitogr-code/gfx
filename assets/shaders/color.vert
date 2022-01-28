@@ -3,8 +3,6 @@
 //#common.inc
 
 layout (location = 0) in vec3 attr_position;
-layout (location = 1) in vec3 attr_normal;
-layout (location = 2) in vec2 attr_texcoords;
 
 uniform mat4 mtx_model;
 

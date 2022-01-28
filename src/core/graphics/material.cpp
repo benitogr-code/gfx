@@ -43,6 +43,10 @@ void Material::apply() {
       _shader->setUniformFloat(iter->first.c_str(), iter->second.value._f);
       break;
 
+    case MaterialParamType_Int:
+      _shader->setUniformInt(iter->first.c_str(), iter->second.value._i);
+      break;
+
     case MaterialParamType_Vec3:
       _shader->setUniformVec3(iter->first.c_str(), iter->second.value._vec3);
       break;
@@ -64,6 +68,13 @@ void Material::setParamFloat(const char* name, float value) {
   MaterialParam param;
   param.type = MaterialParamType_Float;
   param.value._f = value;
+  _params.insert_or_assign(std::string(name), param);
+}
+
+void Material::setParamInt(const char* name, int value) {
+  MaterialParam param;
+  param.type = MaterialParamType_Int;
+  param.value._i = value;
   _params.insert_or_assign(std::string(name), param);
 }
 
