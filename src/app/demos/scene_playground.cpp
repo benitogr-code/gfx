@@ -18,8 +18,12 @@ void ScenePlayground::init() {
   _cyborg.attachModel(getAssetManager().loadModel("models/cyborg.gfx"));
   _cyborg.setPosition(glm::vec3(0.0f, 0.2f, -0.7f));
 
-  ColorRGB colors[2] = { ColorRGB(0.20f, 0.80f, 0.63f), ColorRGB(0.5f, 0.2f, 0.1f) };
+  ColorRGB    colors[2] = { ColorRGB(0.20f, 0.80f, 0.63f), ColorRGB(0.5f, 0.2f, 0.1f) };
+  const char* labels[2] = { "Light 1", "Light 2" };
+
   for (int i = 0; i < 2; ++i) {
+    _pointLights[i].setName(labels[i]);
+    _pointLights[i].setFlag(Entity::Flags::DisplayName, true);
     _pointLights[i].attachModel(getAssetManager().loadModel("models/point_light.gfx"));
     _pointLights[i].cloneModelMaterial();
     _pointLights[i].getModelMaterial()->setParamVec3("material.color", colors[i]);
@@ -53,17 +57,15 @@ void ScenePlayground::render(Renderer& renderer) {
   mainLight.properties.ambientMultiplier = _sunAmbientMult;
   mainLight.properties.specularMultiplier = _sunSpecularMult;
 
-  const char* labels[2] = { "Light 1", "Light 2" };
   for (int i = 0; i < 2 ; i++) {
     _pointLights[i].render(renderer);
-    renderer.drawText(labels[i], _pointLights[i].getPosition() + glm::vec3(0.0f, 0.0f, 0.2f));
+  }
+
+  for (int i = 0; i < 2 ; i++) {
+    _boxes[i].render(renderer);
   }
 
   _ground.render(renderer);
-
-  _boxes[0].render(renderer);
-  _boxes[1].render(renderer);
-
   _cyborg.render(renderer);
 }
 

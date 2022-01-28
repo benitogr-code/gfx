@@ -9,6 +9,7 @@ class Entity {
 public:
   enum class Flags: uint32_t {
     Hidden = BIT(0),
+    DisplayName = BIT(1)
   };
 
   Entity();
@@ -24,6 +25,9 @@ public:
   void setFlag(Flags flag, bool set);
   bool hasFlag(Flags flag) const;
 
+  void setName(const char* name) { _name = name; }
+  const char* getName() const { return _name.c_str(); }
+
   void attachModel(GfxModelRef model);
   void attachLight(const Light::Properties& properties);
 
@@ -37,6 +41,8 @@ private:
   void updateWorldTM();
 
 private:
+  std::string _name;
+
   GfxModelRef _model;
   MaterialRef _overrideMaterial;
   std::unique_ptr<Light> _light;

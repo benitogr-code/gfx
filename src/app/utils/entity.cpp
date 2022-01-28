@@ -77,6 +77,10 @@ void Entity::render(Renderer& renderer) {
       renderer.drawMesh(_model->getMesh(idx), material, _worldTM);
     }
   }
+
+  if (_name.length() > 0 && hasFlag(Flags::DisplayName)) {
+    renderer.drawText(_name, _position + glm::vec3(0.0f, 0.0f, 0.2f));
+  }
 }
 
 void Entity::updateWorldTM() {
