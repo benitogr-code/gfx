@@ -1,9 +1,11 @@
 #pragma once
 
 #include "camera.h"
+#include "graphics/font_atlas.h"
 #include "graphics/lights.h"
 #include "graphics/material.h"
 #include "graphics/mesh.h"
+#include "graphics/text_buffer.h"
 
 class Renderer {
 private:
@@ -50,6 +52,7 @@ public:
   void setClearColor(const ColorRGB& c) { _clearColor = c; }
   void toggleWireframe();
 
+  void drawText(const std::string& text, const glm::vec3& position, bool center = true, float scale = 1.0f);
   void drawLight(const Light& light);
   void drawMesh(MeshRef mesh, MaterialRef material, const glm::mat4& worldTM);
 
@@ -60,6 +63,11 @@ private:
   Camera   _viewCamera;
   UBORef   _uboCamera;
   UBORef   _uboLights;
+
+  FontAtlasRef  _font;
+  ShaderRef     _textShader;
+  TextBufferRef _textBuffer;
+  std::vector<TextVertex> _textVertices;
 
   RenderList _renderList;
   Light      _mainLight;

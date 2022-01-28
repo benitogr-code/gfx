@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "font.h"
 #include "graphics/debug_utils.h"
 
 #include "imgui/imgui_impl_sdl.h"
@@ -8,6 +9,9 @@
 #define UBO_CAMERA_IDX 0
 #define UBO_LIGHTS_IDX 1
 
+#define TEXT_BUFFER_CAPACITY 2048
+#define TEXT_VERTICES_CAPACITY 2048 * 6
+
 Renderer::Renderer()
   : _clearColor(0.0f)
   , _wireframeEnabled(false) {
@@ -16,10 +20,23 @@ Renderer::Renderer()
 }
 
 void Renderer::init() {
+  LOG_INFO("[Renderer] Initializing resources");
+
+  _font = Font::loadFont("fonts/meslo_lgs_bold.ttf", 20);
+  _textBuffer = TextBuffer::Create(TEXT_BUFFER_CAPACITY);
+  _textVertices.reserve(TEXT_VERTICES_CAPACITY);
+
+  ShaderCreateParams params;
+  params.name = "text";
+  params.vertexShaderPath = "shaders/text.vert";
+  params.fragmentShaderPath = "shaders/text.frag";
+  _textShader = Shader::Create(params);
+
   _uboCamera = UBO::Create(
       UBO_CAMERA_IDX,
       {
         UBO::newVec(3),             // position
+        UBO::newVec(2),             // viewport size (w, h)
         UBO::newColumnMatrix(4, 4), // view
         UBO::newColumnMatrix(4, 4), // projection
         UBO::newColumnMatrix(4, 4), // view-projection
@@ -50,6 +67,8 @@ void Renderer::init() {
       }
   );
 
+  _textShader->setUniformBlockBind("Camera", UBO_CAMERA_IDX);
+
   _mainLight.position = glm::vec3(20.0f, 30.0f, 100.0f);
   _mainLight.properties.color = ColorRGB(0.6f);
   _mainLight.properties.ambientMultiplier = 0.2f;
@@ -72,6 +91,49 @@ void Renderer::toggleWireframe() {
   else {
     glEnable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  }
+}
+
+void Renderer::drawText(const std::string& text, const glm::vec3& position, bool center, float scale) {
+  float xOffset = 0.0f;
+
+  glm::vec3 screenPos = _viewCamera.worldToScreenCoordinates(position);
+
+  if (center) {
+    float width = 0.0f;
+
+    for (size_t i = 0; i < text.length(); ++i) {
+      const unsigned char c = text.at(i);
+      auto charInfo = _font->getCharacterInfo(c);
+
+      width += charInfo ? charInfo->advance.x * scale : 0.0f;
+    }
+
+    screenPos.x -= (width * 0.5f);
+  }
+
+  for (size_t i = 0; i < text.size(); ++i) {
+    const unsigned char c = text.at(i);
+    auto charInfo = _font->getCharacterInfo(c);
+
+    if (charInfo) {
+      const float xpos = xOffset + screenPos.x + (charInfo->bearing.x * scale);
+      const float ypos = screenPos.y - (charInfo->size.y - (charInfo->bearing.y * scale));
+      const float zpos = screenPos.z;
+
+      const float w = charInfo->size.x * scale;
+      const float h = charInfo->size.y * scale;
+      const auto& offsets = charInfo->atlasOffsets;
+
+      _textVertices.push_back({ glm::vec3(xpos, ypos + h, zpos),     glm::vec2(offsets[0], 0.0f)});
+      _textVertices.push_back({ glm::vec3(xpos, ypos, zpos),         glm::vec2(offsets[0], 1.0f)});
+      _textVertices.push_back({ glm::vec3(xpos + w, ypos, zpos),     glm::vec2(offsets[1], 1.0f)});
+      _textVertices.push_back({ glm::vec3(xpos, ypos + h, zpos),     glm::vec2(offsets[0], 0.0f)});
+      _textVertices.push_back({ glm::vec3(xpos + w, ypos, zpos),     glm::vec2(offsets[1], 1.0f)});
+      _textVertices.push_back({ glm::vec3(xpos + w, ypos + h, zpos), glm::vec2(offsets[1], 0.0f)});
+
+      xOffset += (charInfo->advance.x * scale);
+    }
   }
 }
 
@@ -100,6 +162,7 @@ void Renderer::beginFrame() {
 
   _renderList.clear();
   _lightsList.clear();
+  _textVertices.clear();
 }
 
 void Renderer::endFrame() {
@@ -108,6 +171,7 @@ void Renderer::endFrame() {
   // Prepare UBOs
   _uboCamera->writeBegin();
   _uboCamera->writeVec3(_viewCamera.getPosition());
+  _uboCamera->writeVec2(_viewCamera.getViewport());
   _uboCamera->writeMat4(_viewCamera.getView());
   _uboCamera->writeMat4(_viewCamera.getProjection());
   _uboCamera->writeMat4(_viewCamera.getViewProjection());
@@ -144,6 +208,20 @@ void Renderer::endFrame() {
     item.mesh->draw();
 
     drawcalls++;
+  }
+
+  // Render text
+  if (_textVertices.size() > 0) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _font->id());
+    _textShader->use();
+    _textShader->setUniformInt("texture_font", 0);
+    drawcalls += _textBuffer->draw(_textVertices);
+
+    glDisable(GL_BLEND);
   }
 
   ImGui::Render();

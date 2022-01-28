@@ -19,6 +19,7 @@ struct PointLight {
 
 layout(std140) uniform Camera {
   vec3 pos;
+  vec2 viewport;
   mat4 view;
   mat4 proj;
   mat4 viewproj;

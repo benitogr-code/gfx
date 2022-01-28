@@ -41,3 +41,12 @@ void Camera::setWorldLocation(const glm::vec3& position, const glm::quat& rotati
   _view = glm::inverse(_world);
   _viewProjection = _projection * _view;
 }
+
+void Camera::setViewport(int width, int height) {
+  _viewPort.x = width;
+  _viewPort.y = height;
+}
+
+glm::vec3 Camera::worldToScreenCoordinates(const glm::vec3& position) const {
+  return glm::project(position, _view, _projection, glm::vec4(0, 0, _viewPort.x, _viewPort.y));
+}

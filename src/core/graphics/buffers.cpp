@@ -160,7 +160,7 @@ void VAO::unbind() {
   glBindVertexArray(0);
 }
 
-void VAO::addVertextBuffer(VBORef buffer) {
+void VAO::addVertexBuffer(VBORef buffer) {
   glBindVertexArray(_id);
   glBindBuffer(GL_ARRAY_BUFFER, buffer->id());
 
@@ -214,6 +214,10 @@ void VAO::addVertextBuffer(VBORef buffer) {
   glBindVertexArray(0);
 
   _vertexBuffers.push_back(buffer);
+}
+
+VBORef VAO::getVertexBuffer(size_t i) const {
+  return i < _vertexBuffers.size() ? _vertexBuffers[i] : nullptr;
 }
 
 void VAO::setIndexBuffer(IBORef buffer) {

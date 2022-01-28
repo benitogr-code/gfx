@@ -27,6 +27,9 @@ public:
   SDL_GLContext getGLContext() const { return _context; }
   float         getAspectRatio() const { return (float)_width / (float)_height; }
 
+  int           getWidth() const { return _width; }
+  int           getHeight() const { return _height; }
+
 private:
   int _width;
   int _height;

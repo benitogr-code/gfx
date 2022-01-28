@@ -66,14 +66,10 @@ FontAtlas::~FontAtlas() {
   glDeleteTextures(1, &_textureId);
 }
 
-void FontAtlas::bindTexture() {
-  glBindTexture(GL_TEXTURE_2D, _textureId);
-}
-
 /*static*/ FontAtlasRef FontAtlas::Create(FT_LibraryRec_* library, const char* fontFile, int pixelSize) {
   FT_Face face;
   if (FT_New_Face(library, fontFile, 0, &face)) {
-    LOG_ERROR("[Renderer] Failed to load font {}", fontFile);
+    LOG_ERROR("[FontAtlas] Failed to load font {}", fontFile);
     return nullptr;
   }
 

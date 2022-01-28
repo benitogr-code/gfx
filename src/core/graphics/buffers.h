@@ -132,7 +132,8 @@ public:
   void bind();
   void unbind();
 
-  void addVertextBuffer(VBORef buffer);
+  void addVertexBuffer(VBORef buffer);
+  VBORef getVertexBuffer(size_t i) const;
   void setIndexBuffer(IBORef buffer);
 
   const uint32_t indexCount() const { return _indexBuffer ? _indexBuffer->count() : 0; }

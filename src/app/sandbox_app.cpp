@@ -15,7 +15,7 @@ SandboxApp::SandboxApp()
 }
 
 bool SandboxApp::onInit() {
-  changeScene(SCENE_CUBEMAPS);
+  changeScene(SCENE_PLAYGROUND);
 
   return true;
 }

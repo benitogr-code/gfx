@@ -28,7 +28,7 @@ void Mesh::setup() {
     );
 
     _vao = VAO::Create();
-    _vao->addVertextBuffer(vbo);
+    _vao->addVertexBuffer(vbo);
 
     if(_indices.size() > 0) {
          auto ibo = IBO::Create(_indices.data(), _indices.size());

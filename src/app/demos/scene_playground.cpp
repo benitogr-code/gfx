@@ -53,8 +53,12 @@ void ScenePlayground::render(Renderer& renderer) {
   mainLight.properties.ambientMultiplier = _sunAmbientMult;
   mainLight.properties.specularMultiplier = _sunSpecularMult;
 
-  _pointLights[0].render(renderer);
-  _pointLights[1].render(renderer);
+  const char* labels[2] = { "Light 1", "Light 2" };
+
+  for (int i = 0; i < 2 ; i++) {
+    _pointLights[i].render(renderer);
+    renderer.drawText(labels[i], _pointLights[i].getPosition() + glm::vec3(0.0f, 0.0f, 0.2f));
+  }
 
   _ground.render(renderer);
 
@@ -93,7 +97,7 @@ void ScenePlayground::onGUI() {
   if (ImGui::CollapsingHeader("Point lights", ImGuiTreeNodeFlags_DefaultOpen)){
     for (int i = 0; i < 2; ++i) {
       const bool off = _pointLights[i].hasFlag(Entity::Flags::Hidden);
-      ImGui::Text("Light %d [%s] (Toggle with key '%d')", i, off ? "OFF" : "ON", i+1);
+      ImGui::Text("Light %d [%s] (Toggle with key '%d')", i+1, off ? "OFF" : "ON", i+1);
     }
   }
 }

@@ -24,7 +24,7 @@ public:
   const CharacterInfo* getCharacterInfo(uint8_t c) const {
     return (c < _characters.max_size()) ? &_characters[c] : nullptr;
   }
-  void bindTexture();
+  uint32_t id() const { return _textureId; }
 
   static FontAtlasRef Create(FT_LibraryRec_* library, const char* fontFile, int pixelSize);
 
