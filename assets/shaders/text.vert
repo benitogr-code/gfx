@@ -17,5 +17,5 @@ void main() {
 
   vs_out.texcoords = attr_texcoords;
   vs_out.color = attr_color;
-  gl_Position = vec4(x, y, 0.0f, 1.0f);
+  gl_Position = vec4(x, y, attr_position.z, 1.0f);
 }

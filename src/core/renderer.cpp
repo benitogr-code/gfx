@@ -97,7 +97,14 @@ void Renderer::toggleWireframe() {
 void Renderer::drawText(const std::string& text, const glm::vec3& position, const ColorRGB& color, bool center, float scale) {
   float xOffset = 0.0f;
 
+  glm::vec2 viewport = _viewCamera.getViewport();
   glm::vec3 screenPos = _viewCamera.worldToScreenCoordinates(position);
+
+  const bool visible = fabsf(screenPos.z) <= 1.0f
+    && (screenPos.x > -20.0f && screenPos.x < viewport.x + 20.0f)
+    && (screenPos.y > -20.0f && screenPos.y < viewport.y + 20.0f);
+
+  if (!visible) return;
 
   if (center) {
     float width = 0.0f;
