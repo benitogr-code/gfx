@@ -70,7 +70,7 @@ void Input::updateKeybard() {
 void Input::updateMouse() {
   const int maxEvents = 32;
   SDL_Event events[maxEvents];
-  const int eventsRead = SDL_PeepEvents(events, maxEvents, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEBUTTONUP);
+  const int eventsRead = SDL_PeepEvents(events, maxEvents, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEWHEEL);
 
   if (eventsRead == -1) {
     LOG_ERROR("[Input] Error reading keyboard events: {}", SDL_GetError());
@@ -92,6 +92,18 @@ void Input::updateMouse() {
         mouse.button = MouseButton_Motion;
         mouse.state = motionEvent.state == SDL_PRESSED ? InputState_Pressed : InputState_Released;
         mouse.pos = glm::ivec2(motionEvent.x, motionEvent.y);
+
+        mouseEvents.push_back(mouse);
+      }
+    }
+    else if (events[i].type == SDL_MOUSEWHEEL) {
+      if (!io.WantCaptureMouse) {
+        const auto& wheel = events[i].wheel;
+
+        MouseEvent mouse;
+        mouse.button = MouseButton_MouseWheel;
+        mouse.state = InputState_Pressed;
+        mouse.pos = glm::ivec2(wheel.x, wheel.y);
 
         mouseEvents.push_back(mouse);
       }

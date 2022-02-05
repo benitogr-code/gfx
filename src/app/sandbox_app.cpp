@@ -65,6 +65,10 @@ void SandboxApp::onMouseEvent(const MouseEvent& event) {
 
     _mousePosition = event.pos;
   }
+  else if (event.button == MouseButton_MouseWheel) {
+    const float fov = _camera.fov - (event.pos.y * 0.5f);
+    _camera.fov = std::clamp(fov, 30.0f, 90.0f);
+  }
 }
 
 void SandboxApp::onUpdate(const UpdateContext& ctx) {
@@ -117,7 +121,6 @@ void SandboxApp::onGUI() {
   ImGui::SetNextWindowPos(ImVec2(5.0f, ImGui::GetTextLineHeight() * 2.0f));
   if (ImGui::Begin("App settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
     if (ImGui::CollapsingHeader("Camera")) {
-      ImGui::SliderFloat("Fov", &_camera.fov, 45.0f, 90.0f);
       ImGui::SliderFloat("Speed", &_camera.movementSpeed, 0.1f, 10.0f);
       ImGui::SliderFloat("Mouse sensitivity", &_camera.mouseSensitivity, 0.01f, 0.3f);
     }
@@ -152,8 +155,9 @@ void SandboxApp::onGUI() {
     auto& stats = getRenderer()->getStats();
 
     ImGui::Text(
-      "Camera Position [%.3f, %.3f, %.3f] | Pitch %.2f, Yaw %.2f",
-      _camera.position.x, _camera.position.y, _camera.position.z, _camera.pitch, _camera.yaw
+      "Camera Position [%.3f, %.3f, %.3f] | Pitch %.2f, Yaw %.2f | Fov %.2f",
+      _camera.position.x, _camera.position.y, _camera.position.z,
+      _camera.pitch, _camera.yaw, _camera.fov
     );
     ImGui::Text("Drawcalls %d | Point lights %d", stats.drawcalls, stats.pointlights);
     ImGui::Text("Frame time %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

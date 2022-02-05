@@ -25,7 +25,8 @@ enum MouseButton {
   MouseButton_Left,
   MouseButton_Right,
   MouseButton_Middle,
-  MouseButton_Motion
+  MouseButton_Motion,
+  MouseButton_MouseWheel,
 };
 
 enum InputState: unsigned int {
