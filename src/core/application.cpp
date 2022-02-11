@@ -29,9 +29,7 @@ bool Application::init(const WindowDesc& desc) {
   );
 
   _renderer.reset(new Renderer());
-  _renderer->init();
-  _renderer->getViewCamera().setViewport(_window->getWidth(), _window->getHeight());
-  _renderer->getViewCamera().setAspectRatio(_window->getAspectRatio());
+  _renderer->init(_window->getWidth(), _window->getHeight());
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
@@ -114,8 +112,7 @@ void Application::checkSystemEvents() {
         int width = events[i].window.data1;
         int height = events[i].window.data2;
         _window->onResized(width, height);
-        _renderer->getViewCamera().setViewport(width, height);
-        _renderer->getViewCamera().setAspectRatio(_window->getAspectRatio());
+        _renderer->setViewport(width, height);
       }
     }
   }

@@ -39,7 +39,7 @@ private:
 public:
   Renderer();
 
-  void init();
+  void init(int width, int height);
 
   Camera& getViewCamera() { return _viewCamera; };
   const Camera& getViewCamera() const { return _viewCamera; }
@@ -49,6 +49,7 @@ public:
 
   const Stats& getStats() const { return _stats; }
 
+  void setViewport(int width, int height);
   void setClearColor(const ColorRGB& c) { _clearColor = c; }
   void toggleWireframe();
 
@@ -74,6 +75,8 @@ private:
   LightsList _lightsList;
 
   Stats    _stats;
+  uint32_t _viewportHeight;
+  uint32_t _viewportWidth;
   ColorRGB _clearColor;
   bool     _wireframeEnabled;
 };

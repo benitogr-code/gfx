@@ -19,8 +19,10 @@ Renderer::Renderer()
     _renderList.reserve(256);
 }
 
-void Renderer::init() {
+void Renderer::init(int width, int height) {
   LOG_INFO("[Renderer] Initializing resources");
+
+  setViewport(width, height);
 
   _font = Font::loadFont("fonts/meslo_lgs_bold.ttf", 20);
   _textBuffer = TextBuffer::Create(TEXT_BUFFER_CAPACITY);
@@ -80,6 +82,15 @@ void Renderer::init() {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
   glFrontFace(GL_CCW);
+}
+
+void Renderer::setViewport(int width, int height) {
+  const float aspectRatio = (float)width / (float)height;
+
+  _viewportWidth = width;
+  _viewportHeight = height;
+  _viewCamera.setViewport(width, height);
+  _viewCamera.setAspectRatio(aspectRatio);
 }
 
 void Renderer::toggleWireframe() {
