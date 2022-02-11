@@ -434,3 +434,48 @@ bool UBO::pop() {
 
   return pop;
 }
+
+// FBO
+FBO::FBO(const FBOSpec& spec)
+  : _spec(spec) {
+
+  glGenFramebuffers(1, &_id);
+  glBindFramebuffer(GL_FRAMEBUFFER, _id);
+
+  // Color attachment
+  glGenTextures(1, &_colorAttachment);
+  glBindTexture(GL_TEXTURE_2D, _colorAttachment);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, spec.width, spec.height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorAttachment, 0);
+
+  // Depth and stencil
+  glGenRenderbuffers(1, &_depthAttachment);
+  glBindRenderbuffer(GL_RENDERBUFFER, _depthAttachment);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, spec.width, spec.height);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthAttachment);
+
+  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    LOG_ERROR("[FBO] Framebuffer not complete");
+  }
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+FBO::~FBO() {
+  glDeleteFramebuffers(1, &_id);
+  glDeleteTextures(1, &_colorAttachment);
+  glDeleteRenderbuffers(1, &_depthAttachment);
+}
+
+/*static*/ FBORef FBO::Create(const FBOSpec& spec) {
+  FBORef buffer(new FBO(spec));
+
+  return buffer;
+}

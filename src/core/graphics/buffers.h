@@ -148,6 +148,8 @@ private:
   uint32_t _attributeCount;
 };
 
+// Uniform buffer ///
+
 class UBO;
 typedef std::shared_ptr<UBO> UBORef;
 
@@ -334,4 +336,33 @@ private:
   std::vector<uint8_t> _writeBuffer;
   uint32_t   _writePos;
   uint32_t   _writePoppedPos;
+};
+
+// Framebuffer ///
+
+struct FBOSpec {
+  uint32_t width;
+  uint32_t height;
+};
+
+class FBO;
+typedef std::shared_ptr<FBO> FBORef;
+
+class FBO {
+public:
+  ~FBO();
+
+  static FBORef Create(const FBOSpec& spec);
+
+private:
+  FBO() = delete;
+  FBO(FBO& fbo) = delete;
+  FBO(const FBOSpec& spec);
+
+private:
+  FBOSpec _spec;
+
+  uint32_t _id;
+  uint32_t _colorAttachment;
+  uint32_t _depthAttachment;
 };
