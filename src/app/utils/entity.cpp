@@ -74,7 +74,8 @@ void Entity::render(Renderer& renderer) {
   if (_model) {
     MaterialRef material = _overrideMaterial ? _overrideMaterial : _model->getMaterial();
     for (uint32_t idx = 0; idx < _model->getMeshCount(); ++idx) {
-      renderer.drawMesh(_model->getMesh(idx), material, _worldTM);
+      uint32_t drawFlags = hasFlag(Entity::Flags::RenderShadow) ? DrawFlags_Shadow : DrawFlags_None;
+      renderer.drawMesh(_model->getMesh(idx), material, _worldTM, drawFlags);
     }
   }
 

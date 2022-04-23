@@ -340,9 +340,15 @@ private:
 
 // Framebuffer ///
 
+enum class FBOType {
+  Default,
+  Shadowmap
+};
+
 struct FBOSpec {
   uint32_t width;
   uint32_t height;
+  FBOType  type;
 };
 
 class FBO;
@@ -353,6 +359,13 @@ public:
   ~FBO();
 
   static FBORef Create(const FBOSpec& spec);
+
+  uint32_t id() const { return _id; }
+  uint32_t colorAttachment() const { return _colorAttachment; }
+  uint32_t depthAttachment() const { return _depthAttachment; }
+
+  const uint32_t width() const { return _spec.width; }
+  const uint32_t height() const { return _spec.height; }
 
 private:
   FBO() = delete;

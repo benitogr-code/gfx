@@ -9,14 +9,18 @@ void ScenePlayground::init() {
   _boxes[0].attachModel(getAssetManager().loadModel("models/wooden_crate.gfx"));
   _boxes[0].setPosition(glm::vec3(3.0f, 1.0f, 0.5f));
   _boxes[0].setRotation(glm::angleAxis(glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+  _boxes[0].setFlag(Entity::Flags::RenderShadow, true);
 
   _boxes[1].attachModel(getAssetManager().loadModel("models/wooden_crate.gfx"));
   _boxes[1].setPosition(glm::vec3(-3.0f, 1.0f, 0.5f));
+  _boxes[1].setFlag(Entity::Flags::RenderShadow, true);
 
   _ground.attachModel(GfxModel::Create(MeshUtils::CreateGroundPlane(2.0f, 15, 2.0f), floorMaterial));
+  //_ground.setFlag(Entity::Flags::RenderShadow, true);
 
   _cyborg.attachModel(getAssetManager().loadModel("models/cyborg.gfx"));
   _cyborg.setPosition(glm::vec3(0.0f, 0.2f, -0.7f));
+  _cyborg.setFlag(Entity::Flags::RenderShadow, true);
 
   ColorRGB    colors[2] = { ColorRGB(0.20f, 0.80f, 0.63f), ColorRGB(0.5f, 0.2f, 0.1f) };
   const char* labels[2] = { "Light 1", "Light 2" };
@@ -24,6 +28,7 @@ void ScenePlayground::init() {
   for (int i = 0; i < 2; ++i) {
     _pointLights[i].setName(labels[i]);
     _pointLights[i].setFlag(Entity::Flags::DisplayName, true);
+    _pointLights[i].setFlag(Entity::Flags::Hidden, true);
     _pointLights[i].attachModel(getAssetManager().loadModel("models/point_light.gfx"));
     _pointLights[i].cloneModelMaterial();
     _pointLights[i].getModelMaterial()->setParamVec3("material.color", colors[i]);

@@ -8,9 +8,11 @@ layout (location = 2) in vec2 attr_texcoords;
 layout (location = 3) in vec3 attr_tangent;
 
 uniform mat4 mtx_model;
+uniform mat4 mtx_light_vp; // TODO: Move to Lights UBO
 
 out VSOut {
   vec3 fragpos;
+  vec4 fragpos_lightspace;
   vec3 normal;
   vec2 texcoords;
   mat3 tbn;
@@ -22,6 +24,7 @@ void main() {
     vec3 b = cross(n, t);
 
     vs_out.fragpos = vec3(mtx_model * vec4(attr_pos, 1.0));
+    vs_out.fragpos_lightspace = mtx_light_vp * vec4(vs_out.fragpos, 1.0);
     vs_out.normal = vec3(mtx_model * vec4(attr_normal, 0.0f));
     vs_out.texcoords = attr_texcoords;
     vs_out.tbn = mat3(t, b, n);

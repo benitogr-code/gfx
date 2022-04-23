@@ -31,7 +31,7 @@ bool Window::init() {
 
   _window = SDL_CreateWindow(
     _title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-    _width, _height, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE|SDL_WINDOW_ALLOW_HIGHDPI
+    _width, _height, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE/*|SDL_WINDOW_ALLOW_HIGHDPI*/
   );
 
   if (_window == nullptr) {
@@ -59,14 +59,11 @@ void Window::resize(int width, int height) {
   _height = height;
 
   SDL_SetWindowSize(_window, width, height);
-  glViewport(0, 0, width, height);
 }
 
 void Window::onResized(int width, int height) {
   _width = width;
   _height = height;
-
-  glViewport(0, 0, width, height);
 }
 
 void Window::update() {

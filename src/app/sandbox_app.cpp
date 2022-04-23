@@ -129,6 +129,9 @@ void SandboxApp::onGUI() {
       if (ImGui::Button("Toggle wireframe")) {
         getRenderer()->toggleWireframe();
       }
+      if (ImGui::Button("Toggle render debug")) {
+        getRenderer()->toggleDebug();
+      }
     }
 
     _scene->onGUI();
@@ -159,7 +162,7 @@ void SandboxApp::onGUI() {
       _camera.position.x, _camera.position.y, _camera.position.z,
       _camera.pitch, _camera.yaw, _camera.fov
     );
-    ImGui::Text("Drawcalls %d | Point lights %d", stats.drawcalls, stats.pointlights);
+    ImGui::Text("Drawcalls main=%d shadow=%d total=%d", stats.drawcalls, stats.drawcallsShadows, stats.drawcalls+stats.drawcallsShadows);
     ImGui::Text("Frame time %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
     ImGui::End();

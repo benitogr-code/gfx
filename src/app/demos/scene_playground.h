@@ -11,7 +11,7 @@ public:
     _time = 0.0f;
     _sunLatitude = 30.0f;
     _sunLongitude = 70.0f;
-    _sunColor = ColorRGB(0.6f);
+    _sunColor = ColorRGB(0.75f);
     _sunAmbientMult = 0.2f;
     _sunSpecularMult = 0.8f;
     _sunPosition = computeSunPosition();

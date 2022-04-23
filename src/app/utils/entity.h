@@ -9,7 +9,8 @@ class Entity {
 public:
   enum class Flags: uint32_t {
     Hidden = BIT(0),
-    DisplayName = BIT(1)
+    DisplayName = BIT(1),
+    RenderShadow = BIT(2)
   };
 
   Entity();

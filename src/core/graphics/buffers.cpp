@@ -442,24 +442,43 @@ FBO::FBO(const FBOSpec& spec)
   glGenFramebuffers(1, &_id);
   glBindFramebuffer(GL_FRAMEBUFFER, _id);
 
-  // Color attachment
-  glGenTextures(1, &_colorAttachment);
-  glBindTexture(GL_TEXTURE_2D, _colorAttachment);
+  if (spec.type == FBOType::Default) {
+    // Color RGB
+    glGenTextures(1, &_colorAttachment);
+    glBindTexture(GL_TEXTURE_2D, _colorAttachment);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, spec.width, spec.height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, spec.width, spec.height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorAttachment, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorAttachment, 0);
 
-  // Depth and stencil
-  glGenRenderbuffers(1, &_depthAttachment);
-  glBindRenderbuffer(GL_RENDERBUFFER, _depthAttachment);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, spec.width, spec.height);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthAttachment);
+    // Depth and stencil
+    glGenRenderbuffers(1, &_depthAttachment);
+    glBindRenderbuffer(GL_RENDERBUFFER, _depthAttachment);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, spec.width, spec.height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthAttachment);
+  }
+  else if (spec.type == FBOType::Shadowmap) {
+    glGenTextures(1, &_depthAttachment);
+    glBindTexture(GL_TEXTURE_2D, _depthAttachment);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, spec.width, spec.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthAttachment, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+  }
 
   if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     LOG_ERROR("[FBO] Framebuffer not complete");
@@ -470,8 +489,14 @@ FBO::FBO(const FBOSpec& spec)
 
 FBO::~FBO() {
   glDeleteFramebuffers(1, &_id);
-  glDeleteTextures(1, &_colorAttachment);
-  glDeleteRenderbuffers(1, &_depthAttachment);
+
+  if (_spec.type == FBOType::Default) {
+    glDeleteTextures(1, &_colorAttachment);
+    glDeleteRenderbuffers(1, &_depthAttachment);
+  }
+  else if (_spec.type == FBOType::Shadowmap) {
+    glDeleteTextures(1, &_depthAttachment);
+  }
 }
 
 /*static*/ FBORef FBO::Create(const FBOSpec& spec) {
