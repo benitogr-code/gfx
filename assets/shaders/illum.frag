@@ -75,13 +75,23 @@ vec3 calculatePointLight(PointLight light, vec3 diffColor, vec3 specColor, vec3 
 }
 
 float shadowFactor(vec4 fragpos, float bias) {
-  vec3 proj_coords = fragpos.xyz / fragpos.w;
-  proj_coords = (proj_coords * 0.5) + vec3(0.5);
+  vec3 projCoords = fragpos.xyz / fragpos.w;
+  projCoords = (projCoords * 0.5) + vec3(0.5);
 
-  float closest_depth = texture(shadow_depth_map, proj_coords.xy).r;
-  float frag_depth = proj_coords.z;
+  float fragDepth = projCoords.z;
+  if(fragDepth > 1.0)
+    return 0.0;
 
-  return (frag_depth - bias) > closest_depth ? 1.0 : 0.0;
+  float shadow = 0.0;
+  vec2 texelSize = 1.0 / textureSize(shadow_depth_map, 0);
+  for(int x = -1; x <= 1; ++x) {
+    for(int y = -1; y <= 1; ++y) {
+      float pcfDepth = texture(shadow_depth_map, projCoords.xy + vec2(x, y) * texelSize).r;
+      shadow += fragDepth - bias > pcfDepth ? 1.0 : 0.0;
+    }
+  }
+
+  return (shadow /= 9.0);
 }
 
 void main() {
