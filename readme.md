@@ -1,6 +1,6 @@
 # GFX
 
-An OpenGL sandbox project for learning different computer graphics concepts and tecniques.
+A work in progress OpenGL playground for learning different computer graphics concepts and tecniques.
 
 ### Prerequisites
 
