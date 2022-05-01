@@ -6,6 +6,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 std::string FileUtils::_assetsFolder;
 
 void FileUtils::init(const std::string& assetsFolder) {
@@ -88,6 +91,17 @@ bool FileUtils::readJsonFile(const char* filePath, Json::Value& root) {
   }
 
   return true;
+}
+
+void FileUtils::saveImageToFile(const char* filePath, const ImageData& data) {  
+  const unsigned char* lastLine = data.data.data() + (data.width * 3 * (data.height - 1));
+
+  if (!stbi_write_png(filePath, data.width, data.height, data.bytesPerPixel, lastLine, -3*data.width)) {
+    LOG_ERROR("[FileUtils] Could not save image {0}", filePath);
+    return;
+  }
+
+  LOG_INFO("[FileUtils] Image {0} saved", filePath);
 }
 
 std::string FileUtils::removeExtension(const std::string& filename) {

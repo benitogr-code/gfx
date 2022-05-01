@@ -19,6 +19,8 @@ enum KeyboardKey {
   KeyboardKey_2,
   KeyboardKey_3,
   KeyboardKey_4,
+
+  KeyboardKey_F12,
 };
 
 enum MouseButton {

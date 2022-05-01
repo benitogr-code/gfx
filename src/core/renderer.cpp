@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "file_utils.h"
 #include "font.h"
 #include "graphics/debug_utils.h"
 
@@ -334,4 +335,20 @@ void Renderer::endFrame() {
   _stats.drawcallsShadows = drawcallsShadows;
 
   GL_CHECK_ERROR();
+}
+
+void Renderer::captureScreen() {
+  ImageData img;
+  img.width = _viewportWidth;
+  img.height = _viewportHeight;
+  img.bytesPerPixel = 3; // RGB
+  img.data.resize(_viewportHeight*_viewportWidth*3);
+
+  glReadPixels(0, 0, _viewportWidth, _viewportWidth, GL_RGB, GL_UNSIGNED_BYTE, img.data.data());
+
+  char filename[128];
+  long int t = time(NULL);
+  sprintf(filename, "_captures/screenshot_%ld.png", t);
+
+  FileUtils::saveImageToFile(FileUtils::getAbsolutePath(filename).c_str(), img);
 }

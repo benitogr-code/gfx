@@ -1,4 +1,6 @@
+.DS_Store
 .vscode
+/assets/_captures
 /build
 /src/imgui
 

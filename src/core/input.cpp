@@ -19,7 +19,7 @@ Input::Input() {
   _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_2, KeyboardKey_2));
   _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_3, KeyboardKey_3));
   _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_4, KeyboardKey_4));
-
+  _keyCodes.insert(KeyCodes::value_type(SDL_SCANCODE_F12, KeyboardKey_F12));
 
   _mouseButtonCodes.insert(ButtonCodes::value_type(SDL_BUTTON_LEFT, MouseButton_Left));
   _mouseButtonCodes.insert(ButtonCodes::value_type(SDL_BUTTON_RIGHT, MouseButton_Left));

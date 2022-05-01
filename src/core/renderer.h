@@ -67,6 +67,8 @@ public:
   void beginFrame();
   void endFrame();
 
+  void captureScreen();
+
 private:
   Camera   _viewCamera;
   UBORef   _uboCamera;

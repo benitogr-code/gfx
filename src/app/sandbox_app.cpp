@@ -27,18 +27,31 @@ void SandboxApp::onShutdown() {
 void SandboxApp::onInputEvent(const InputEvent& event) {
   const bool released = (event.state == InputState_Released);
 
-  if (event.key == KeyboardKey_A) {
-    setInputFlag(InputFlag_MoveLeft, !released);
+  switch(event.key) {
+    case KeyboardKey_A:
+    case KeyboardKey_Left:
+      setInputFlag(InputFlag_MoveLeft, !released);
+      break;
+    case KeyboardKey_D:
+    case KeyboardKey_Right:
+      setInputFlag(InputFlag_MoveRight, !released);
+      break;
+    case KeyboardKey_W:
+    case KeyboardKey_Up:
+      setInputFlag(InputFlag_MoveForward, !released);
+      break;
+    case KeyboardKey_S:
+    case KeyboardKey_Down:
+      setInputFlag(InputFlag_MoveBackward, !released);
+      break;
+    case KeyboardKey_F12: {
+        if (event.state == InputState_Pressed)
+          getRenderer()->captureScreen();
+      }
+      break;
+    default: break;
   }
-  else if (event.key == KeyboardKey_D) {
-    setInputFlag(InputFlag_MoveRight, !released);
-  }
-  else if (event.key == KeyboardKey_W) {
-    setInputFlag(InputFlag_MoveForward, !released);
-  }
-  else if (event.key == KeyboardKey_S) {
-    setInputFlag(InputFlag_MoveBackward, !released);
-  }
+
 
   _scene->onInputEvent(event);
 }
