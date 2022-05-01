@@ -19,7 +19,7 @@
 Renderer::Renderer()
   : _clearColor(0.0f)
   , _wireframeEnabled(false)
-  , _debugEnabled(true) {
+  , _debugEnabled(false) {
     _viewCamera = Camera(glm::vec3(0.0f, 0.0f, 10.0f), 1.0f, 65.0f, 0.1f, 50.0f);
     _mainPassList.reserve(256);
     _shadowPassList.reserve(256);
